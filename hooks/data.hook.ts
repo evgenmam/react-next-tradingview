@@ -32,6 +32,11 @@ export const useRows = () => {
         R.mapObjIndexed((v, k) => (k === "time" ? v : +v.toFixed(maxDigits)))
       );
     }) || [];
+
+  const indexed = R.indexBy<IChartData, number>(R.prop("time"))(
+    rows as IChartData[]
+  );
+
   const setRows = async (rows: IChartData[]) => {
     await IDB.rows.clear();
     await IDB.rows.bulkAdd(rows);
@@ -39,7 +44,7 @@ export const useRows = () => {
   const clearRows = async () => {
     await IDB.rows.clear();
   };
-  return { rows, setRows, clearRows };
+  return { rows, setRows, clearRows, indexed };
 };
 
 const useSetting = (k: string, defaultValue: any) => {

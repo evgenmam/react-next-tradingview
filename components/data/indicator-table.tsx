@@ -7,6 +7,7 @@ import {
   IconButton,
   Input,
   Sheet,
+  Textarea,
   Typography,
 } from "@mui/joy";
 import { Stack } from "@mui/system";
@@ -18,6 +19,8 @@ import { useState } from "react";
 import { FieldSelect } from "./selects/field-select";
 import { TypeSelect } from "./selects/type-select";
 import * as R from "ramda";
+import { ColorSelect } from "./selects/color-select";
+import randomInteger from "random-int";
 type Props = {
   indicator: IIndicator;
 };
@@ -28,7 +31,9 @@ export const IndicatorTable = ({ indicator }: Props) => {
   const [field, setField] = useState<IIndicatorField>({
     key: "close",
     type: "line",
+    color: ColorSelect.swatches[randomInteger(0, 12) * 8],
   });
+  const [json, setJson] = useState("{}");
   return (
     <Stack>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -47,6 +52,14 @@ export const IndicatorTable = ({ indicator }: Props) => {
         <Stack direction="row" spacing={0.5}>
           <ButtonBase
             onClick={() => {
+              if (!adding) {
+                setField({
+                  key: "close",
+                  type: "line",
+                  color: ColorSelect.swatches[randomInteger(0, 12) * 7 + 5],
+                });
+                setJson("{}");
+              }
               setAdding(!adding);
             }}
           >
@@ -97,10 +110,25 @@ export const IndicatorTable = ({ indicator }: Props) => {
               }}
               value={field.type}
             />
+            <ColorSelect
+              onChange={(v) => {
+                if (v) setField(R.assoc("color", v));
+              }}
+              value={field.color}
+            />
+            <Textarea
+              minRows={2}
+              value={json}
+              onChange={(v) => setJson(v.target.value)}
+            />
             <Button
               size="sm"
               variant="plain"
               onClick={() => {
+                try {
+                  const props = JSON.parse(json);
+                  setField(R.assoc("props", props));
+                } catch (error) {}
                 updateIndicator(
                   R.over(
                     R.lensProp<IIndicator, "fields">("fields"),

@@ -8,9 +8,10 @@ type Props = {
 };
 
 const ChartDataRow = ({ idx = 0, field }: { idx: number; field: string }) => {
-  const { rows } = useRows();
+  const { rows, indexed } = useRows();
+  const row = rows?.findIndex((r) => r.time >= idx);
   const color =
-    rows?.[idx]?.[field] > rows?.[idx - 1]?.[field] ? "success" : "danger";
+    rows?.[row]?.[field] > rows?.[row - 1]?.[field] ? "success" : "danger";
   return (
     <Stack direction="row" justifyContent="space-between" spacing={1}>
       <Typography fontWeight={600} fontSize={12} whiteSpace="nowrap">
@@ -21,7 +22,7 @@ const ChartDataRow = ({ idx = 0, field }: { idx: number; field: string }) => {
         color={field === "time" ? "neutral" : color}
         fontFamily="monospace"
       >
-        {rows?.[idx]?.[field]}
+        {rows?.[row]?.[field]}
       </Typography>
     </Stack>
   );
@@ -29,15 +30,12 @@ const ChartDataRow = ({ idx = 0, field }: { idx: number; field: string }) => {
 
 export const ChartData = ({ active = 0 }: Props) => {
   const { fields } = useFields();
-  const [debounced] = useDebounce(active, 10, {
-    trailing: true,
-  });
   return (
     <Stack>
       <Divider>Chart Data</Divider>
       <Box mt={1}>
         {fields.reverse().map((field) => (
-          <ChartDataRow idx={debounced} key={field} field={field} />
+          <ChartDataRow idx={active} key={field} field={field} />
         ))}
       </Box>
     </Stack>

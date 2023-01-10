@@ -9,7 +9,7 @@ export const TypeSelect = (props: SelectProps<string>) => {
     // "pie",
     // "donut",
     // "radialBar",
-    // "scatter",
+    "scatter",
     // "bubble",
     // "heatmap",
     // "treemap",

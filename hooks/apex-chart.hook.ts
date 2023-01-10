@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import ApexCharts from "apexcharts";
 
 export const useApexChart = (options: ApexCharts.ApexOptions) => {
@@ -16,8 +16,9 @@ export const useApexChart = (options: ApexCharts.ApexOptions) => {
   }, []);
 
   useEffect(() => {
-    console.log(prevOptions.current, options);
-    chartRef.current?.updateOptions(options);
+    chartRef.current?.destroy();
+    chartRef.current = new ApexCharts(elRef.current!, options);
+    chartRef.current.render();
   }, [options]);
 
   return { elRef };

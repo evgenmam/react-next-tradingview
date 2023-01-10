@@ -1,3 +1,5 @@
+import Highcharts from "highcharts/highstock";
+
 export type IChartData = {
   close: number;
   open: number;
@@ -14,7 +16,7 @@ export type ISettings = {
 
 export type IIndicatorField = {
   key: string;
-  type: "line" | "area" | "bar";
+  type: Highcharts.Series["type"];
   // | "histogram"
   // | "pie"
   // | "donut"
@@ -28,6 +30,8 @@ export type IIndicatorField = {
   // | "radar"
   // | "polarArea"
   // | "rangeBar";
+  color?: string;
+  props?: Record<string, any>;
 };
 
 export type IIndicator = {

@@ -21,12 +21,14 @@ export const CsvUpload = () => {
           const data = lines.slice(1).map((line) => {
             const values = line.split(",");
             return headers.reduce((obj, nextKey, index) => {
-              if (!isNaN(+values[index])) {
+              let value = +values[index];
+              if (nextKey === "time") value *= 1000;
+              if (!isNaN(value)) {
                 fields[index].isNull = false;
               }
               return {
                 ...obj,
-                [nextKey]: +values[index],
+                [nextKey]: value,
               };
             }, {} as IChartData);
           });

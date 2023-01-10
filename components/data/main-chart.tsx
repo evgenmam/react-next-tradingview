@@ -1,72 +1,103 @@
-import { Box } from "@mui/system";
-import dynamic from "next/dynamic";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useDebounce } from "use-debounce";
-import { useRows } from "../../hooks/data.hook";
-import { IChartData } from "../../types/app.types";
-import ApexCharts from "apexcharts";
+import { memo } from "react";
+import { useIndicators, useRows } from "../../hooks/data.hook";
+import { IChartData, IIndicator, IIndicatorField } from "../../types/app.types";
 import { useApexChart } from "../../hooks/apex-chart.hook";
+import { HChart, HStock } from "../hchart";
+import Highcharts from "highcharts/highstock";
+import * as R from "ramda";
+import colors from "material-colors";
+
 export const MainChart1 = ({
-  rows,
-  setActive,
+  setHover,
 }: {
   rows: string;
-  setActive: (i: number) => void;
+  setHover: (i: number) => void;
 }) => {
-  const d = JSON.parse(rows);
+  const { rows } = useRows();
+  const { indicators } = useIndicators();
+  const { overlay = [], stack = [] } = R.groupBy<IIndicator>((v) =>
+    v.main ? "overlay" : "stack"
+  )(indicators);
 
-  const series: ApexAxisChartSeries = [
-    {
-      data: d.map((row: IChartData) => ({
-        x: new Date(row.time * 1000),
-        y: [row.open, row.high, row.low, row.close],
-      })),
-      type: "candlestick",
-    },
-  ];
-  const options: ApexCharts.ApexOptions = {
-    title: {
-      text: "Trade history",
-    },
-    chart: {
-      type: "candlestick",
-      id: "candles",
-      group: "mainchart",
-      events: {
-        mouseMove: (_, __, options) => {
-          try {
-            setActive(options.dataPointIndex);
-          } catch (error) {
-            console.log(error);
-          }
+  const chartH = 50;
+
+  const additionsAxis: Highcharts.YAxisOptions[] = stack.map((v, idx) => {
+    const h = (100 - chartH) / stack.length;
+    const s = idx + 1;
+    return {
+      yAxis: s,
+      height: `${h}%`,
+      top: `${h * idx + chartH}%`,
+      resize: { enabled: true },
+    };
+  });
+
+  const additionalSeries: (Highcharts.SeriesOptions & { type: any })[] = [
+    ...stack,
+    ...overlay,
+  ].flatMap((v, idx) =>
+    v.fields.map((f) => {
+      return {
+        yAxis: v.main ? 0 : idx + 1,
+        type: f.type as any,
+        color: f.color,
+        data: rows.map((row) => [row.time, row[f.key]]),
+        name: f.key,
+        marker: {
+          symbol: "circle",
+          radius: 2.5
+        }
+      };
+    })
+  );
+
+  const options: Highcharts.Options = {
+    yAxis: [
+      {
+        height: `${stack.length ? chartH : 100 - chartH}%`,
+        resize: {
+          enabled: true,
         },
       },
-      height: 350,
-      width: "100%",
-      animations: {
-        enabled: false,
+      ...additionsAxis,
+    ],
+    series: [
+      {
+        type: "candlestick",
+        data: rows.map((row) => [
+          row.time,
+          row.open,
+          row.high,
+          row.low,
+          row.close,
+        ]),
+        color: colors.red[500],
+        upColor: colors.green[500],
+        lineColor: colors.red[500],
+        upLineColor: colors.green[500],
+        name: "Market value",
       },
-    },
-    yaxis: {
-      labels: {
-        minWidth: 40,
-      },
-    },
-    xaxis: {
-      type: "datetime",
-      tooltip: {
-        enabled: false,
-      },
+      ...additionalSeries,
+    ],
+    chart: {
+      height: (stack.length + 1) * 300 + 120,
     },
     tooltip: {
-      custom: () => {
-        return null;
+      formatter: function (tooltip) {
+        if (this.x && typeof this.x === "number") setHover(this.x);
+        return false;
       },
     },
-    series,
+
+    // series: [
+    //   {
+    //     data: [1, 2, 1, 4, 3, 6, 7, 3, 8, 6, 9],
+    //   },
+    // ],
   };
-  const { elRef } = useApexChart(options);
-  return <div id="candles" ref={elRef}></div>;
+  console.log(options);
+
+  return <HStock options={options} />;
 };
 
 export const MainChart = memo(MainChart1);

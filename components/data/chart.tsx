@@ -2,6 +2,7 @@ import { Divider, Grid, Stack, Typography } from "@mui/joy";
 import { Box } from "@mui/system";
 import dynamic from "next/dynamic";
 import { memo, useCallback, useEffect, useState } from "react";
+import { useThrottledCallback } from "use-debounce";
 import {
   useFields,
   useIndicators,
@@ -15,12 +16,11 @@ import { IndicatorChart } from "./indicators/indicator-chart";
 import { MainChart } from "./main-chart";
 
 export const DataChart1 = () => {
-  const { indicators } = useIndicators();
   const { rows } = useRows();
   const [active, s] = useState(rows.length - 1);
-  const setActive = useCallback((i: number) => {
+  const setActive = useThrottledCallback((i: number) => {
     s(i);
-  }, []);
+  }, 50);
 
   return (
     <Box>
@@ -31,16 +31,7 @@ export const DataChart1 = () => {
       >
         {rows.length && (
           <Box flexGrow={1} id="wrapper">
-            <MainChart rows={JSON.stringify(rows)} setActive={setActive} />
-            {indicators
-              .filter((v) => !v.main)
-              .map((indicator) => (
-                <IndicatorChart
-                  key={indicator.name}
-                  indicator={indicator}
-                  rows={JSON.stringify(rows)}
-                />
-              ))}
+            <MainChart rows={JSON.stringify(rows)} setHover={setActive} />
           </Box>
         )}
         <Stack flexShrink={0} spacing={2}>

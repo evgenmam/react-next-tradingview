@@ -1,4 +1,13 @@
-import { Box, Card, CardContent, Tab, TabList, TabPanel, Tabs } from "@mui/joy";
+import {
+  Box,
+  Card,
+  CardContent,
+  Grid,
+  Tab,
+  TabList,
+  TabPanel,
+  Tabs,
+} from "@mui/joy";
 import { Stack } from "@mui/system";
 import { useRef, useState } from "react";
 import { CsvUpload } from "../components/csv/csv-upload";
@@ -15,32 +24,38 @@ export default function App() {
         <CsvUpload />
       </Box>
       <Stack spacing={2}>
-        <Tabs
-          value={tab}
-          onChange={(_, v) => {
-            setTab(v as string);
-          }}
-        >
-          <TabList>
-            <Tab value="chart">Chart</Tab>
-            <Tab value="table">Table</Tab>
-          </TabList>
-          <Box mt={2}>
-            <Card
-              variant="outlined"
-              sx={tab === "table" ? { overflow: "auto", height: "600px" } : {}}
+        <Grid container>
+          <Grid xs={12} md={8}>
+            <Tabs
+              value={tab}
+              onChange={(_, v) => {
+                setTab(v as string);
+              }}
             >
-              <CardContent>
-                <TabPanel value="chart">
-                  <DataChart />
-                </TabPanel>
-                <TabPanel value="table">
-                  <DataTable />
-                </TabPanel>
-              </CardContent>
-            </Card>
-          </Box>
-        </Tabs>
+              <TabList>
+                <Tab value="chart">Chart</Tab>
+                <Tab value="table">Table</Tab>
+              </TabList>
+              <Box mt={2}>
+                <Card
+                  variant="outlined"
+                  sx={
+                    tab === "table" ? { overflow: "auto", height: "600px" } : {}
+                  }
+                >
+                  <CardContent>
+                    <TabPanel value="chart">
+                      <DataChart />
+                    </TabPanel>
+                    <TabPanel value="table">
+                      <DataTable />
+                    </TabPanel>
+                  </CardContent>
+                </Card>
+              </Box>
+            </Tabs>
+          </Grid>
+        </Grid>
         <Settings />
       </Stack>
     </>
