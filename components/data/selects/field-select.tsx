@@ -3,14 +3,21 @@ import { useFields } from "../../../hooks/data.hook";
 import * as R from "ramda";
 type Props = {
   exclude?: string[];
+  hideLabel?: boolean;
+  datasource?: string;
 } & SelectProps<string>;
 
-export const FieldSelect = ({ exclude = [], ...props }: Props) => {
-  const { fields } = useFields();
+export const FieldSelect = ({
+  exclude = [],
+  hideLabel,
+  datasource = "source",
+  ...props
+}: Props) => {
+  const { fields } = useFields("source");
   const options = R.without(exclude, fields);
   return (
     <FormControl size="sm">
-      <FormLabel>Data</FormLabel>
+      {!hideLabel && <FormLabel>Data</FormLabel>}
       <Select {...props}>
         {options.map((option) => (
           <Option key={option} value={option}>

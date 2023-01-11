@@ -12,7 +12,12 @@ import {
 } from "@mui/joy";
 import { Stack } from "@mui/system";
 import { IIndicator, IIndicatorField } from "../../types/app.types";
-import { XMarkIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
+import {
+  XMarkIcon,
+  PlusIcon,
+  TrashIcon,
+  StopIcon,
+} from "@heroicons/react/24/solid";
 import { ButtonBase, Collapse, TextField, useTheme } from "@mui/material";
 import { useIndicators } from "../../hooks/data.hook";
 import { useState } from "react";
@@ -31,7 +36,7 @@ export const IndicatorTable = ({ indicator }: Props) => {
   const [field, setField] = useState<IIndicatorField>({
     key: "close",
     type: "line",
-    color: ColorSelect.swatches[randomInteger(0, 12) * 8],
+    color: ColorSelect.random(),
   });
   const [json, setJson] = useState("{}");
   return (
@@ -56,7 +61,7 @@ export const IndicatorTable = ({ indicator }: Props) => {
                 setField({
                   key: "close",
                   type: "line",
-                  color: ColorSelect.swatches[randomInteger(0, 12) * 7 + 5],
+                  color: ColorSelect.random(),
                 });
                 setJson("{}");
               }
@@ -76,7 +81,10 @@ export const IndicatorTable = ({ indicator }: Props) => {
             alignItems="center"
             spacing={0.5}
           >
-            <Typography fontSize={12}>{field.key}</Typography>
+            <Stack spacing={0.5} direction="row">
+              <StopIcon width={18} color={field?.color} />
+              <Typography fontSize={12}>{field.key}</Typography>
+            </Stack>
             <ButtonBase
               onClick={() => {
                 updateIndicator(

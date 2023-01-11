@@ -5,6 +5,7 @@ import * as R from "ramda";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import { Popover } from "@mui/material";
 import { Square2StackIcon, StopIcon } from "@heroicons/react/24/solid";
+import randomInteger from "random-int";
 
 const swatches = R.pipe(
   R.pick([
@@ -75,3 +76,4 @@ export const ColorSelect = ({
 };
 
 ColorSelect.swatches = swatches;
+ColorSelect.random = () => ColorSelect.swatches[randomInteger(0, 12) * 8];

@@ -52,7 +52,7 @@ export const NewIndicator = () => {
             </BTN>
             <BTN
               onClick={() => {
-                addIndicator({ name, fields: [], main });
+                addIndicator({ name, fields: [], main, dataset: "source" });
                 setName("");
                 setAdding(false);
               }}

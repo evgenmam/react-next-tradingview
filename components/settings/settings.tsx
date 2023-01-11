@@ -12,23 +12,18 @@ import {
   TextField,
 } from "@mui/joy";
 import dynamic from "next/dynamic";
+import { useState } from "react";
 import { useFields, useRows, useSettings } from "../../hooks/data.hook";
 
 const Checkbox = dynamic(() => import("@mui/joy/Checkbox"), { ssr: false });
 
 export const Settings = () => {
   const { hideEmpty, setHideEmpty, maxDigits, setMaxDigits } = useSettings();
-  const { clearFields } = useFields();
-  const { clearRows } = useRows();
+  const { clearFields } = useFields("source");
+  const { clearRows } = useRows("source");
+  const [open, setOpen] = useState(false);
   return (
-    <Box
-      position="fixed"
-      bottom="0"
-      left="0"
-      right="0"
-      zIndex={4}
-      boxShadow={1}
-    >
+    <Box position="fixed" bottom="0" right="0" zIndex={4} boxShadow={1}>
       <Sheet variant="outlined">
         <Stack
           spacing={2}
@@ -54,12 +49,13 @@ export const Settings = () => {
             <TextField
               sx={{ maxWidth: 70 }}
               type="number"
-              value={maxDigits || ''}
+              value={maxDigits || ""}
               onChange={(e) => {
                 if (+e.target.value >= 0) setMaxDigits(+e.target.value);
               }}
             />
           </FormControl>
+
           <Button
             onClick={() => {
               clearFields();

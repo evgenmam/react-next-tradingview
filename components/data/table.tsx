@@ -5,7 +5,7 @@ import { filterEmpty } from "../../utils/data.utils";
 
 export const DataTable = () => {
   const { fields } = useFields();
-  const { rows } = useRows();
+  const { rows } = useRows("source");
   return (
     <table>
       <thead>

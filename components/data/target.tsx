@@ -1,31 +1,30 @@
 import { Divider, Grid, Stack } from "@mui/joy";
 import { Box } from "@mui/system";
+import dynamic from "next/dynamic";
 import { memo, useState } from "react";
 import { useThrottledCallback } from "use-debounce";
 import { useRows } from "../../hooks/data.hook";
 import { ChartData } from "./chart-data";
-import { Indicators } from "./indicators";
-import { MainChart } from "./main-chart";
+import { TargetChart } from "./target-chart";
 
-export const DataChart1 = () => {
-  const { rows } = useRows("source");
+export const TargetData1 = () => {
+  const { rows } = useRows("target");
   const [active, s] = useState(rows.length - 1);
   const setActive = useThrottledCallback((i: number) => {
     s(i);
   }, 50);
 
   return (
-    <Box>
-      <Grid container spacing={4} columns={24}>
+    <Box mt={2}>
+      <Grid container spacing={2} columns={24}>
         <Grid xs={24} md={19}>
           {rows.length && (
-            <MainChart rows={JSON.stringify(rows)} setHover={setActive} />
+            <TargetChart rows={JSON.stringify(rows)} setHover={setActive} />
           )}
         </Grid>
         <Grid xs={24} md={5}>
           <Stack flexShrink={0} spacing={2}>
-            <ChartData active={active} datasource="source" />
-            <Indicators />
+            <ChartData active={active} datasource="target" />
           </Stack>
         </Grid>
       </Grid>
@@ -33,4 +32,4 @@ export const DataChart1 = () => {
   );
 };
 
-export const DataChart = memo(DataChart1);
+export const TargetData = memo(TargetData1);

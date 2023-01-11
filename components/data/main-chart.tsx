@@ -1,11 +1,18 @@
 import { memo } from "react";
-import { useIndicators, useRows } from "../../hooks/data.hook";
+import {
+  useIndicators,
+  useRows,
+  useSetting,
+  useSettings,
+  useSignals,
+} from "../../hooks/data.hook";
 import { IChartData, IIndicator, IIndicatorField } from "../../types/app.types";
 import { useApexChart } from "../../hooks/apex-chart.hook";
 import { HChart, HStock } from "../hchart";
 import Highcharts from "highcharts/highstock";
 import * as R from "ramda";
 import colors from "material-colors";
+import { applySignal } from "../utils/calculations";
 
 export const MainChart1 = ({
   setHover,
@@ -13,21 +20,23 @@ export const MainChart1 = ({
   rows: string;
   setHover: (i: number) => void;
 }) => {
-  const { rows } = useRows();
+  const { rows } = useRows("source");
+  const { signals } = useSignals();
   const { indicators } = useIndicators();
+  const { showSignals } = useSettings();
   const { overlay = [], stack = [] } = R.groupBy<IIndicator>((v) =>
     v.main ? "overlay" : "stack"
   )(indicators);
 
-  const chartH = 50;
+  const chartH = 300;
 
   const additionsAxis: Highcharts.YAxisOptions[] = stack.map((v, idx) => {
-    const h = (100 - chartH) / stack.length;
+    const h = chartH;
     const s = idx + 1;
     return {
       yAxis: s,
-      height: `${h}%`,
-      top: `${h * idx + chartH}%`,
+      height: `${h}px`,
+      top: `${h * idx + chartH + 100}px`,
       resize: { enabled: true },
     };
   });
@@ -45,8 +54,8 @@ export const MainChart1 = ({
         name: f.key,
         marker: {
           symbol: "circle",
-          radius: 2.5
-        }
+          radius: 2.5,
+        },
       };
     })
   );
@@ -54,7 +63,7 @@ export const MainChart1 = ({
   const options: Highcharts.Options = {
     yAxis: [
       {
-        height: `${stack.length ? chartH : 100 - chartH}%`,
+        height: chartH + 100 + "px",
         resize: {
           enabled: true,
         },
@@ -71,31 +80,43 @@ export const MainChart1 = ({
           row.low,
           row.close,
         ]),
-        color: colors.red[500],
-        upColor: colors.green[500],
-        lineColor: colors.red[500],
-        upLineColor: colors.green[500],
+        color: colors.red[100],
+        upColor: colors.green[100],
+        lineColor: colors.red[700],
+        upLineColor: colors.green[700],
         name: "Market value",
       },
       ...additionalSeries,
     ],
     chart: {
-      height: (stack.length + 1) * 300 + 120,
+      height: (stack.length + 1) * 300 + 100 + 100,
+    },
+    accessibility: {
+      enabled: false,
     },
     tooltip: {
       formatter: function (tooltip) {
         if (this.x && typeof this.x === "number") setHover(this.x);
-        return false;
+        return [this.x ? new Date(this.x).toDateString() : ""];
       },
     },
-
-    // series: [
-    //   {
-    //     data: [1, 2, 1, 4, 3, 6, 7, 3, 8, 6, 9],
-    //   },
-    // ],
+    xAxis: {
+      plotLines: showSignals
+        ? signals
+            .filter((v) => !v.hide)
+            .flatMap(applySignal(rows))
+            .flatMap(({ data, signal }) =>
+              data.map((v) => ({
+                value: v.time,
+                color: signal.color,
+                width: 2,
+              }))
+            )
+        : [],
+    },
   };
-  console.log(options);
+
+  console.log();
 
   return <HStock options={options} />;
 };

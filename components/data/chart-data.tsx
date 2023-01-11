@@ -5,10 +5,19 @@ import { useFields, useRows, useSettings } from "../../hooks/data.hook";
 
 type Props = {
   active: number;
+  datasource: string;
 };
 
-const ChartDataRow = ({ idx = 0, field }: { idx: number; field: string }) => {
-  const { rows, indexed } = useRows();
+const ChartDataRow = ({
+  idx = 0,
+  field,
+  datasource,
+}: {
+  idx: number;
+  field: string;
+  datasource: string;
+}) => {
+  const { rows } = useRows(datasource);
   const row = rows?.findIndex((r) => r.time >= idx);
   const color =
     rows?.[row]?.[field] > rows?.[row - 1]?.[field] ? "success" : "danger";
@@ -28,14 +37,19 @@ const ChartDataRow = ({ idx = 0, field }: { idx: number; field: string }) => {
   );
 };
 
-export const ChartData = ({ active = 0 }: Props) => {
-  const { fields } = useFields();
+export const ChartData = ({ active = 0, datasource }: Props) => {
+  const { fields } = useFields(datasource);
   return (
     <Stack>
       <Divider>Chart Data</Divider>
       <Box mt={1}>
-        {fields.reverse().map((field) => (
-          <ChartDataRow idx={active} key={field} field={field} />
+        {fields.map((field) => (
+          <ChartDataRow
+            idx={active}
+            key={field}
+            field={field}
+            datasource={datasource}
+          />
         ))}
       </Box>
     </Stack>
