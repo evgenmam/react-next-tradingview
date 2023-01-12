@@ -10,7 +10,7 @@ import {
 import { Stack } from "@mui/system";
 import { useRows, useStrategies } from "../../hooks/data.hook";
 import { useTradeStats } from "../../hooks/trade.hoosk";
-import { calculateStrategy } from "../utils/calculations";
+import { calculateStrategy } from "../../utils/calculations";
 import { HumanDate } from "../utils/human-date";
 
 export const TradeStats = () => {

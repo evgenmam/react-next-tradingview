@@ -75,6 +75,21 @@ export type IStrategy = {
   entry?: number;
 };
 
+export type IBaseTrade = {
+  action: "open" | "close";
+  close?: boolean;
+  long?: boolean;
+  short?: boolean;
+  open?: boolean;
+  time: number;
+  strategy: IStrategy;
+};
+
+export type IBaseTradePack = {
+  open: IBaseTrade[];
+  close: IBaseTrade[];
+};
+
 export type ITrade = {
   color?: string;
   pnl?: number;

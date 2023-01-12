@@ -1,20 +1,9 @@
 import { memo, useRef } from "react";
-import {
-  useIndicators,
-  useRows,
-  useSetting,
-  useSettings,
-  useSignals,
-  useStrategies,
-} from "../../hooks/data.hook";
-import { IChartData, IIndicator, IIndicatorField } from "../../types/app.types";
-import { useApexChart } from "../../hooks/apex-chart.hook";
-import { HChart, HStock } from "../hchart";
+import { useRows, useStrategies } from "../../hooks/data.hook";
+import { HStock } from "../hchart";
 import Highcharts from "highcharts/highstock";
-import * as R from "ramda";
 import colors from "material-colors";
-import { applySignal, calculateStrategy } from "../utils/calculations";
-import { HoverWatcher, ZoomWatcher } from "./hover-watcher";
+import { calculateStrategy } from "../../utils/calculations";
 import HighchartsReact from "highcharts-react-official";
 import { syncExtremes } from "../../utils/chart.utils";
 

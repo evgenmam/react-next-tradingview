@@ -1,4 +1,4 @@
-import { calculateStrategy } from "../components/utils/calculations";
+import { calculateStrategy } from "../utils/calculations";
 import { useRows, useStrategies } from "./data.hook";
 
 export const useTradeStats = () => {

@@ -1,4 +1,10 @@
-import { IChartData, ISignal, IStrategy, ITrade } from "../../types/app.types";
+import {
+  IBaseTradePack,
+  IChartData,
+  ISignal,
+  IStrategy,
+  ITrade,
+} from "../types/app.types";
 
 export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
   return {
@@ -33,16 +39,26 @@ export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
   };
 };
 
-export const applyStrategy = (rows: IChartData[]) => (strategy: IStrategy) => ({
-  open: applySignal(rows)(strategy.openSignal!).data.map((r) => ({
-    time: r.time,
-    action: "open",
-  })),
-  close: applySignal(rows)(strategy.closeSignal!).data.map((r) => ({
-    time: r.time,
-    action: "close",
-  })),
-});
+export const applyStrategy =
+  (rows: IChartData[]) =>
+  (strategy: IStrategy): IBaseTradePack => ({
+    open: applySignal(rows)(strategy.openSignal!).data.map((r) => ({
+      strategy,
+      open: true,
+      long: strategy.direction === "long",
+      short: strategy.direction === "short",
+      time: r.time,
+      action: "open",
+    })),
+    close: applySignal(rows)(strategy.closeSignal!).data.map((r) => ({
+      strategy,
+      close: true,
+      long: strategy.direction === "long",
+      short: strategy.direction === "short",
+      time: r.time,
+      action: "close",
+    })),
+  });
 
 export const calculateStrategy =
   (source: IChartData[], target: IChartData[]) =>
