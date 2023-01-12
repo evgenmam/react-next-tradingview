@@ -1,5 +1,6 @@
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
-import { List, Stack, Typography } from "@mui/joy";
+import { ClipboardIcon } from "@heroicons/react/24/outline";
+import { IconButton, List, Stack, Typography } from "@mui/joy";
 import { ButtonBase, Icon } from "@mui/material";
 import { useSettings, useStrategies } from "../../hooks/data.hook";
 import { StrategyRow } from "./strategy-row";
@@ -15,11 +16,14 @@ export const Strategies = () => {
         <Typography fontSize={20}>Strategies</Typography>
         <ButtonBase
           onClick={() => {
-            // setShowSignals(!showSignals);
+            setShowStrategies(!showStrategies);
           }}
         >
           <Icon width={16} />
         </ButtonBase>
+        <IconButton size="sm" sx={{ ml: "auto" }}>
+          <ClipboardIcon />
+        </IconButton>
       </Stack>
 
       <List>

@@ -31,7 +31,6 @@ export const TargetChart1 = ({
   const chartH = 300;
 
   const data = strategies.map(calculateStrategy(source, rows));
-  console.log(data);
 
   const tradeLines =
     data?.[0]?.map(
@@ -59,7 +58,6 @@ export const TargetChart1 = ({
         ],
       })
     ) || [];
-  console.log(tradeLines);
   const options: Highcharts.Options = {
     yAxis: [
       {
@@ -94,11 +92,11 @@ export const TargetChart1 = ({
       enabled: false,
     },
     tooltip: {
-      formatter: function (tooltip) {
-        if (this.x && typeof this.x === "number") setHover(this.x);
-        return [this.x ? new Date(this.x).toDateString() : ""];
-      },
-      stickOnContact: true,
+      // formatter: function (tooltip) {
+      //   if (this.x && typeof this.x === "number") setHover(this.x);
+      //   return [this.x ? new Date(this.x).toDateString() : ""];
+      // },
+      // stickOnContact: true,
     },
     xAxis: {
       events: {

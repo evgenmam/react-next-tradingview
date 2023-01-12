@@ -74,3 +74,15 @@ export type IStrategy = {
   direction: "long" | "short";
   entry?: number;
 };
+
+export type ITrade = {
+  color?: string;
+  pnl?: number;
+  pnlRate?: number;
+  short: boolean;
+  duration?: number;
+  openPrice: number;
+  closePrice?: number;
+  opened: number;
+  closed?: number;
+};

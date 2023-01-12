@@ -63,6 +63,22 @@ export const MainChart1 = () => {
     })
   );
 
+  const signalMarkers = showSignals
+    ? signals
+        .filter((v) => !v.hide)
+        .flatMap(applySignal(rows))
+        .flatMap(({ data, signal }) =>
+          data.map((v) => ({
+            x: v.time,
+            title: " ",
+            shape: "circlepin",
+            color: signal.color,
+            fillColor: signal.color,
+          }))
+        )
+        .sort((a, b) => a.x - b.x)
+    : [];
+
   const options: Highcharts.Options = {
     yAxis: [
       {
@@ -73,6 +89,11 @@ export const MainChart1 = () => {
       },
       ...additionsAxis,
     ],
+    plotOptions: {
+      series: {
+        dataGrouping: { enabled: false },
+      },
+    },
     series: [
       {
         type: "candlestick",
@@ -88,9 +109,15 @@ export const MainChart1 = () => {
         lineColor: colors.red[700],
         upLineColor: colors.green[700],
         name: "Market value",
+        tooltip: {},
+      },
+      {
+        type: "flags",
+        data: signalMarkers,
       },
       ...additionalSeries,
     ],
+
     chart: {
       height: (stack.length + 1) * 300 + 100 + 100,
     },
@@ -98,12 +125,17 @@ export const MainChart1 = () => {
       enabled: false,
     },
     tooltip: {
-      formatter: function (tooltip) {
-        if (this.x && typeof this.x === "number") setHover(this.x);
-        return [this.x ? new Date(this.x).toDateString() : ""];
-      },
-      stickOnContact: true,
+      // enabled: true,
+      // split: false,
+      shared: false,
     },
+    // tooltip: {
+    //   // formatter: function (tooltip) {
+    //   //   if (this.x && typeof this.x === "number") setHover(this.x);
+    //   //   return [];
+    //   // },
+    //   // outside: true,
+    // },
 
     xAxis: {
       events: {
@@ -112,32 +144,21 @@ export const MainChart1 = () => {
           setZoom({ min: e.min, max: e.max });
         },
       },
-      plotLines: showSignals
-        ? signals
-            .filter((v) => !v.hide)
-            .flatMap(applySignal(rows))
-            .flatMap(({ data, signal }) =>
-              data.map((v) => ({
-                value: v.time,
-                color: signal.color,
-                width: 2,
-              }))
-            )
-        : [],
+
+      // plotLines: showSignals
+      //   ? signals
+      //       .filter((v) => !v.hide)
+      //       .flatMap(applySignal(rows))
+      //       .flatMap(({ data, signal }) =>
+      //         data.map((v) => ({
+      //           value: v.time,
+      //           color: signal.color,
+      //           width: 2,
+      //         }))
+      //       )
+      //   : [],
     },
   };
-  // useEffect(() => {
-  //   chartRef.current?.container.current?.addEventListener("mousemove", (e) => {
-  //     const ev = chartRef.current?.chart.pointer.normalize(e);
-  //     if (ev) {
-  //       const point = Highcharts.charts[1]?.series[0].searchPoint(ev, true);
-  //       const ev2 = point?.series.chart.pointer.normalize(ev);
-  //       point?.onMouseOver(); // Show the hover marker
-  //       point?.series.chart.tooltip.refresh(point); // Show the tooltip
-  //       point?.series.chart.xAxis[0].drawCrosshair(ev2, point); // Show the crosshair
-  //     }
-  //   });
-  // }, [chartRef.current]);
 
   return <HStock options={options} ref={chartRef} />;
 };

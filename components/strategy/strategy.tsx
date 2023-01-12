@@ -4,6 +4,7 @@ import { CsvUpload } from "../csv/csv-upload";
 import { DatasetSelect } from "../data/selects/dataset-select";
 import { Signals } from "./signals";
 import { Strategies } from "./strategies";
+import { TradeStats } from "./trade-stats";
 
 export const Strategy = () => {
   return (
@@ -14,6 +15,7 @@ export const Strategy = () => {
         </Typography>
         <Signals />
         <Strategies />
+        <TradeStats />
         {/* <Stack
           direction="row"
           justifyContent="space-between"

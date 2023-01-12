@@ -1,7 +1,6 @@
-import { IChartData, ISignal, IStrategy } from "../../types/app.types";
+import { IChartData, ISignal, IStrategy, ITrade } from "../../types/app.types";
 
 export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
-  console.log(signal);
   return {
     data: rows.filter((r, idx) =>
       signal.condition.every((c) => {
@@ -34,8 +33,20 @@ export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
   };
 };
 
+export const applyStrategy = (rows: IChartData[]) => (strategy: IStrategy) => ({
+  open: applySignal(rows)(strategy.openSignal!).data.map((r) => ({
+    time: r.time,
+    action: "open",
+  })),
+  close: applySignal(rows)(strategy.closeSignal!).data.map((r) => ({
+    time: r.time,
+    action: "close",
+  })),
+});
+
 export const calculateStrategy =
-  (source: IChartData[], target: IChartData[]) => (strategy: IStrategy) => {
+  (source: IChartData[], target: IChartData[]) =>
+  (strategy: IStrategy): ITrade[] => {
     const signals = {
       open: applySignal(source)(strategy.openSignal!).data.map((r) => ({
         time: r.time,
@@ -53,21 +64,24 @@ export const calculateStrategy =
       }))
       .map((t) => ({
         ...t,
+        short: strategy.direction === "short",
         duration: t.closed ? t.closed - t.opened : undefined,
-        openPrice: target.find((r) => r.time > t.opened)?.close,
+        openPrice: target.find((r) => r.time > t.opened)?.close!,
         closePrice: target.find((r) => r.time > (t.closed || Infinity))?.close,
       }))
       .map((v) => ({
         ...v,
         pnl:
           v.closePrice && v.openPrice
-            ? ((v.closePrice - v.openPrice) / v.openPrice) *
-              (strategy.direction === "short" ? -1 : 1)
-            : undefined,
+            ? +((v.closePrice - v.openPrice) * (v.short ? -1 : 1)).toFixed(2)
+            : 0,
       }))
       .map((v) => ({
         ...v,
         color: v.pnl ? (v.pnl > 0 ? "green" : "red") : "grey",
+        pnlRate: +(
+          (v.pnl && v.openPrice ? v.pnl / v.openPrice : 0) * 100
+        ).toFixed(2),
       }));
     return trades;
   };
