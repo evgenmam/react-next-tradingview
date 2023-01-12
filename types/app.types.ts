@@ -57,9 +57,20 @@ export type IConditionGroup = {
 
 export type ISignal = {
   condition: ICondition[];
-  dataset: "source" | "target";
+  dataset?: string;
   preview?: boolean;
   id?: number;
   color?: string;
   hide?: boolean;
+};
+
+export type IStrategy = {
+  openSignal?: ISignal;
+  closeSignal?: ISignal;
+  hide?: boolean;
+  dataset?: string;
+  id?: number;
+  color?: string;
+  direction: "long" | "short";
+  entry?: number;
 };

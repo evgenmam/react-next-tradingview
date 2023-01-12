@@ -33,7 +33,7 @@ export const CsvUpload = ({
             const fields = headers.map((key) => ({
               key,
               isNull: true,
-              dataset: ds,
+              dataset: ds as string,
             }));
             const data = lines.slice(1).map((line) => {
               const values = line.split(",");

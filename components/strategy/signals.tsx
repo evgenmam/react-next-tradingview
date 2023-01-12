@@ -13,7 +13,7 @@ export const Signals = () => {
   return (
     <Stack>
       <Stack direction={"row"} spacing={2} alignItems="center">
-        <Typography>Signals</Typography>
+        <Typography fontSize={20}>Signals</Typography>
         <ButtonBase
           onClick={() => {
             setShowSignals(!showSignals);

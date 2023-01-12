@@ -6,6 +6,7 @@ import {
   IIndicator,
   ISettings,
   ISignal,
+  IStrategy,
 } from "../types/app.types";
 import * as R from "ramda";
 import IDB from "../db/db";
@@ -88,7 +89,7 @@ export const useFields = (datasetName = "source") => {
       const hideEmpty = (await IDB.settings.get("hideEmpty"))?.value;
       return await IDB.fields
         .where("dataset")
-        .equals(dataset)
+        .equals(dataset || 'source')
         .filter((f) => !hideEmpty || !f.isNull)
         .toArray();
     }) || []
@@ -127,12 +128,47 @@ export const useSignals = () => {
   return { signals, addSignal, removeSignal, updateSignal };
 };
 
+export const useStrategies = () => {
+  const strategies =
+    useLiveQuery(async () => {
+      const dataset = (await IDB.settings.get("target"))?.value;
+      if (!dataset) return [];
+      return await IDB.strategies.where("dataset").equals(dataset).toArray();
+    }) || [];
+
+  // const sourcedata =
+  //   useLiveQuery(async () => {
+  //     const dataset = (await IDB.settings.get("target"))?.value;
+  //     if (!dataset) return [];
+  //     await IDB.strategies
+  //       .where("dataset")
+  //       .equals(dataset)
+  //       .first()
+  //   }) || [];
+
+  const addStrategy = async (strategy: Omit<IStrategy, "id">) => {
+    await IDB.strategies.add(strategy);
+  };
+  const removeStrategy = async (id?: number) => {
+    if (id) {
+      await IDB.strategies.delete(id);
+    }
+  };
+  const updateStrategy = async (strategy: IStrategy) => {
+    if (strategy.id) {
+      await IDB.strategies.update(strategy.id, strategy);
+    }
+  };
+  return { strategies, addStrategy, removeStrategy, updateStrategy };
+};
+
 export const useSettings = () => {
   const [hideEmpty, setHideEmpty] = useSetting("hideEmpty", true);
   const [maxDigits, setMaxDigits] = useSetting("maxDigits", 4);
   const [source, setSource] = useSetting("source", "");
   const [target, setTarget] = useSetting("target", "");
   const [showSignals, setShowSignals] = useSetting("signals", true);
+  const [showStrategies, setShowStrategies] = useSetting("strategies", true);
   const sett = (k: string) => async (v: any) => {
     await IDB.settings.put({ key: k, value: v });
   };
@@ -149,5 +185,7 @@ export const useSettings = () => {
     sett,
     showSignals,
     setShowSignals,
+    showStrategies,
+    setShowStrategies,
   };
 };

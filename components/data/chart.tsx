@@ -9,22 +9,16 @@ import { MainChart } from "./main-chart";
 
 export const DataChart1 = () => {
   const { rows } = useRows("source");
-  const [active, s] = useState(rows.length - 1);
-  const setActive = useThrottledCallback((i: number) => {
-    s(i);
-  }, 50);
 
   return (
     <Box>
       <Grid container spacing={4} columns={24}>
         <Grid xs={24} md={19}>
-          {rows.length && (
-            <MainChart rows={JSON.stringify(rows)} setHover={setActive} />
-          )}
+          {rows.length && <MainChart />}
         </Grid>
         <Grid xs={24} md={5}>
           <Stack flexShrink={0} spacing={2}>
-            <ChartData active={active} datasource="source" />
+            <ChartData datasource="source" />
             <Indicators />
           </Stack>
         </Grid>

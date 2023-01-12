@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useEffect, useRef } from "react";
 import {
   useIndicators,
   useRows,
@@ -13,13 +13,13 @@ import Highcharts from "highcharts/highstock";
 import * as R from "ramda";
 import colors from "material-colors";
 import { applySignal } from "../utils/calculations";
+import { useHoverSet } from "../../hooks/hover.hook";
+import HighchartsReact from "highcharts-react-official";
+import { syncExtremes } from "../../utils/chart.utils";
+import { useZoomSet } from "../../hooks/zoom.hook";
 
-export const MainChart1 = ({
-  setHover,
-}: {
-  rows: string;
-  setHover: (i: number) => void;
-}) => {
+export const MainChart1 = () => {
+  const chartRef = useRef<HighchartsReact.RefObject | null>(null);
   const { rows } = useRows("source");
   const { signals } = useSignals();
   const { indicators } = useIndicators();
@@ -27,6 +27,9 @@ export const MainChart1 = ({
   const { overlay = [], stack = [] } = R.groupBy<IIndicator>((v) =>
     v.main ? "overlay" : "stack"
   )(indicators);
+
+  const setHover = useHoverSet();
+  const setZoom = useZoomSet();
 
   const chartH = 300;
 
@@ -99,8 +102,16 @@ export const MainChart1 = ({
         if (this.x && typeof this.x === "number") setHover(this.x);
         return [this.x ? new Date(this.x).toDateString() : ""];
       },
+      stickOnContact: true,
     },
+
     xAxis: {
+      events: {
+        setExtremes: (e) => {
+          if (e.trigger === "syncExtremes") return;
+          setZoom({ min: e.min, max: e.max });
+        },
+      },
       plotLines: showSignals
         ? signals
             .filter((v) => !v.hide)
@@ -115,10 +126,20 @@ export const MainChart1 = ({
         : [],
     },
   };
+  // useEffect(() => {
+  //   chartRef.current?.container.current?.addEventListener("mousemove", (e) => {
+  //     const ev = chartRef.current?.chart.pointer.normalize(e);
+  //     if (ev) {
+  //       const point = Highcharts.charts[1]?.series[0].searchPoint(ev, true);
+  //       const ev2 = point?.series.chart.pointer.normalize(ev);
+  //       point?.onMouseOver(); // Show the hover marker
+  //       point?.series.chart.tooltip.refresh(point); // Show the tooltip
+  //       point?.series.chart.xAxis[0].drawCrosshair(ev2, point); // Show the crosshair
+  //     }
+  //   });
+  // }, [chartRef.current]);
 
-  console.log();
-
-  return <HStock options={options} />;
+  return <HStock options={options} ref={chartRef} />;
 };
 
 export const MainChart = memo(MainChart1);

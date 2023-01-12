@@ -2,9 +2,9 @@ import { Box, Divider, Typography } from "@mui/joy";
 import { Stack } from "@mui/system";
 import { useDebounce } from "use-debounce";
 import { useFields, useRows, useSettings } from "../../hooks/data.hook";
+import { useHoverGet } from "../../hooks/hover.hook";
 
 type Props = {
-  active: number;
   datasource: string;
 };
 
@@ -37,8 +37,9 @@ const ChartDataRow = ({
   );
 };
 
-export const ChartData = ({ active = 0, datasource }: Props) => {
+export const ChartData = ({ datasource }: Props) => {
   const { fields } = useFields(datasource);
+  const active = useHoverGet();
   return (
     <Stack>
       <Divider>Chart Data</Divider>

@@ -1,10 +1,11 @@
-import { memo } from "react";
+import { memo, useRef } from "react";
 import {
   useIndicators,
   useRows,
   useSetting,
   useSettings,
   useSignals,
+  useStrategies,
 } from "../../hooks/data.hook";
 import { IChartData, IIndicator, IIndicatorField } from "../../types/app.types";
 import { useApexChart } from "../../hooks/apex-chart.hook";
@@ -12,7 +13,10 @@ import { HChart, HStock } from "../hchart";
 import Highcharts from "highcharts/highstock";
 import * as R from "ramda";
 import colors from "material-colors";
-import { applySignal } from "../utils/calculations";
+import { applySignal, calculateStrategy } from "../utils/calculations";
+import { HoverWatcher, ZoomWatcher } from "./hover-watcher";
+import HighchartsReact from "highcharts-react-official";
+import { syncExtremes } from "../../utils/chart.utils";
 
 export const TargetChart1 = ({
   setHover,
@@ -21,9 +25,41 @@ export const TargetChart1 = ({
   setHover: (i: number) => void;
 }) => {
   const { rows } = useRows("target");
-
+  const { strategies } = useStrategies();
+  const dataset = strategies[0]?.openSignal?.dataset || "source";
+  const { rows: source } = useRows("source");
   const chartH = 300;
 
+  const data = strategies.map(calculateStrategy(source, rows));
+  console.log(data);
+
+  const tradeLines =
+    data?.[0]?.map(
+      ({
+        opened,
+        color,
+        closed,
+        openPrice,
+        closePrice,
+        pnl,
+      }): Highcharts.SeriesLineOptions => ({
+        type: "line",
+        color,
+        data: [
+          {
+            x: opened,
+            y: openPrice,
+            marker: {
+              enabled: true,
+              radius: 10,
+              symbol: pnl && pnl > 0 ? "triangle-down" : "triangle",
+            },
+          },
+          { x: closed, y: closePrice },
+        ],
+      })
+    ) || [];
+  console.log(tradeLines);
   const options: Highcharts.Options = {
     yAxis: [
       {
@@ -49,6 +85,7 @@ export const TargetChart1 = ({
         upLineColor: colors.green[700],
         name: "Market value",
       },
+      ...tradeLines,
     ],
     chart: {
       height: 600,
@@ -61,11 +98,27 @@ export const TargetChart1 = ({
         if (this.x && typeof this.x === "number") setHover(this.x);
         return [this.x ? new Date(this.x).toDateString() : ""];
       },
+      stickOnContact: true,
     },
-    xAxis: {},
+    xAxis: {
+      events: {
+        setExtremes: syncExtremes,
+      },
+    },
   };
 
-  return <HStock options={options} />;
+  const chartRef = useRef<HighchartsReact.RefObject | null>(null);
+  return (
+    <>
+      <HStock options={options} ref={chartRef} />
+      {/* {chartRef.current?.chart && (
+        <>
+          <HoverWatcher chart={chartRef.current.chart} />
+          <ZoomWatcher chart={chartRef.current.chart} />
+        </>
+      )} */}
+    </>
+  );
 };
 
 export const TargetChart = memo(TargetChart1);

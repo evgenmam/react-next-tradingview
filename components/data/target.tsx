@@ -24,7 +24,7 @@ export const TargetData1 = () => {
         </Grid>
         <Grid xs={24} md={5}>
           <Stack flexShrink={0} spacing={2}>
-            <ChartData active={active} datasource="target" />
+            <ChartData datasource="target" />
           </Stack>
         </Grid>
       </Grid>

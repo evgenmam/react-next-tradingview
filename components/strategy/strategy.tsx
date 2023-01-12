@@ -3,15 +3,17 @@ import { Box } from "@mui/system";
 import { CsvUpload } from "../csv/csv-upload";
 import { DatasetSelect } from "../data/selects/dataset-select";
 import { Signals } from "./signals";
+import { Strategies } from "./strategies";
 
 export const Strategy = () => {
   return (
     <Card variant="outlined" sx={{ height: "100%", boxSizing: "border-box" }}>
       <Stack spacing={2} divider={<Divider />}>
-        <Typography fontSize={16} my={1.5}>
+        <Typography fontSize={16} my={1.5} textAlign="center">
           Strategy Builder
         </Typography>
         <Signals />
+        <Strategies />
         {/* <Stack
           direction="row"
           justifyContent="space-between"

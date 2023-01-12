@@ -23,7 +23,6 @@ export const PromptDialog = ({}: Props) => {
     setValue(modal?.value || "");
   }, [modal?.value]);
 
-  console.log(!!modal);
 
   return (
     <Modal
