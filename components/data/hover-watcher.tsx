@@ -7,15 +7,40 @@ Highcharts.Pointer.prototype.reset = function () {
 };
 export const HoverWatcher = ({ chart }: { chart: Highcharts.Chart }) => {
   const active = useHoverGet();
-  const point = chart?.series?.[0].points?.find?.((p) => {
-    return p.x === active});
+  const [mainchart, ...series] = chart.series;
+  const point = mainchart.points?.sort((a, b) =>
+    Math.abs(active - a.x) < Math.abs(active - b.x) ? -1 : 1
+  )[0];
+
   useEffect(() => {
-    if (point?.x && chart?.series) {
-      try {
-        point?.onMouseOver?.();
-      } catch (error) {}
+    console.log(active);
+    if (active !== -1 && point?.x && chart?.series) {
+      const pl = chart?.xAxis[0]?.addPlotLine({ value: point.x, width: 3 });
+      point?.setState("hover");
+      return () => {
+        pl?.destroy?.();
+        point?.setState?.("normal");
+      };
     }
-  }, [point?.x]);
+  }, [active]);
+
+  useEffect(() => {
+    if (active !== -1 && point?.x) {
+      series.forEach((s) => {
+        console.log(s.points?.[0]?.x, active);
+        if (
+          s.points?.[0]?.x <= active &&
+          s.points?.[s.points.length - 1]?.x >= active
+        ) {
+          s.setState("hover");
+        } else {
+          s.setState("inactive");
+        }
+      });
+    } else {
+      series.forEach((s) => s.setState("normal"));
+    }
+  }, [active]);
 
   return null;
 };

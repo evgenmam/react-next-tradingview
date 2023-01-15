@@ -2,19 +2,17 @@ import { memo, useEffect, useRef } from "react";
 import {
   useIndicators,
   useRows,
-  useSetting,
   useSettings,
   useSignals,
 } from "../../hooks/data.hook";
-import { IChartData, IIndicator, IIndicatorField } from "../../types/app.types";
-import { HChart, HStock } from "../hchart";
+import { IIndicator } from "../../types/app.types";
+import { HStock } from "../hchart";
 import Highcharts from "highcharts/highstock";
 import * as R from "ramda";
 import colors from "material-colors";
 import { applySignal } from "../../utils/calculations";
 import { useHoverSet } from "../../hooks/hover.hook";
 import HighchartsReact from "highcharts-react-official";
-import { syncExtremes } from "../../utils/chart.utils";
 import { useZoomSet } from "../../hooks/zoom.hook";
 
 export const MainChart1 = () => {
@@ -30,16 +28,16 @@ export const MainChart1 = () => {
   const setHover = useHoverSet();
   const setZoom = useZoomSet();
 
-  const chartH = 300;
+  const chartH = 400;
+  const indxPercent = 0.4;
 
   const additionsAxis: Highcharts.YAxisOptions[] = stack.map((v, idx) => {
-    const h = chartH;
+    const h = chartH * indxPercent;
     const s = idx + 1;
     return {
       yAxis: s,
-      height: `${h}px`,
-      top: `${h * idx + chartH + 100}px`,
-      resize: { enabled: true },
+      height: h,
+      top: h * s + (chartH - h),
     };
   });
 
@@ -48,17 +46,39 @@ export const MainChart1 = () => {
     ...overlay,
   ].flatMap((v, idx) =>
     v.fields.map((f) => {
-      return {
-        yAxis: v.main ? 0 : idx + 1,
-        type: f.type as any,
-        color: f.color,
-        data: rows.map((row) => [row.time, row[f.key]]),
-        name: f.key,
-        marker: {
-          symbol: "circle",
-          radius: 2.5,
-        },
-      };
+      switch (f.type) {
+        case "scatter":
+          return {
+            yAxis: v.main ? 0 : idx + 1,
+            type: "spline",
+            color: f.color,
+            data: rows.map((row) => [row.time, row[f.key]]),
+            name: f.key,
+            lineWidth: 0,
+            marker: {
+              enabled: true,
+              symbol: "circle",
+              radius: 2.5,
+            },
+            states: {
+              hover: {
+                lineWidthPlus: 0,
+              },
+            },
+          };
+        default:
+          return {
+            yAxis: v.main ? 0 : idx + 1,
+            type: f.type as any,
+            color: f.color,
+            data: rows.map((row) => [row.time, row[f.key]]),
+            name: f.key,
+            marker: {
+              symbol: "circle",
+              radius: 2.5,
+            },
+          };
+      }
     })
   );
 
@@ -69,10 +89,8 @@ export const MainChart1 = () => {
         .flatMap(({ data, signal }) =>
           data.map((v) => ({
             x: v.time,
-            title: " ",
-            shape: "circlepin",
             color: signal.color,
-            fillColor: signal.color,
+            value: v.time,
           }))
         )
         .sort((a, b) => a.x - b.x)
@@ -81,18 +99,21 @@ export const MainChart1 = () => {
   const options: Highcharts.Options = {
     yAxis: [
       {
-        height: chartH + 100 + "px",
-        resize: {
-          enabled: true,
-        },
+        height: chartH,
       },
       ...additionsAxis,
     ],
     plotOptions: {
       series: {
-        dataGrouping: { enabled: false },
+        events: {
+          mouseOut: () => {
+            setHover(-1);
+          },
+        },
       },
     },
+    global: {},
+
     series: [
       {
         type: "candlestick",
@@ -103,59 +124,45 @@ export const MainChart1 = () => {
           row.low,
           row.close,
         ]),
-        color: colors.red[100],
-        upColor: colors.green[100],
+        color: colors.red[400],
+        upColor: colors.green[400],
         lineColor: colors.red[700],
         upLineColor: colors.green[700],
         name: "Market value",
         tooltip: {},
       },
-      {
-        type: "flags",
-        data: signalMarkers,
-      },
+      // {
+      //   type: "flags",
+      //   data: signalMarkers,
+      // },
       ...additionalSeries,
     ],
 
     chart: {
-      height: (stack.length + 1) * 300 + 100 + 100,
+      height: stack.length * (chartH * indxPercent) + chartH + 180,
     },
     accessibility: {
       enabled: false,
     },
     tooltip: {
-      // enabled: true,
-      // split: false,
-      shared: false,
+      formatter: function (tooltip) {
+        if (this.x && typeof this.x === "number") setHover(this.x);
+        return [this.x ? new Date(this.x).toLocaleString() : null];
+      },
+      split: true,
+      outside: true,
     },
-    // tooltip: {
-    //   // formatter: function (tooltip) {
-    //   //   if (this.x && typeof this.x === "number") setHover(this.x);
-    //   //   return [];
-    //   // },
-    //   // outside: true,
-    // },
-
     xAxis: {
+      plotLines: [...signalMarkers],
+      crosshair: {
+        width: 3,
+      },
       events: {
         setExtremes: (e) => {
           if (e.trigger === "syncExtremes") return;
           setZoom({ min: e.min, max: e.max });
         },
       },
-
-      // plotLines: showSignals
-      //   ? signals
-      //       .filter((v) => !v.hide)
-      //       .flatMap(applySignal(rows))
-      //       .flatMap(({ data, signal }) =>
-      //         data.map((v) => ({
-      //           value: v.time,
-      //           color: signal.color,
-      //           width: 2,
-      //         }))
-      //       )
-      //   : [],
     },
   };
 

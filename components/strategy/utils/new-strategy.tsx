@@ -112,7 +112,7 @@ export const NewStrategy = ({ onSave }: Props) => {
               <ColorSelect
                 value={strategy.color}
                 onChange={(v) => {
-                  setStrategy(R.assoc("entry", +v!));
+                  setStrategy(R.assoc("color", v!));
                 }}
               />
               <Button

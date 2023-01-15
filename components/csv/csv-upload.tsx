@@ -15,7 +15,6 @@ export const CsvUpload = ({
   const modal = useModalAsync({ label: "Dataset Name" });
   const ref = useRef<HTMLInputElement>(null);
   const { setRows } = useRows("source");
-  const { setFields } = useFields();
   const { sett } = useSettings();
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -30,20 +29,13 @@ export const CsvUpload = ({
           if (text && typeof text === "string") {
             const lines = text.split("\n");
             const headers = lines[0].split(",").filter((v) => !!v);
-            const fields = headers.map((key) => ({
-              key,
-              isNull: true,
-              dataset: ds as string,
-            }));
             const data = lines.slice(1).map((line) => {
               const values = line.split(",");
               return headers.reduce(
                 (obj, nextKey, index) => {
                   let value = +values[index];
+                  if (isNaN(value)) return obj;
                   if (nextKey === "time") value *= 1000;
-                  if (!isNaN(value)) {
-                    fields[index].isNull = false;
-                  }
                   return {
                     ...obj,
                     [nextKey]: value,
@@ -54,7 +46,6 @@ export const CsvUpload = ({
                 } as IChartData
               );
             });
-            setFields(fields);
             setRows(data);
             sett(dataset)(ds);
           }

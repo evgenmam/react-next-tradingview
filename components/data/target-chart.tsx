@@ -6,14 +6,17 @@ import colors from "material-colors";
 import { calculateStrategy } from "../../utils/calculations";
 import HighchartsReact from "highcharts-react-official";
 import { syncExtremes } from "../../utils/chart.utils";
+import { HoverWatcher, ZoomWatcher } from "./hover-watcher";
 
 export const TargetChart1 = ({
   setHover,
+  target = "target",
 }: {
   rows: string;
   setHover: (i: number) => void;
+  target: string;
 }) => {
-  const { rows } = useRows("target");
+  const { rows } = useRows(target);
   const { strategies } = useStrategies();
   const dataset = strategies[0]?.openSignal?.dataset || "source";
   const { rows: source } = useRows("source");
@@ -35,6 +38,7 @@ export const TargetChart1 = ({
         color,
         data: [
           {
+            connectorColor: color,
             x: opened,
             y: openPrice,
             marker: {
@@ -66,10 +70,10 @@ export const TargetChart1 = ({
           row.low,
           row.close,
         ]),
-        color: colors.red[100],
-        upColor: colors.green[100],
-        lineColor: colors.red[700],
-        upLineColor: colors.green[700],
+        color: colors.red[300],
+        upColor: colors.green[300],
+        lineColor: colors.red[600],
+        upLineColor: colors.green[600],
         name: "Market value",
       },
       ...tradeLines,
@@ -81,11 +85,12 @@ export const TargetChart1 = ({
       enabled: false,
     },
     tooltip: {
-      // formatter: function (tooltip) {
-      //   if (this.x && typeof this.x === "number") setHover(this.x);
-      //   return [this.x ? new Date(this.x).toDateString() : ""];
-      // },
-      // stickOnContact: true,
+      formatter: function (tooltip) {
+        // if (this.x && typeof this.x === "number") setHover(this.x);
+        return [this.x ? new Date(this.x).toLocaleString() : null];
+      },
+      stickOnContact: true,
+      snap: 50,
     },
     xAxis: {
       events: {
@@ -98,12 +103,12 @@ export const TargetChart1 = ({
   return (
     <>
       <HStock options={options} ref={chartRef} />
-      {/* {chartRef.current?.chart && (
+      {chartRef.current?.chart && (
         <>
           <HoverWatcher chart={chartRef.current.chart} />
           <ZoomWatcher chart={chartRef.current.chart} />
         </>
-      )} */}
+      )}
     </>
   );
 };

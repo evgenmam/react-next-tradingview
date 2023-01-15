@@ -8,13 +8,9 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head />
-      <body style={{ background: "#eee" }}>
-        <CssVarsProvider>
-          <Container maxWidth={false}>
-            <Main />
-            <NextScript />
-          </Container>
-        </CssVarsProvider>
+      <body style={{ margin: 0 }}>
+        <Main />
+        <NextScript />
       </body>
     </Html>
   );

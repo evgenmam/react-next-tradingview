@@ -1,3 +1,4 @@
+import { colors } from "@mui/material";
 import {
   IBaseTradePack,
   IChartData,
@@ -94,7 +95,12 @@ export const calculateStrategy =
       }))
       .map((v) => ({
         ...v,
-        color: v.pnl ? (v.pnl > 0 ? "green" : "red") : "grey",
+        color: v.pnl
+          ? v.pnl > 0
+            ? colors.green[500]
+            : colors.red[500]
+          : "grey",
+
         pnlRate: +(
           (v.pnl && v.openPrice ? v.pnl / v.openPrice : 0) * 100
         ).toFixed(2),

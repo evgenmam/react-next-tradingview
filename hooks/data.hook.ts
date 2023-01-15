@@ -83,25 +83,26 @@ export const useSetting = (k: string, defaultValue?: any) => {
 };
 
 export const useFields = (datasetName = "source") => {
-  const fields = (
+  const fields =
     useLiveQuery(async () => {
       const dataset = (await IDB.settings.get(datasetName))?.value;
       const hideEmpty = (await IDB.settings.get("hideEmpty"))?.value;
-      return await IDB.fields
-        .where("dataset")
-        .equals(dataset || 'source')
-        .filter((f) => !hideEmpty || !f.isNull)
-        .toArray();
-    }) || []
-  ).map(R.prop("key"));
-  const setFields = async (fields: IField[]) => {
-    await IDB.fields.bulkAdd(fields);
-  };
-  const clearFields = async () => {
-    await IDB.fields.clear();
-  };
+      const rows = (
+        await IDB.rows.where("dataset").equals(dataset).toArray()
+      ).reduce(R.mergeWith(R.or), {} as Record<string, any[]>);
+      return R.pipe(
+        R.keys,
+        R.reject((v: string) => hideEmpty && R.isNil(rows[v]))
+      )(rows);
+    }) || [];
+  // const setFields = async (fields: IField[]) => {
+  //   await IDB.fields.bulkAdd(fields);
+  // };
+  // const clearFields = async () => {
+  //   await IDB.fields.clear();
+  // };
 
-  return { fields, setFields, clearFields };
+  return { fields };
 };
 
 export const useSignals = () => {
@@ -169,6 +170,10 @@ export const useSettings = () => {
   const [target, setTarget] = useSetting("target", "");
   const [showSignals, setShowSignals] = useSetting("signals", true);
   const [showStrategies, setShowStrategies] = useSetting("strategies", true);
+  const [theme, setTheme] = useSetting("theme", "dark") as [
+    theme: "dark" | "light",
+    setTheme: (theme: "dark" | "light") => void
+  ];
   const sett = (k: string) => async (v: any) => {
     await IDB.settings.put({ key: k, value: v });
   };
@@ -187,5 +192,7 @@ export const useSettings = () => {
     setShowSignals,
     showStrategies,
     setShowStrategies,
+    theme,
+    setTheme,
   };
 };
