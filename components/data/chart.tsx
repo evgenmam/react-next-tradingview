@@ -17,7 +17,7 @@ export const DataChart1 = () => {
           {rows.length && <MainChart />}
         </Grid>
         <Grid xs={24} md={5}>
-          <Stack flexShrink={0} spacing={2}>
+          <Stack flexShrink={0} spacing={2} height="100%">
             <ChartData datasource="source" />
             <Indicators />
           </Stack>

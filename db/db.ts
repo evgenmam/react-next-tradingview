@@ -7,7 +7,7 @@ import {
   IStrategy,
 } from "../types/app.types";
 
-const DB_VERSION = 2.0;
+const DB_VERSION = 2.2;
 
 class DB extends Dexie {
   rows!: Dexie.Table<IChartData, number>;
@@ -24,8 +24,8 @@ class DB extends Dexie {
       fields: "id++, dataset",
       indicators: "name",
       settings: "key",
-      signals: "id++, dataset",
-      strategies: "id++, dataset",
+      signals: "id++",
+      strategies: "id++",
     });
   }
 }

@@ -31,7 +31,7 @@ const ChartDataRow = ({
         color={field === "time" ? "neutral" : color}
         fontFamily="monospace"
       >
-        {rows?.[row]?.[field]}
+        {rows?.[row]?.[field] || "-"}
       </Typography>
     </Stack>
   );
@@ -43,7 +43,7 @@ export const ChartData = ({ datasource }: Props) => {
   return (
     <Stack>
       <Divider>Chart Data</Divider>
-      <Box mt={1}>
+      <Box mt={1} sx={{ maxHeight: 500, overflowY: "auto", mr: -2, pr: 2 }}>
         {fields.map((field) => (
           <ChartDataRow
             idx={active}

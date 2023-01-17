@@ -44,6 +44,10 @@ export const useRows = (datasetName: string) => {
         )
       );
     }) || [];
+  const dataset =
+    useLiveQuery(async () => {
+      return (await IDB.settings.get(datasetName))?.value;
+    }) || [];
 
   const indexed = R.indexBy<IChartData, number>(R.prop("time"))(
     rows as IChartData[]
@@ -55,7 +59,7 @@ export const useRows = (datasetName: string) => {
   const clearRows = async () => {
     await IDB.rows.clear();
   };
-  return { rows: rows as IChartData[], setRows, clearRows, indexed };
+  return { rows: rows as IChartData[], setRows, clearRows, indexed, dataset };
 };
 
 export const useDatasets = () => {
@@ -64,7 +68,11 @@ export const useDatasets = () => {
       return await IDB.rows.orderBy("dataset").uniqueKeys();
     }) || [];
 
-  return { datasets: datasets as string[] };
+  const remove = async (dataset: string) => {
+    await IDB.rows.where("dataset").equals(dataset).delete();
+  };
+
+  return { datasets: datasets as string[], remove };
 };
 
 export const useSetting = (k: string, defaultValue?: any) => {
@@ -108,9 +116,7 @@ export const useFields = (datasetName = "source") => {
 export const useSignals = () => {
   const signals =
     useLiveQuery(async () => {
-      const dataset = (await IDB.settings.get("source"))?.value;
-      if (!dataset) return [];
-      return await IDB.signals.where("dataset").equals(dataset).toArray();
+      return await IDB.signals.toArray();
     }) || [];
 
   const addSignal = async (signal: Omit<ISignal, "id">) => {
@@ -132,9 +138,7 @@ export const useSignals = () => {
 export const useStrategies = () => {
   const strategies =
     useLiveQuery(async () => {
-      const dataset = (await IDB.settings.get("target"))?.value;
-      if (!dataset) return [];
-      return await IDB.strategies.where("dataset").equals(dataset).toArray();
+      return await IDB.strategies.toArray();
     }) || [];
 
   // const sourcedata =
@@ -168,6 +172,7 @@ export const useSettings = () => {
   const [maxDigits, setMaxDigits] = useSetting("maxDigits", 4);
   const [source, setSource] = useSetting("source", "");
   const [target, setTarget] = useSetting("target", "");
+  const [target2, setTarget2] = useSetting("target2", "");
   const [showSignals, setShowSignals] = useSetting("signals", true);
   const [showStrategies, setShowStrategies] = useSetting("strategies", true);
   const [theme, setTheme] = useSetting("theme", "dark") as [
@@ -194,5 +199,7 @@ export const useSettings = () => {
     setShowStrategies,
     theme,
     setTheme,
+    target2,
+    setTarget2,
   };
 };

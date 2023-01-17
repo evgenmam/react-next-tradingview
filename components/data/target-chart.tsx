@@ -14,7 +14,7 @@ export const TargetChart1 = ({
 }: {
   rows: string;
   setHover: (i: number) => void;
-  target: string;
+  target?: string;
 }) => {
   const { rows } = useRows(target);
   const { strategies } = useStrategies();

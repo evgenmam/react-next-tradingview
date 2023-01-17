@@ -13,7 +13,7 @@ import {
 import { Collapse } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
-import { useFields, useRows, useSettings } from "../../hooks/data.hook";
+import { useRows, useSettings } from "../../hooks/data.hook";
 import * as R from "ramda";
 
 const Checkbox = dynamic(() => import("@mui/joy/Checkbox"), { ssr: false });
@@ -30,8 +30,8 @@ export const Settings = () => {
     }, 400);
   }, [setTheme, theme]);
   return (
-    <Box position="fixed" bottom="0" right="0" zIndex={4} boxShadow={1}>
-      <Sheet>
+    <Stack position="fixed" bottom="0" right="0" zIndex={4}  alignItems="end">
+      <Sheet variant="plain">
         <Stack direction="row" justifyContent="end" spacing={1} p={1}>
           <IconButton onClick={() => setOpen(R.not)}>
             <Cog6ToothIcon />
@@ -85,6 +85,6 @@ export const Settings = () => {
           </Stack>
         </Collapse>
       </Sheet>
-    </Box>
+    </Stack>
   );
 };

@@ -4,19 +4,11 @@ import {
   StopIcon,
   TrashIcon,
 } from "@heroicons/react/24/solid";
-import {
-  Button,
-  IconButton,
-  List,
-  ListItem,
-  Stack,
-  Typography,
-} from "@mui/joy";
-import { ListItemAvatar, ListItemSecondaryAction } from "@mui/material";
-import { capitalCase, sentenceCase } from "change-case";
-import { useSignals, useStrategies } from "../../hooks/data.hook";
-import { ISignal, IStrategy } from "../../types/app.types";
-import { XJson } from "../json";
+import { IconButton, ListItem, Stack, Typography } from "@mui/joy";
+import { ListItemSecondaryAction } from "@mui/material";
+import { sentenceCase } from "change-case";
+import { useStrategies } from "../../hooks/data.hook";
+import { IStrategy } from "../../types/app.types";
 
 type Props = {
   strategy: IStrategy;
@@ -34,7 +26,8 @@ export const StrategyRow = ({ strategy }: Props) => {
 
         <Stack>
           <Typography fontSize={14} sx={{ textTransform: "capitalize" }}>
-            {strategy.direction} {strategy.entry}ct
+            {strategy.direction} {strategy.entry}ct on{" "}
+            {strategy.dataset === "target" ? "Target 1" : "Target 2"}
           </Typography>
           <Stack direction="row" spacing={0.5}>
             <Typography fontSize={12}>Open: </Typography>

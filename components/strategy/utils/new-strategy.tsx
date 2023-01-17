@@ -1,27 +1,19 @@
 import {
   Button,
-  Divider,
   FormControl,
   FormLabel,
   Grid,
   IconButton,
   Input,
-  Link,
-  Modal,
-  ModalClose,
-  ModalDialog,
+  RadioGroup,
+  Radio,
   Sheet,
   Stack,
   Typography,
 } from "@mui/joy";
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
-import {
-  ICondition,
-  IConditionEntry,
-  ISignal,
-  IStrategy,
-} from "../../../types/app.types";
+import { IStrategy } from "../../../types/app.types";
 import { NewCondition } from "./new-condition";
 import * as R from "ramda";
 import { LockClosedIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
@@ -39,10 +31,10 @@ const newStrategy: IStrategy = {
   direction: "long",
   entry: 1,
   color: ColorSelect.random(),
+  dataset: "target",
 };
 
 export const NewStrategy = ({ onSave }: Props) => {
-  const { target } = useSettings();
   const [strategy, setStrategy] = useState<IStrategy>(newStrategy);
   useEffect(() => {
     setStrategy(newStrategy);
@@ -68,7 +60,7 @@ export const NewStrategy = ({ onSave }: Props) => {
                 <XMarkIcon />
               </IconButton>
             </Stack>
-            <Grid container>
+            <Grid container spacing={1}>
               <Grid xs={12} sm={12}>
                 <SignalSelect
                   label="Open signal"
@@ -107,6 +99,21 @@ export const NewStrategy = ({ onSave }: Props) => {
                   />
                 </FormControl>
               </Grid>
+              <Grid xs={12}>
+                <FormControl size="sm">
+                  <FormLabel>Target Chart</FormLabel>
+                  <RadioGroup
+                    row={true}
+                    value={strategy.dataset}
+                    onChange={(v) =>
+                      setStrategy(R.assoc("dataset", v.target.value))
+                    }
+                  >
+                    <Radio value="target" label="Target 1" />
+                    <Radio value="target2" label="Target 2" />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
             </Grid>
             <Stack direction="row" justifyContent="space-between">
               <ColorSelect
@@ -118,7 +125,7 @@ export const NewStrategy = ({ onSave }: Props) => {
               <Button
                 variant="plain"
                 onClick={() => {
-                  onSave({ ...strategy, dataset: target });
+                  onSave({ ...strategy });
                   setOpen(false);
                 }}
               >

@@ -28,7 +28,7 @@ export const Signals = () => {
       ))}
       <NewSignal
         onSave={(condition, color) => {
-          addSignal({ condition, dataset: source, color });
+          addSignal({ condition, color });
         }}
       />
     </Stack>

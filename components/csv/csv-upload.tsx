@@ -4,13 +4,16 @@ import { useFields, useRows, useSettings } from "../../hooks/data.hook";
 import { IChartData } from "../../types/app.types";
 import * as R from "ramda";
 import { useModal, useModalAsync } from "../../hooks/modal.hook";
+import noop from "lodash.noop";
 
 export const CsvUpload = ({
   dataset,
   label = "Add data source",
+  onFinish = noop,
 }: {
   dataset: string;
   label?: string;
+  onFinish?: (name: string) => void;
 }) => {
   const modal = useModalAsync({ label: "Dataset Name" });
   const ref = useRef<HTMLInputElement>(null);
@@ -48,6 +51,7 @@ export const CsvUpload = ({
             });
             setRows(data);
             sett(dataset)(ds);
+            onFinish(ds as string);
           }
         } catch (error) {
           console.log(error);

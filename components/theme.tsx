@@ -22,7 +22,6 @@ export const ThemeWrapper = () => {
 
   useEffect(() => {
     setMode(theme);
-    console.log(theme);
   }, [theme, setMode]);
   return <></>;
 };

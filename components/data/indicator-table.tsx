@@ -19,7 +19,7 @@ import {
   StopIcon,
 } from "@heroicons/react/24/solid";
 import { ButtonBase, Collapse, TextField, useTheme } from "@mui/material";
-import { useIndicators } from "../../hooks/data.hook";
+import { useFields, useIndicators } from "../../hooks/data.hook";
 import { useState } from "react";
 import { FieldSelect } from "./selects/field-select";
 import { TypeSelect } from "./selects/type-select";
@@ -32,6 +32,7 @@ type Props = {
 
 export const IndicatorTable = ({ indicator }: Props) => {
   const { removeIndicator, updateIndicator } = useIndicators();
+  const { fields } = useFields();
   const [adding, setAdding] = useState(false);
   const [field, setField] = useState<IIndicatorField>({
     key: "close",
@@ -81,7 +82,11 @@ export const IndicatorTable = ({ indicator }: Props) => {
             alignItems="center"
             spacing={0.5}
           >
-            <Stack spacing={0.5} direction="row">
+            <Stack
+              spacing={0.5}
+              direction="row"
+              sx={{ opacity: fields.includes(field.key) ? 1 : 0.3 }}
+            >
               <StopIcon width={18} color={field?.color} />
               <Typography fontSize={12}>{field.key}</Typography>
             </Stack>

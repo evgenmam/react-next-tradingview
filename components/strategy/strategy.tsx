@@ -8,15 +8,16 @@ import { TradeStats } from "./trade-stats";
 
 export const Strategy = () => {
   return (
-    <Card variant="outlined" sx={{ height: "100%", boxSizing: "border-box" }}>
-      <Stack spacing={2} divider={<Divider />}>
-        <Typography fontSize={16} my={1.5} textAlign="center">
-          Strategy Builder
-        </Typography>
-        <Signals />
-        <Strategies />
-        <TradeStats />
-        {/* <Stack
+    <Box height="100%" sx={{ boxSizing: "border-box" }} py={2}>
+      <Card variant="outlined" sx={{ height: "100%", boxSizing: "border-box" }}>
+        <Stack spacing={2} divider={<Divider />}>
+          <Typography fontSize={16} my={1.5} textAlign="center">
+            Strategy Builder
+          </Typography>
+          <Signals />
+          <Strategies />
+          <TradeStats />
+          {/* <Stack
           direction="row"
           justifyContent="space-between"
           alignItems="center"
@@ -26,7 +27,8 @@ export const Strategy = () => {
           </Box>
           <CsvUpload dataset="target" label="Import Target Chart" />
         </Stack> */}
-      </Stack>
-    </Card>
+        </Stack>
+      </Card>
+    </Box>
   );
 };

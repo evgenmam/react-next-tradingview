@@ -26,6 +26,7 @@ export type IIndicator = {
   fields: IIndicatorField[];
   dataset: string;
   main: boolean;
+  height?: number;
 };
 
 export type IField = { key: string; isNull: boolean; dataset: string };
@@ -57,7 +58,6 @@ export type IConditionGroup = {
 
 export type ISignal = {
   condition: ICondition[];
-  dataset?: string;
   preview?: boolean;
   id?: number;
   color?: string;
