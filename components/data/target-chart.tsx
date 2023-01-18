@@ -6,7 +6,7 @@ import colors from "material-colors";
 import { calculateStrategy } from "../../utils/calculations";
 import HighchartsReact from "highcharts-react-official";
 import { syncExtremes } from "../../utils/chart.utils";
-import { HoverWatcher, ZoomWatcher } from "./hover-watcher";
+import { HoverWatcher } from "./hover-watcher";
 
 export const TargetChart1 = ({
   setHover,
@@ -18,7 +18,6 @@ export const TargetChart1 = ({
 }) => {
   const { rows } = useRows(target);
   const { strategies } = useStrategies();
-  const dataset = strategies[0]?.openSignal?.dataset || "source";
   const { rows: source } = useRows("source");
   const chartH = 300;
 
@@ -106,7 +105,6 @@ export const TargetChart1 = ({
       {chartRef.current?.chart && (
         <>
           <HoverWatcher chart={chartRef.current.chart} />
-          <ZoomWatcher chart={chartRef.current.chart} />
         </>
       )}
     </>

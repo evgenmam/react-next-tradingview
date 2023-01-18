@@ -101,7 +101,6 @@ export const useStrategyHover = (chart: Highcharts.Chart, active: number) => {
             v.setState("inactive");
           });
         v.data?.forEach((v) => {
-          v.dataLabel?.show();
           v.setState("inactive");
         });
       });
