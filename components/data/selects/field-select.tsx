@@ -16,7 +16,6 @@ export const FieldSelect = ({
 }: Props) => {
   const { fields } = useFields("source");
   const options = R.without(exclude, fields);
-  console.log(options);
   return (
     <FormControl size="sm">
       {!hideLabel && <FormLabel>Data</FormLabel>}

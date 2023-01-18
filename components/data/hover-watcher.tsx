@@ -29,8 +29,6 @@ export const HoverWatcher = ({ chart }: { chart: Highcharts.Chart }) => {
     v.series.name.startsWith("signal")
   );
 
-  console.log(hoverPoint);
-
   const signalIndex = hoverPoint?.series.name?.split("-")[1] || -1;
   const { signals } = useSignals();
   const signal = signals.find((v) => v.id === +signalIndex);

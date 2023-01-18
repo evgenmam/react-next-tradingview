@@ -1,13 +1,6 @@
 import Dexie from "dexie";
 import { useLiveQuery } from "dexie-react-hooks";
-import {
-  IChartData,
-  IField,
-  IIndicator,
-  ISettings,
-  ISignal,
-  IStrategy,
-} from "../types/app.types";
+import { IChartData, IIndicator, ISignal, IStrategy } from "../types/app.types";
 import * as R from "ramda";
 import IDB from "../db/db";
 
@@ -30,20 +23,48 @@ export const useIndicators = () => {
   return { indicators, addIndicator, removeIndicator, updateIndicator };
 };
 
+const getFirstRow = async (dataset: string) => {
+  const ds = (await IDB.settings.get(dataset))?.value;
+  return (
+    (await IDB.rows.where("dataset").equals(ds).limit(1).sortBy("time"))[0]
+      ?.time || 0
+  );
+};
+
+const getMinRow = async () => {
+  const source = await getFirstRow("source");
+  const target = await getFirstRow("target");
+  const target2 = await getFirstRow("target2");
+  return Math.max(source, target, target2);
+};
+
 export const useRows = (datasetName: string) => {
   const rows =
     useLiveQuery(async () => {
+      const minRow = await getMinRow();
       const dataset = (await IDB.settings.get(datasetName))?.value;
       if (!dataset) return [];
       const maxDigits = (await IDB.settings.get("maxDigits"))?.value;
 
-      return (await IDB.rows.where("dataset").equals(dataset).toArray()).map(
+      return (
+        await IDB.rows
+          .where("dataset")
+          .equals(dataset)
+          .and((v) => v.time >= minRow)
+          .toArray()
+      ).map(
         R.pipe(
           R.dissoc("dataset"),
           R.mapObjIndexed((v, k) => (k === "time" ? v : +v.toFixed(maxDigits)))
         )
       );
     }) || [];
+  const count = useLiveQuery(async () => {
+    const dataset = (await IDB.settings.get(datasetName))?.value;
+    if (!dataset) return 0;
+
+    return await IDB.rows.where("dataset").equals(dataset).count();
+  });
   const dataset =
     useLiveQuery(async () => {
       return (await IDB.settings.get(datasetName))?.value;
@@ -59,7 +80,14 @@ export const useRows = (datasetName: string) => {
   const clearRows = async () => {
     await IDB.rows.clear();
   };
-  return { rows: rows as IChartData[], setRows, clearRows, indexed, dataset };
+  return {
+    rows: rows as IChartData[],
+    setRows,
+    clearRows,
+    indexed,
+    dataset,
+    count,
+  };
 };
 
 export const useDatasets = () => {

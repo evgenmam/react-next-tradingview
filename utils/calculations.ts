@@ -5,6 +5,7 @@ import {
   ISignal,
   IStrategy,
   ITrade,
+  ITradeWithTotals,
 } from "../types/app.types";
 
 export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
@@ -76,8 +77,28 @@ export const calculateStrategy =
     };
     const trades = signals.open
       .map((o) => ({
+        strategy: strategy,
         opened: o.time,
         closed: signals.close.find((c) => c.time > o.time)?.time,
+      }))
+      .map((t) => ({
+        ...t,
+        highest: t.closed
+          ? target
+              .filter(
+                (r) => r.time > t.opened && r.time < (t.closed || Infinity)
+              )
+              ?.map((r) => r.high)
+              .reduce((a, b) => Math.max(a, b), 0)
+          : 0,
+        lowest: t.closed
+          ? target
+              .filter(
+                (r) => r.time > t.opened && r.time < (t.closed || Infinity)
+              )
+              ?.map((r) => r.low)
+              .reduce((a, b) => Math.max(a, b), 0)
+          : 0,
       }))
       .map((t) => ({
         ...t,
@@ -85,12 +106,23 @@ export const calculateStrategy =
         duration: t.closed ? t.closed - t.opened : undefined,
         openPrice: target.find((r) => r.time > t.opened)?.close!,
         closePrice: target.find((r) => r.time > (t.closed || Infinity))?.close,
+        highestPrice: target.find((r) => r.time > (t.highest || Infinity))
+          ?.high,
+        lowestPrice: target.find((r) => r.time > (t.lowest || Infinity))?.low,
       }))
       .map((v) => ({
         ...v,
         pnl:
           v.closePrice && v.openPrice
             ? +((v.closePrice - v.openPrice) * (v.short ? -1 : 1)).toFixed(2)
+            : 0,
+        runup:
+          v.highestPrice && v.openPrice
+            ? +((v.highestPrice - v.openPrice) * (v.short ? -1 : 1)).toFixed(2)
+            : 0,
+        drawdown:
+          v.lowestPrice && v.openPrice
+            ? +((v.lowestPrice - v.openPrice) * (v.short ? -1 : 1)).toFixed(2)
             : 0,
       }))
       .map((v) => ({
@@ -104,6 +136,22 @@ export const calculateStrategy =
         pnlRate: +(
           (v.pnl && v.openPrice ? v.pnl / v.openPrice : 0) * 100
         ).toFixed(2),
+
+        drawdownRate: +(
+          (v.drawdown && v.openPrice ? v.drawdown / v.openPrice : 0) * 100
+        ).toFixed(2),
+
+        runupRate: +(
+          (v.runup && v.openPrice ? v.runup / v.openPrice : 0) * 100
+        ).toFixed(2),
       }));
     return trades;
   };
+
+export const withRunningTotal = (rows: ITrade[]): ITradeWithTotals[] => {
+  let totalPnl = 0;
+  return rows.map((r) => ({
+    ...r,
+    totalPnl: +(totalPnl += r.pnl || 0).toFixed(2),
+  }));
+};

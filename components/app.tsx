@@ -52,20 +52,10 @@ export default function App() {
               <Grid xs={12} md={8} height="100%">
                 <DisplayArea />
               </Grid>
-              <Grid xs={12} md={4}>
+              <Grid xs={12} md={4} height="100%">
                 <Strategy />
               </Grid>
             </Grid>
-            {/* <ZoomWrapper>
-              <Grid container spacing={2} height="100%">
-                <Grid xs={12} md={8}>
-                  <DisplayArea />
-                </Grid>
-                <Grid xs={12} md={4}>
-                  <Strategy />
-                </Grid>
-              </Grid>
-            </ZoomWrapper> */}
             <Settings />
             <PromptDialog />
           </Container>

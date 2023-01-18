@@ -100,4 +100,14 @@ export type ITrade = {
   closePrice?: number;
   opened: number;
   closed?: number;
+  strategy: IStrategy;
+  runup?: number;
+  drawdown?: number;
+  runupRate?: number;
+  drawdownRate?: number;
+};
+
+export type ITradeWithTotals = ITrade & {
+  totalPnl: number;
+  moneyIn?: number;
 };

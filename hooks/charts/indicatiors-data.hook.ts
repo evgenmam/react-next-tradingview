@@ -36,6 +36,11 @@ export const useIndicatorsData = ({
                 enabled: true,
                 symbol: "circle",
                 radius: 4,
+                // states: {
+                //   inactive: {
+                //     opacity: 0.1,
+                //   },
+                // },
               },
               states: {
                 hover: {
