@@ -37,7 +37,6 @@ export const useModal = () => {
 export const useModalAsync = (props: { title?: string; label?: string }) => {
   const modal = useModal();
   const [v, setV] = useState<string | undefined>("");
-  console.log(v);
   return (initial?: string) => {
     return new Promise((resolve, reject) => {
       setV(initial);

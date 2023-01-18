@@ -1,5 +1,5 @@
 import HighchartsReact from "highcharts-react-official";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useSourceData } from "../../hooks/charts/source-data.hook";
 import { HStock } from "../hchart";
 import * as R from "ramda";
@@ -10,7 +10,9 @@ import { useChartData } from "../../hooks/charts/chart-data.hook";
 import { useHoverSet } from "../../hooks/hover.hook";
 import { useSignalsData } from "../../hooks/charts/signals-data.hook";
 import { HoverWatcher } from "../data/hover-watcher";
-import { useSettings } from "../../hooks/data.hook";
+import { useRows, useSettings } from "../../hooks/data.hook";
+import { useTradesData } from "../../hooks/charts/trades.hook";
+import { DataWatcher } from "../data/data-watcher";
 
 const signalsHeight = 10;
 const sourceHeight = 500;
@@ -69,13 +71,16 @@ export const DisplayChart = () => {
     top: firstChartHeight + theight,
   });
 
+  const trades = useTradesData({ dataset: "target" });
+  const trades2 = useTradesData({ dataset: "target2" });
+
   let chartData = R.reduce<
     Partial<Highcharts.Options>,
     Partial<Highcharts.Options>
   >(
     R.mergeDeepWith(R.concat),
     {}
-  )([sourceChart, targetData, targetData2]);
+  )([sourceChart, targetData, targetData2, trades, trades2]);
 
   const height = [chartData?.yAxis]
     ?.flat()
@@ -92,6 +97,7 @@ export const DisplayChart = () => {
         minHeight: height,
       },
     },
+
     tooltip,
     ...chartData,
   };
@@ -100,6 +106,7 @@ export const DisplayChart = () => {
     <Stack height="100%" ref={stackRef} flexGrow={1}>
       <HStock options={options} ref={ref} />
       {ref?.current?.chart && <HoverWatcher chart={ref?.current?.chart} />}
+      {ref?.current?.chart && <DataWatcher chart={ref?.current?.chart} />}
     </Stack>
   );
 };

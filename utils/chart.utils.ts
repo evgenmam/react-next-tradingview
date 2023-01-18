@@ -28,6 +28,7 @@ export const getNextLabel = (label: string) => ({
     style: {
       fontSize: "16px",
     },
+    useHTML: true,
     y: 20,
   },
   width: 0,

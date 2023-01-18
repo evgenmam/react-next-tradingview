@@ -18,7 +18,7 @@ import { useSettings } from "../hooks/data.hook";
 import DarkTheme from "highcharts/themes/dark-blue";
 import LightTheme from "highcharts/themes/brand-light";
 import { deepmerge } from "@mui/utils";
-
+import * as R from "ramda";
 if (typeof Highcharts === "object") {
   HighchartsExporting(Highcharts);
   HighchartsExporting(HighchartsStock);
@@ -30,6 +30,14 @@ if (typeof Highcharts === "object") {
   }
 }
 
+const rangeButtons: Array<Highcharts.RangeSelectorButtonsOptions> = R.range(
+  1,
+  5
+).map((_, i) => ({
+  count: i + 1,
+  type: "year",
+  text: `${i + 1}Y`,
+}));
 const defaults: HighchartsReact.Props["options"] = {
   chart: {
     animation: false,
@@ -38,7 +46,6 @@ const defaults: HighchartsReact.Props["options"] = {
     enabled: false,
   },
 };
-
 export const HChart = (props: HighchartsReact.Props) => {
   return <HighchartsReact highcharts={Highcharts} {...props} />;
 };

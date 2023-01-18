@@ -11,53 +11,57 @@ export const useIndicatorsData = ({
 }) => {
   const { rows } = useRows("source");
   const { indicators } = useIndicators();
-
   const { stack = [] } = R.groupBy<IIndicator>((v) =>
     v.main ? "overlay" : "stack"
   )(indicators);
 
   const series: (Highcharts.SeriesOptions & { type: any })[] =
     indicators.flatMap((v, idx) =>
-      v.fields.map((f) => {
-        const ff = {
-          yAxis: v.main ? "source" : `indicator-${v.name}`,
-          type: f.type as any,
-          color: f.color,
-          data: rows.map((row) => [row.time, row[f.key]]),
-          name: f.key,
-        };
-        switch (f.type) {
-          case "scatter":
-            return {
-              ...ff,
-              type: "spline",
-              lineWidth: 0,
-              marker: {
-                enabled: true,
-                symbol: "circle",
-                radius: 4,
-                // states: {
-                //   inactive: {
-                //     opacity: 0.1,
-                //   },
-                // },
-              },
-              states: {
-                hover: {
-                  lineWidthPlus: 0,
+      v.fields
+        .filter((v) => !v.hide)
+        .map((f) => {
+          const ff = {
+            yAxis: v.main ? "source" : `indicator-${v.name}`,
+            type: f.type as any,
+            color: f.color,
+            data: rows.map((row) => [row.time, row[f.key]]),
+            name: f.key,
+          };
+          switch (f.type) {
+            case "scatter":
+              return {
+                ...ff,
+                type: "spline",
+                lineWidth: 0,
+                marker: {
+                  enabled: true,
+                  symbol: "circle",
+                  radius: 4,
                 },
-              },
-            };
-          default:
-            return {
-              ...ff,
-              marker: {
-                symbol: "circle",
-                radius: 2.5,
-              },
-            };
-        }
-      })
+                states: {
+                  hover: {
+                    lineWidthPlus: 0,
+                  },
+                },
+              };
+            case "signal":
+              return {
+                ...ff,
+                type: "line",
+                data: rows
+                  .filter((row) => row[f.key])
+                  .map((row) => [row.time, row.low]),
+              };
+            default:
+              return {
+                ...ff,
+                marker: {
+                  symbol: "circle",
+                  radius: 2.5,
+                },
+              };
+          }
+        })
     );
 
   const { target } = useSettings();

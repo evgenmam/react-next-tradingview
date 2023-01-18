@@ -33,8 +33,7 @@ export const useChartData = ({
       upColor: colors.palette.success.outlinedColor,
       lineColor: colors.palette.danger.outlinedColor,
       upLineColor: colors.palette.success.outlinedColor,
-      name: dsname,
-      tooltip: {},
+      name: dataset,
       yAxis: dataset,
     },
   ];

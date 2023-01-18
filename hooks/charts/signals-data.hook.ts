@@ -15,7 +15,7 @@ export const useSignalsData = ({ height = 50 }: { height?: number }) => {
       color: signal.color,
       marker: {
         symbol: "circle",
-        radius: 3,
+        radius: 6,
       },
       data: data.map((v) => ({
         x: v.time,

@@ -19,6 +19,7 @@ export type IIndicatorField = {
   type: Highcharts.Series["type"];
   color?: string;
   props?: Record<string, any>;
+  hide?: boolean;
 };
 
 export type IIndicator = {
@@ -105,6 +106,10 @@ export type ITrade = {
   drawdown?: number;
   runupRate?: number;
   drawdownRate?: number;
+  highestPrice?: number;
+  lowestPrice?: number;
+  highest?: number;
+  lowest?: number;
 };
 
 export type ITradeWithTotals = ITrade & {

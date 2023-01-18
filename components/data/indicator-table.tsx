@@ -17,6 +17,8 @@ import {
   PlusIcon,
   TrashIcon,
   StopIcon,
+  EyeIcon,
+  EyeSlashIcon,
 } from "@heroicons/react/24/solid";
 import { ButtonBase, Collapse, TextField, useTheme } from "@mui/material";
 import { useFields, useIndicators } from "../../hooks/data.hook";
@@ -74,7 +76,7 @@ export const IndicatorTable = ({ indicator }: Props) => {
         </Stack>
       </Stack>
       <Stack>
-        {indicator.fields.map((field) => (
+        {indicator.fields.map((field, idx) => (
           <Stack
             key={field.key}
             direction="row"
@@ -90,20 +92,46 @@ export const IndicatorTable = ({ indicator }: Props) => {
               <StopIcon width={18} color={field?.color} />
               <Typography fontSize={12}>{field.key}</Typography>
             </Stack>
-            <ButtonBase
-              onClick={() => {
-                updateIndicator(
-                  R.over(
-                    R.lensProp<IIndicator, "fields">("fields"),
-                    R.reject(R.propEq("key", field.key))
-                  )(indicator)
-                );
-              }}
+            <Stack
+              spacing={0.5}
+              direction="row"
+              sx={{ opacity: fields.includes(field.key) ? 1 : 0.3 }}
             >
-              <Typography color="danger">
-                <TrashIcon width={12} />
-              </Typography>
-            </ButtonBase>
+              <ButtonBase
+                onClick={() => {
+                  updateIndicator(
+                    R.over(
+                      R.lensPath(["fields", idx, "hide"]),
+                      R.not
+                    )(indicator)
+                  );
+                }}
+              >
+                {field?.hide ? (
+                  <Typography color="neutral">
+                    <EyeSlashIcon width={12} />
+                  </Typography>
+                ) : (
+                  <Typography color="info">
+                    <EyeIcon width={12} />
+                  </Typography>
+                )}
+              </ButtonBase>
+              <ButtonBase
+                onClick={() => {
+                  updateIndicator(
+                    R.over(
+                      R.lensProp<IIndicator, "fields">("fields"),
+                      R.reject(R.propEq("key", field.key))
+                    )(indicator)
+                  );
+                }}
+              >
+                <Typography color="danger">
+                  <TrashIcon width={12} />
+                </Typography>
+              </ButtonBase>
+            </Stack>
           </Stack>
         ))}
       </Stack>

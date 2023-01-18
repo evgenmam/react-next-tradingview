@@ -75,7 +75,7 @@ export const calculateStrategy =
         action: "close",
       })),
     };
-    const trades = signals.open
+    let trades = signals.open
       .map((o) => ({
         strategy: strategy,
         opened: o.time,
@@ -83,23 +83,26 @@ export const calculateStrategy =
       }))
       .map((t) => ({
         ...t,
-        highest: t.closed
-          ? target
-              .filter(
-                (r) => r.time > t.opened && r.time < (t.closed || Infinity)
-              )
-              ?.map((r) => r.high)
-              .reduce((a, b) => Math.max(a, b), 0)
-          : 0,
-        lowest: t.closed
-          ? target
-              .filter(
-                (r) => r.time > t.opened && r.time < (t.closed || Infinity)
-              )
-              ?.map((r) => r.low)
-              .reduce((a, b) => Math.max(a, b), 0)
-          : 0,
+        highest:
+          t.closed &&
+          target
+            .filter(
+              (r) => r.time >= t.opened && r.time <= (t.closed || Infinity)
+            )
+            .map((r) => {
+              return r;
+            })
+            .reduce((a, b) => (a.high > b.high ? a : b), { high: 0, time: 0 })
+            ?.time,
+
+        lowest: target
+          .filter((r) => r.time >= t.opened && r.time <= (t.closed || Infinity))
+          .reduce((a, b) => (a.low < b.low ? a : b), {
+            low: Infinity,
+            time: 0,
+          })?.time,
       }))
+
       .map((t) => ({
         ...t,
         short: strategy.direction === "short",

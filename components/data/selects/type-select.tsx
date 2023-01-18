@@ -18,6 +18,7 @@ export const TypeSelect = (props: SelectProps<string>) => {
     // "radar",
     // "polarArea",
     // "rangeBar",
+    "signal",
   ];
   return (
     <FormControl size="sm">

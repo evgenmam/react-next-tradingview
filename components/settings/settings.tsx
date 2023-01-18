@@ -15,6 +15,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
 import { useRows, useSettings } from "../../hooks/data.hook";
 import * as R from "ramda";
+import { SaveLoadButtons } from "./save-load-buttons";
 
 const Checkbox = dynamic(() => import("@mui/joy/Checkbox"), { ssr: false });
 
@@ -30,7 +31,7 @@ export const Settings = () => {
     }, 400);
   }, [setTheme, theme]);
   return (
-    <Stack position="fixed" bottom="0" right="0" zIndex={4}  alignItems="end">
+    <Stack position="fixed" bottom="0" right="0" zIndex={4} alignItems="end">
       <Sheet variant="plain">
         <Stack direction="row" justifyContent="end" spacing={1} p={1}>
           <IconButton onClick={() => setOpen(R.not)}>
@@ -75,6 +76,7 @@ export const Settings = () => {
               />
             </FormControl>
 
+            <SaveLoadButtons />
             <Button
               onClick={() => {
                 clearRows();

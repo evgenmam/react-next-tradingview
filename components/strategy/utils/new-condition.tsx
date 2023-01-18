@@ -20,7 +20,7 @@ export const NewCondition = ({ first, value, setCondition }: Props) => {
         <Stack direction="row">
           <Box flexGrow={1}>
             <FieldSelect
-              exclude={[value.b.field || ""]}
+              exclude={["time", "id", "dataset"]}
               hideLabel
               value={value.a.field}
               onChange={(_, e) => {
@@ -56,7 +56,7 @@ export const NewCondition = ({ first, value, setCondition }: Props) => {
         <Stack direction="row">
           <Box flexGrow={1}>
             <FieldSelect
-              exclude={[value.a.field || ""]}
+              exclude={["time", "id", "dataset"]}
               hideLabel
               value={value.b.field}
               onChange={(_, e) => {

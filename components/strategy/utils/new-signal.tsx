@@ -23,9 +23,9 @@ type Props = {
   onSave: (conditions: ICondition[], color?: string) => void;
 };
 const newCondition = (): ICondition & { key?: string } => ({
-  a: { field: "open", type: "field", offset: 0 },
+  a: { field: "close", type: "field", offset: 0 },
   operator: "crossesUp",
-  b: { field: "close", type: "field", offset: 0 },
+  b: { field: "open", type: "field", offset: 0 },
   key: v4(),
 });
 

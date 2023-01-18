@@ -18,6 +18,7 @@ import { IconButton, ListItemText, Stack } from "@mui/material";
 import { RefObject, useEffect, useState } from "react";
 import { XJson } from "../json";
 import noop from "lodash.noop";
+import XScrollbar from "../utils/scrollbars";
 
 type Props = {
   onClose?: () => void;
@@ -55,41 +56,43 @@ export const SelectDialog = ({
       </Button>
       <Modal open={open} onClose={() => setOpen((v) => !v)}>
         <ModalDialog sx={{ overflowY: "auto", maxHeight: "100vh" }}>
-          <Stack spacing={1} divider={<Divider />}>
-            {options.length ? (
-              <List>
-                {options.map((option) => (
-                  <ListItem
-                    key={option}
-                    endAction={
-                      onDelete && (
-                        <IconButton
-                          color="error"
-                          onClick={() => {
-                            onDelete(option);
-                            if (option === value) onChange(null);
-                          }}
-                        >
-                          <XMarkIcon width={12} />
-                        </IconButton>
-                      )
-                    }
-                  >
-                    <ListItemButton
-                      selected={option === value}
-                      onClick={() => {
-                        setOpen(false);
-                        onChange(option);
-                      }}
+          <Stack spacing={1} divider={<Divider />} maxHeight="70vh">
+            <XScrollbar>
+              {options.length ? (
+                <List>
+                  {options.map((option) => (
+                    <ListItem
+                      key={option}
+                      endAction={
+                        onDelete && (
+                          <IconButton
+                            color="error"
+                            onClick={() => {
+                              onDelete(option);
+                              if (option === value) onChange(null);
+                            }}
+                          >
+                            <XMarkIcon width={12} />
+                          </IconButton>
+                        )
+                      }
                     >
-                      {option}
-                    </ListItemButton>
-                  </ListItem>
-                ))}
-              </List>
-            ) : (
-              <Box p={2}>Nothing here yet</Box>
-            )}
+                      <ListItemButton
+                        selected={option === value}
+                        onClick={() => {
+                          setOpen(false);
+                          onChange(option);
+                        }}
+                      >
+                        {option}
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <Box p={2}>Nothing here yet</Box>
+              )}
+            </XScrollbar>
             {actions}
           </Stack>
         </ModalDialog>
