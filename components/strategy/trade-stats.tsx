@@ -55,7 +55,6 @@ export const TradeStats = () => {
               <TableRow
                 key={`${s.openPrice}${s.opened}${s.closePrice}${s.closed}${s.strategy.dataset}`}
                 onMouseEnter={() => {
-                  console.log("enter");
                 }}
               >
                 <TableCell>

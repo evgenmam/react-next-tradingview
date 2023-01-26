@@ -3,6 +3,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { IChartData, IIndicator, ISignal, IStrategy } from "../types/app.types";
 import * as R from "ramda";
 import IDB from "../db/db";
+import { ITVSymbol } from "../components/tv-components/types";
 
 export const useIndicators = () => {
   const indicators =
@@ -25,6 +26,7 @@ export const useIndicators = () => {
 
 const getFirstRow = async (dataset: string) => {
   const ds = (await IDB.settings.get(dataset))?.value;
+  if (!ds) return 0;
   return (
     (await IDB.rows.where("dataset").equals(ds).limit(1).sortBy("time"))[0]
       ?.time || 0
@@ -123,6 +125,7 @@ export const useFields = (datasetName = "source") => {
     useLiveQuery(async () => {
       const dataset = (await IDB.settings.get(datasetName))?.value;
       const hideEmpty = (await IDB.settings.get("hideEmpty"))?.value;
+      if (!dataset) return [];
       const rows = (
         await IDB.rows.where("dataset").equals(dataset).toArray()
       ).reduce(R.mergeWith(R.or), {} as Record<string, any[]>);
@@ -230,4 +233,43 @@ export const useSettings = () => {
     target2,
     setTarget2,
   };
+};
+
+export const useActiveList = () => {
+  const list = useLiveQuery(async () => {
+    let l = await IDB.lists?.filter((v) => !!v.selected).first();
+    return l;
+  });
+  const setActive = async (id: number) => {
+    await IDB.lists.filter((v) => !!v.selected).modify({ selected: false });
+    await IDB.lists.update(id, { selected: true });
+  };
+  const addSymbol = async (symbol: ITVSymbol) => {
+    if (!list) return;
+    await IDB.lists.update(list.id!, { symbols: [...list.symbols, symbol] });
+  };
+  const removeSymbol = async (symbol: ITVSymbol) => {
+    if (!list) return;
+    await IDB.lists.update(list.id!, {
+      symbols: R.reject(R.equals(symbol), list.symbols),
+    });
+  };
+  return { list, setActive, addSymbol, removeSymbol };
+};
+
+export const useLists = () => {
+  const lists =
+    useLiveQuery(async () => {
+      return await IDB.lists.toArray();
+    }) || [];
+  const createList = async (name: string) => {
+    return await IDB.lists.add({ name, selected: false, symbols: [] });
+  };
+  const deleteList = async (id: number) => {
+    if (id === 1) return;
+    await IDB.lists.delete(id);
+    await IDB.lists.filter((v) => !!v.selected).modify({ selected: false });
+    await IDB.lists.update(1, { selected: true });
+  };
+  return { lists, createList, deleteList };
 };

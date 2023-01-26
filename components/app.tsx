@@ -30,7 +30,9 @@ import { TargetChart } from "./data/target-chart";
 import { PromptDialog } from "./dialogs/prompt-dialog";
 import { DisplayArea } from "./display-area/display-area";
 import { Strategy } from "./strategy/strategy";
+import { SymbolListDrawer } from "./symbol-list/symbol-list-drawer";
 import { Theme, ThemeWrapper } from "./theme";
+import { ChartConfigDrawer } from "./v2/chart-config-drawer";
 export default function App() {
   const [tab, setTab] = useState("chart");
   const ctx = useState<IModalContext | null>(null);
@@ -59,6 +61,7 @@ export default function App() {
             <Settings />
             <PromptDialog />
           </Container>
+          <ChartConfigDrawer />
         </HoverWrapper>
       </ModalContext.Provider>
     </CssVarsProvider>

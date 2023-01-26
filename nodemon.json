@@ -1,0 +1,4 @@
+{
+  "watch": ["api"],
+  "exec": "ts-node --project tsconfig.server.json ./api/index.ts "
+}
