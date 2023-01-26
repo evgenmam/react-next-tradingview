@@ -19,19 +19,20 @@ export const useV2MarketData = () => {
   const { sett } = useSettings();
   useEffect(() => {
     const getData = async () => {
-      spl.clearRows();
-      sett("source")(`${numerator}/${denominator}`);
-      sett("target")(`${numerator}`);
-      sett("target2")(`${denominator}`);
       try {
+        sett("fetching")(true);
         const { data } = await axios.post("/api/market-data", {
           numerator,
           denominator,
           indicators: selected?.indicators,
         });
+        sett("source")(`${numerator}/${denominator}`);
+        sett("target")(`${numerator}`);
+        sett("target2")(`${denominator}`);
         spl.setRows(data?.splits || []);
         target1.setRows(data?.num || []);
         target2.setRows(data?.denum || []);
+        sett("fetching")(false);
       } catch (error) {
         console.log(error);
       }

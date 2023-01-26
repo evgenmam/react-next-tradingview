@@ -12,6 +12,7 @@ export type IChartData = {
 export type ISettings = {
   hideEmpty: boolean;
   maxDigits: number;
+  fetching: boolean;
 };
 
 export type IIndicatorField = {

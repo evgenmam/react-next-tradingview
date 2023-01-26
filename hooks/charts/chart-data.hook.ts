@@ -43,7 +43,6 @@ export const useChartData = ({
       id: dataset,
       height,
       top,
-      ...(nextLabel && { plotLines: [getNextLabel(nextLabel)] }),
       ...(next && {
         resize: {
           enabled: true,

@@ -31,7 +31,6 @@ export const useSignalsData = ({ height = 50 }: { height?: number }) => {
       labels: {
         enabled: false,
       },
-      plotLines: [getNextLabel(dataset)],
     },
   ];
 

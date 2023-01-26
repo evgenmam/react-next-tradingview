@@ -1,8 +1,5 @@
 import Dexie from "dexie";
-import {
-  ITVIndicatorSet,
-  ITVSymbolList,
-} from "../components/tv-components/types";
+import { ITVSymbolList } from "../components/tv-components/types";
 import { IChartConfig, IPreset } from "../components/v2/v2.types";
 import {
   IChartData,

@@ -18,6 +18,7 @@ const signalsHeight = 10;
 const sourceHeight = 500;
 
 export const DisplayChart = () => {
+  const { target } = useSettings();
   const ref = useRef<HighchartsReact.RefObject | null>(null);
   const signals = useSignalsData({ height: signalsHeight });
   const indicators = useIndicatorsData({
@@ -28,7 +29,7 @@ export const DisplayChart = () => {
 
   const source = useSourceData({
     height: sourceHeight,
-    next: indicators.yAxis.map<string>(R.propOr("", "id")),
+    next: [...indicators.yAxis.map<string>(R.propOr("", "id")), target],
   });
   const sourceChart = R.reduce<
     Partial<Highcharts.Options>,

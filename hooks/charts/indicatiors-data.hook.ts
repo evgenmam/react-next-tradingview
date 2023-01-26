@@ -76,7 +76,6 @@ export const useIndicatorsData = ({
         next: [stack[idx + 1]?.name || "target"],
       },
     },
-    plotLines: [getNextLabel(stack[idx + 1]?.name || target)],
   }));
 
   return { series, yAxis };

@@ -77,11 +77,13 @@ export const useRows = (datasetName: string) => {
   );
 
   const setRows = async (rows: IChartData[]) => {
+    IDB.rows.where("dataset").equals(dataset).delete();
     await IDB.rows.bulkAdd(rows);
   };
   const clearRows = async () => {
     await IDB.rows.clear();
   };
+
   return {
     rows: rows as IChartData[],
     setRows,
@@ -204,6 +206,7 @@ export const useSettings = () => {
   const [source, setSource] = useSetting("source", "");
   const [target, setTarget] = useSetting("target", "");
   const [target2, setTarget2] = useSetting("target2", "");
+  const [fetching, setFetching] = useSetting("fetching", false);
   const [showSignals, setShowSignals] = useSetting("signals", true);
   const [showStrategies, setShowStrategies] = useSetting("strategies", true);
   const [theme, setTheme] = useSetting("theme", "dark") as [
@@ -232,6 +235,8 @@ export const useSettings = () => {
     setTheme,
     target2,
     setTarget2,
+    fetching,
+    setFetching,
   };
 };
 

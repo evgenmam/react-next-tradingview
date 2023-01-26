@@ -42,20 +42,6 @@ export const useSourceData = ({
           enabled: true,
           controlledAxis: { next },
         },
-        plotLines: [
-          {
-            zIndex: 0,
-            value: 0,
-            label: {
-              text: next[0],
-              style: {
-                fontSize: "16px",
-              },
-              y: 20,
-            },
-            width: 0,
-          },
-        ],
       }),
     },
   ];

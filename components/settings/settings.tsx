@@ -16,6 +16,7 @@ import { useCallback, useState } from "react";
 import { useRows, useSettings } from "../../hooks/data.hook";
 import * as R from "ramda";
 import { SaveLoadButtons } from "./save-load-buttons";
+import IDB from "../../db/db";
 
 const Checkbox = dynamic(() => import("@mui/joy/Checkbox"), { ssr: false });
 
@@ -54,17 +55,6 @@ export const Settings = () => {
             sx={{ ">*": { flexShrink: 0 } }}
           >
             <FormControl>
-              <FormLabel>Hide null</FormLabel>
-              <Box py={1} textAlign="center">
-                <Checkbox
-                  checked={!!hideEmpty}
-                  onChange={(e) => {
-                    setHideEmpty(e.target.checked);
-                  }}
-                />
-              </Box>
-            </FormControl>
-            <FormControl>
               <FormLabel>Max Digits</FormLabel>
               <TextField
                 sx={{ maxWidth: 70 }}
@@ -79,7 +69,7 @@ export const Settings = () => {
             <SaveLoadButtons />
             <Button
               onClick={() => {
-                clearRows();
+                IDB.delete();
               }}
             >
               Reset Data

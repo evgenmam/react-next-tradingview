@@ -33,7 +33,7 @@ const TVComponents = () => {
               <Stack>
                 <Stack spacing={1}>
                   <Typography level="h5">Search</Typography>
-                  <TVSearch value={selected} onSelect={setSelected} />
+                  <TVSearch value={selected} />
                 </Stack>
               </Stack>
             </Grid>
