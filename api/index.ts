@@ -7,6 +7,7 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 const port = process.env.PORT || 3000;
 import bodyParser from "body-parser";
+import pino from "pino";
 
 dotenv.config();
 
@@ -23,7 +24,9 @@ dotenv.config();
     });
     server.listen(port, (err?: any) => {
       if (err) throw err;
-      console.log(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
+      pino({ name: "SYSTEM" }).info(
+        `Ready on localhost:${port} - env ${process.env.NODE_ENV}`
+      );
     });
   } catch (e) {
     console.error(e);

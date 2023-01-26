@@ -1,6 +1,5 @@
 import { Cog6ToothIcon, MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 import {
-  Box,
   Button,
   Divider,
   FormControl,
@@ -11,19 +10,15 @@ import {
   TextField,
 } from "@mui/joy";
 import { Collapse } from "@mui/material";
-import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
-import { useRows, useSettings } from "../../hooks/data.hook";
+import { useSettings } from "../../hooks/data.hook";
 import * as R from "ramda";
 import { SaveLoadButtons } from "./save-load-buttons";
 import IDB from "../../db/db";
-
-const Checkbox = dynamic(() => import("@mui/joy/Checkbox"), { ssr: false });
+import { StatusButton } from "./status-button";
 
 export const Settings = () => {
-  const { hideEmpty, setHideEmpty, maxDigits, setMaxDigits, setTheme, theme } =
-    useSettings();
-  const { clearRows } = useRows("source");
+  const { maxDigits, setMaxDigits, setTheme, theme } = useSettings();
   const [open, setOpen] = useState(false);
   const toggleTheme = useCallback(() => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -32,9 +27,17 @@ export const Settings = () => {
     }, 400);
   }, [setTheme, theme]);
   return (
-    <Stack position="fixed" bottom="0" right="0" zIndex={4} alignItems="end">
+    <Stack
+      position="fixed"
+      bottom="0"
+      right="0"
+      zIndex={2000}
+      alignItems="end"
+    >
       <Sheet variant="plain">
         <Stack direction="row" justifyContent="end" spacing={1} p={1}>
+          <StatusButton />
+
           <IconButton onClick={() => setOpen(R.not)}>
             <Cog6ToothIcon />
           </IconButton>

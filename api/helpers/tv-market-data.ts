@@ -1,0 +1,129 @@
+import pino from "pino";
+import { v4 } from "uuid";
+import { ITVIndicator } from "../../components/tv-components/types";
+import TVClient, { TVClientC } from "../helpers/tv-client";
+import TVApi from "../tradingview";
+import { IndicatorDU } from "../types";
+import { getPineInputs, randomHash } from "../utils";
+
+const tvc = new TVClient();
+
+export class TVMarketData {
+  chartSession: string;
+  quoteSession: string;
+  constructor() {
+    this.chartSession = `cs_${randomHash()}`;
+    this.quoteSession = `qs_${randomHash()}`;
+  }
+}
+
+class TVSession {
+  hc() {
+    return new Promise<void>(async (resolve, reject) => {
+      if (tvc.ws.readyState !== tvc.ws.OPEN) {
+        tvc.ws.on("open", () => {
+          resolve();
+        });
+      } else {
+        resolve();
+      }
+    });
+  }
+}
+
+export class TVChartSession extends TVSession {
+  session: string;
+  constructor() {
+    super();
+    this.session = `cs_${randomHash()}`;
+    pino({ name: "TVChartSession" }).info({ session: this.session });
+  }
+
+  init = async () => {
+    if (!tvc.loggedIn) await tvc.login();
+    await this.hc();
+    await tvc.send("chart_create_session", [this.session]);
+  };
+
+  waitFor = (...msg: string[]) => tvc.waitFor(this.session, ...msg);
+
+  getSymbol = async (symbol: string, interval = "1W", count = 300) => {
+    const symbol_id = btoa(symbol);
+    tvc.send("resolve_symbol", [this.session, symbol_id, symbol]);
+    await this.waitFor(symbol_id, "symbol_resolved");
+    tvc.send("create_series", [
+      this.session,
+      symbol,
+      symbol,
+      symbol_id,
+      interval,
+      count,
+      "",
+    ]);
+    const data = this.waitFor(symbol, "timescale_update");
+    return data;
+  };
+
+  getIndicator = async (symbol: string, ind: ITVIndicator) => {
+    const res = await TVApi.translateIndicator(ind);
+    const fields = Object.values(res?.result?.metaInfo?.styles)?.map?.(
+      (v: any) => v?.title
+    );
+    const sd = res?.result?.metaInfo?.shortDescription;
+    console.log(fields);
+    const data = {
+      text: res.result.metaInfo.defaults.inputs.text,
+      pineId: ind.scriptIdPart,
+      pineVersion: `${ind.version}.0`,
+      pineFeatures: {
+        t: "text",
+        f: true,
+        v: res.result.metaInfo.defaults.inputs.pineFeatures,
+      },
+      ...getPineInputs(res.result.metaInfo.defaults.inputs),
+    };
+
+    await tvc.send("create_study", [
+      this.session,
+      ind.scriptName,
+      ind.scriptName,
+      symbol,
+      "Script@tv-scripting-101!",
+      data,
+    ]);
+    const values = await this.waitFor(ind.scriptName, "du");
+    return (values as IndicatorDU)?.st
+      ?.filter?.((v) => v.i >= 0)
+      .map?.((v) =>
+        fields.reduce(
+          (acc, field, i) => ({ ...acc, [sd + ":" + field]: v?.v?.[i + 1] }),
+          {}
+        )
+      );
+  };
+}
+
+export class TVQuoteSession extends TVSession {
+  session: string;
+  constructor() {
+    super();
+    this.session = `qs_${randomHash()}`;
+  }
+
+  init = async () => {
+    await this.hc();
+    await tvc.send("quote_create_session", [this.session]);
+  };
+
+  addSymbol = async (symbol: string) => {
+    await tvc.send("quote_add_symbols", [this.session, symbol]);
+  };
+}
+
+export const reconnect = () => {
+  tvc.reconnect();
+};
+
+export const status = () => {
+  return tvc.ws.readyState;
+};

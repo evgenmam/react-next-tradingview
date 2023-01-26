@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon",
+    "dev": "nodemon | pino-pretty",
     "build:server": "tsc --project tsconfig.server.json",
     "build:next": "next build",
     "build": "npm run build:next && npm run build:server",
@@ -39,6 +39,7 @@
     "material-colors": "^1.2.6",
     "material-ui-popup-state": "^5.0.4",
     "next": "13.1.1",
+    "pino": "^8.8.0",
     "ramda": "^0.28.0",
     "random-int": "^3.0.0",
     "react": "18.2.0",
@@ -61,6 +62,7 @@
     "@types/uuid": "^9.0.0",
     "@types/ws": "^8.5.4",
     "nodemon": "^2.0.20",
+    "pino-pretty": "^9.1.1",
     "ts-node": "^10.9.1"
   }
 }

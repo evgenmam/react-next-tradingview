@@ -1,7 +1,11 @@
+import EventEmitter from "events";
+import pino from "pino";
 import WS from "ws";
-import { readMessages } from "../utils";
+import TVApi from "../tradingview";
+import { TimescaleUpdate, TSOHLC, TVWSEvent } from "../types";
+import { readMessages, timescaleToOHLC } from "../utils";
 const URL = "wss://prodata.tradingview.com/socket.io/websocket";
-const BUILD_ID = "2023_01_25-11_52";
+const BUILD_ID = "2023_01_26-12_41";
 const CHART_ID = "lfNsKpYG";
 
 const handlers = {
@@ -11,6 +15,8 @@ const handlers = {
 export class TVClientC {
   handlers: Record<string, (data: any) => void> = {};
   ws: WS;
+  listener: EventEmitter;
+  loggedIn: boolean = false;
 
   constructor() {
     this.ws = new WS(
@@ -18,7 +24,15 @@ export class TVClientC {
       { headers: { Origin: "https://www.tradingview.com" } }
     );
     this.handle();
+    this.listener = new EventEmitter();
   }
+
+  login = async () => {
+    const results = await TVApi.login();
+    // const chartprops = JSON.parse(results?.user?.settings?.chartproperties);
+    await this.init(results.user.auth_token);
+    this.loggedIn = true;
+  };
 
   listen = (msg: string, cb: (data: any) => void) => {
     this.handlers[msg] = cb;
@@ -28,6 +42,31 @@ export class TVClientC {
     this.ws.on("message", this.receive);
   };
 
+  sessionEvent = (e: TVWSEvent) => {
+    pino({ name: "SESSION_EVENT" }).warn({ msg: e.m });
+    const [ses, ...body] = e.p;
+    switch (e.m) {
+      case "symbol_resolved":
+        const [sym, r, t, t_ms] = body;
+        this.listener.emit(`${ses}:${sym}:${e.m}`, r);
+      case "timescale_update":
+        const [b] = body;
+        Object.entries(b).forEach(([sym, v]) => {
+          this.listener.emit(
+            `${ses}:${sym}:${e.m}`,
+            timescaleToOHLC(v as TimescaleUpdate)
+          );
+        });
+      case "du":
+        const [d] = body;
+        Object.entries(d).forEach(([sym, v]) => {
+          this.listener.emit(`${ses}:${sym}:${e.m}`, v);
+        });
+      default:
+        this.listener.emit(`${ses}:${e.m}`, e.p);
+    }
+  };
+
   receive = async (data: WS.RawData) => {
     const message = data.toString();
     if (message.startsWith("~m~")) {
@@ -35,21 +74,41 @@ export class TVClientC {
       messages.forEach((v) => {
         if (typeof v === "string" && v.startsWith("~m~")) {
           this.ws.send(message);
-        } else {
-          // @ts-ignore
+        } else if (typeof v === "object" && v.m) {
+          if (v.m.indexOf("error") > -1) {
+            pino({ name: "TVClient" }).error({ error: v.p, message: v.m });
+          }
           this.handlers[v.m]?.(v.p);
+          if (v?.p?.[0]?.startsWith?.("cs_")) {
+            this.sessionEvent(v);
+          }
         }
       });
     }
   };
 
+  waitFor = (...args: string[]) =>
+    new Promise((resolve, reject) => {
+      const t = setTimeout(() => {
+        this.listener.removeAllListeners();
+        reject();
+      }, 7500);
+      const cb = (v: any) => {
+        this.listener.removeListener(args.join(":"), cb);
+        clearTimeout(t);
+        resolve(v);
+      };
+      this.listener.once(args.join(":"), cb);
+    });
+
   send = async (
     m: string,
     data: Record<string, any> | Record<string, any>[]
   ) => {
-    const message = JSON.stringify({ m, p: data });
+    const ms = { m, p: data };
+    const message = JSON.stringify(ms);
     const encoded = `~m~${message.length}~m~${message}`;
-    console.log("sending:: ", encoded);
+    pino({ name: "TVClient" }).info({ sending: ms });
     this.ws.send(encoded);
   };
 
@@ -68,14 +127,20 @@ export class TVClientC {
       });
       this.ws.close();
     });
+
+  reconnect = async () => {
+    this.listener.removeAllListeners();
+    this.ws.terminate();
+    this.ws = new WS(
+      `${URL}?from=chart%2F${CHART_ID}%2F&date=${BUILD_ID}&type=chart`,
+      { headers: { Origin: "https://www.tradingview.com" } }
+    );
+    this.handle();
+    await this.login();
+    this.listener = new EventEmitter();
+  };
 }
 
 const TVClient = TVClientC;
 
 export default TVClient;
-// ('~m~136~m~{"m":"quote_remove_symbols","p":["qs_3KXgB62dHeyC","={\\"adjustment\\":\\"splits\\",\\"currency-id\\":\\"HKD\\",\\"symbol\\":\\"HKEX_DLY:1810\\"}"]}');
-// ('{"m":"quote_add_symbols","p":["qs_3KXgB62dHeyC","={\\"adjustment\\":\\"splits\\",\\"symbol\\":\\"MILSEDEX:I06724\\"}"]}');
-// ('{"m":"resolve_symbol","p":["cs_H6E5QMLwckLZ","sds_sym_7","={\\"inputs\\":{},\\"symbol\\":{\\"adjustment\\":\\"splits\\",\\"symbol\\":\\"MILSEDEX:I06724\\"},\\"type\\":\\"BarSetHeikenAshi@tv-basicstudies-60!\\"}"]}');
-// ('{"m":"modify_series","p":["cs_H6E5QMLwckLZ","sds_2","s4","sds_sym_7","1W",""]}');
-// ('{"m":"quote_add_symbols","p":["qs_snapshoter_basic-symbol-quotes_UAvKnZ5mrFPW","MILSEDEX:I06724"]}');
-// ("~h~17");

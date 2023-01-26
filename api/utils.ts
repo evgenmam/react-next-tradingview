@@ -2,6 +2,7 @@ import * as R from "ramda";
 import fs from "fs";
 import path from "path";
 import { v4 } from "uuid";
+import { TimescaleUpdate, TSOHLC, TVWSEvent } from "./types";
 const n = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 export const hashh = () => {
@@ -25,7 +26,7 @@ export const randomHash = () => {
 };
 
 export const s = "~m~";
-export const readMessages = (e: string) => {
+export const readMessages = (e: string): (string | TVWSEvent)[] => {
   let msgs = e.split(/~m~\d+~m~/);
   msgs = msgs.map((v, i) => {
     try {
@@ -69,3 +70,16 @@ export const getPineInputs = (val: Record<string, any>) =>
         },
       };
     }, {});
+
+export const timescaleToOHLC = (timescale: TimescaleUpdate) =>
+  timescale?.s
+    ?.map(({ v }) => v)
+    .map(([t, open, high, low, close, volume]) => ({
+      time: t * 1000,
+      dataset: timescale?.t,
+      open,
+      high,
+      low,
+      close,
+      volume,
+    }));
