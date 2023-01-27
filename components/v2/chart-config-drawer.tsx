@@ -1,5 +1,11 @@
-import { Divider, Sheet } from "@mui/joy";
-import { Drawer, Stack, Typography } from "@mui/material";
+import {
+  Avatar,
+  Divider,
+  IconButton,
+  Sheet,
+  Stack,
+  Typography,
+} from "@mui/joy";
 import { Box } from "@mui/system";
 import { useState } from "react";
 import { V2ChartConfig } from "../v2/chart-config";
@@ -9,11 +15,26 @@ import { Button, ButtonProps } from "@mui/joy";
 import { V2ChartPresets } from "./chart-presets";
 import { useV2MarketData } from "./hooks/v2-market-data.hook";
 import { V2PeriodSelect } from "./period-select";
+import { Drawer } from "@mui/material";
+import { useSettings } from "../../hooks/data.hook";
 type Props = {} & ButtonProps;
+
+const getLogo = (path: string) =>
+  `https://s3-symbol-logo.tradingview.com/${path}.svg`;
+
 export const ChartConfigButton = ({ onClick }: Props) => {
+  const { configs } = useV2ChartConfigs();
+  const { period } = useSettings();
   return (
-    <Button onClick={onClick} variant="plain">
-      Symbol List
+    <Button onClick={onClick} variant="soft" size="lg" sx={{ px: 1 }}>
+      <Stack direction="row" spacing={1} alignItems="center">
+        {configs.map((c) => (
+          <Avatar size="sm" key={c.name} src={getLogo(c.symbol?.logoid)}>
+            {c.symbol?.symbol?.[0]}
+          </Avatar>
+        ))}
+        <Typography level="h5">{period}</Typography>
+      </Stack>
     </Button>
   );
 };
@@ -48,7 +69,7 @@ export const ChartConfigDrawer = () => {
               alignItems="center"
               justifyContent="space-between"
             >
-              <Typography variant="h6">Symbols</Typography>
+              <Typography level="h6">Symbols</Typography>
               <V2PeriodSelect />
             </Stack>
             {configs.map((c) => (

@@ -1,13 +1,16 @@
 import { useTheme } from "@mui/joy";
 import Highcharts from "highcharts";
+import { getLabelAxis } from "../../utils/chart.utils";
 import { useRows } from "../data.hook";
 
 export const useSourceData = ({
   height = 500,
   next,
+  top = 0,
 }: {
   height?: Highcharts.YAxisOptions["height"];
   next?: string[];
+  top?: Highcharts.YAxisOptions["top"];
 }) => {
   const { rows, dataset: dsname } = useRows("source");
   const colors = useTheme();
@@ -36,7 +39,7 @@ export const useSourceData = ({
     {
       id: "source",
       height,
-
+      top,
       ...(next && {
         resize: {
           enabled: true,
@@ -44,6 +47,7 @@ export const useSourceData = ({
         },
       }),
     },
+    getLabelAxis("source", dsname, 48),
   ];
   return { series, yAxis };
 };

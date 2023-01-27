@@ -1,4 +1,5 @@
-import axios, { Canceler } from "axios";
+import axios, { AxiosError, Canceler } from "axios";
+import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useRows, useSetting, useSettings } from "../../../hooks/data.hook";
 import { getSymbolKey } from "../../tv-components/utils/symbol.utils";
@@ -17,6 +18,7 @@ export const useV2MarketData = (active: boolean) => {
   const target1 = useRows("target");
   const target2 = useRows("target2");
   const { sett } = useSettings();
+  const snack = useSnackbar();
   useEffect(() => {
     let cancel: Canceler;
     const getData = async () => {
@@ -41,9 +43,19 @@ export const useV2MarketData = (active: boolean) => {
         spl.setRows(data?.split || []);
         target1.setRows(data?.numerator || []);
         target2.setRows(data?.denominator || []);
-        sett("fetching")(false);
       } catch (error) {
-        console.log(error);
+        if (!axios.isCancel(error))
+          snack.enqueueSnackbar(
+            JSON.stringify((error as AxiosError)?.response?.data, null, 2),
+            {
+              variant: "error",
+              style: {
+                whiteSpace: "pre",
+              },
+            }
+          );
+      } finally {
+        sett("fetching")(false);
       }
     };
     if (active) getData();

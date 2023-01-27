@@ -1,3 +1,6 @@
+import { Response } from "express";
+import { writeFileSync } from "fs";
+import path from "path";
 import pino from "pino";
 import { v4 } from "uuid";
 import { ITVIndicator } from "../../components/tv-components/types";
@@ -33,8 +36,10 @@ class TVSession {
 
 export class TVChartSession extends TVSession {
   session: string;
-  constructor() {
+  res?: Response;
+  constructor(res?: Response) {
     super();
+    this.res = res;
     this.session = `cs_${randomHash()}`;
     pino({ name: "TVChartSession" }).info({ session: this.session });
   }
@@ -43,12 +48,20 @@ export class TVChartSession extends TVSession {
     if (!tvc.loggedIn) await tvc.login();
     await this.hc();
     await tvc.send("chart_create_session", [this.session]);
+    tvc.onError(this.session).then((v) => {
+      this.cleanup();
+      this.res?.status?.(410)?.send(v);
+    });
+  };
+
+  cleanup = () => {
+    tvc.clearListeners(this.session);
   };
 
   waitFor = (...msg: string[]) => tvc.waitFor(this.session, ...msg);
 
   getSymbol = async (symbol: string, interval = "1W", count = 300) => {
-    const symbol_id = btoa(symbol);
+    const symbol_id = symbol.replace(":", "::");
     tvc.send("resolve_symbol", [this.session, symbol_id, symbol]);
     await this.waitFor(symbol_id, "symbol_resolved");
     tvc.send("create_series", [
@@ -66,23 +79,17 @@ export class TVChartSession extends TVSession {
 
   getIndicator = async (symbol: string, ind: ITVIndicator) => {
     const res = await TVApi.translateIndicator(ind);
+    writeFileSync(
+      path.resolve("logs", ind.scriptName + ".json"),
+      JSON.stringify(res, null, 2)
+    );
     const fields = Object.values(res?.result?.metaInfo?.styles)?.map?.(
       (v: any) => v?.title
     );
     const sd = res?.result?.metaInfo?.shortDescription;
-    console.log(fields);
-    const data = {
-      text: res.result.metaInfo.defaults.inputs.text,
-      pineId: ind.scriptIdPart,
-      pineVersion: `${ind.version}.0`,
-      pineFeatures: {
-        t: "text",
-        f: true,
-        v: res.result.metaInfo.defaults.inputs.pineFeatures,
-      },
-      ...getPineInputs(res.result.metaInfo.defaults.inputs),
-    };
+    const data = getPineInputs(res.result.metaInfo, ind);
 
+    console.log(JSON.stringify(data, null, 2));
     await tvc.send("create_study", [
       this.session,
       ind.scriptName,

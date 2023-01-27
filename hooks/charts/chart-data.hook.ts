@@ -1,6 +1,6 @@
 import { useTheme } from "@mui/joy";
 import Highcharts from "highcharts";
-import { getNextLabel } from "../../utils/chart.utils";
+import { getLabelAxis, getNextLabel } from "../../utils/chart.utils";
 import { useRows } from "../data.hook";
 
 export const useChartData = ({
@@ -35,6 +35,9 @@ export const useChartData = ({
       upLineColor: colors.palette.success.outlinedColor,
       name: dataset,
       yAxis: dataset,
+      label: {
+        enabled: true,
+      },
     },
   ];
 
@@ -50,6 +53,7 @@ export const useChartData = ({
         },
       }),
     },
+    getLabelAxis(dataset, dsname, top),
   ];
   return { series, yAxis };
 };

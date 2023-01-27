@@ -12,12 +12,10 @@ import {
 import { Box } from "@mui/system";
 import noop from "lodash.noop";
 import { useActiveList } from "../../hooks/data.hook";
+import { getTVLogo } from "../../utils/chart.utils";
 import { XJson } from "../json";
 import { ITVSymbol } from "../tv-components/types";
 import { getSymbolKey } from "../tv-components/utils/symbol.utils";
-
-const getLogo = (path: string) =>
-  `https://s3-symbol-logo.tradingview.com/${path}.svg`;
 
 type Props = {
   symbol: ITVSymbol;
@@ -45,7 +43,7 @@ export const V2ChartListItem = ({
     >
       <ListItemButton selected={selected} onClick={() => onClick(symbol)}>
         <ListItemDecorator>
-          <Avatar src={getLogo(symbol.logoid)} size="sm">
+          <Avatar src={getTVLogo(symbol.logoid)} size="sm">
             {symbol.symbol?.[0]}
           </Avatar>
         </ListItemDecorator>

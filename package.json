@@ -39,6 +39,7 @@
     "material-colors": "^1.2.6",
     "material-ui-popup-state": "^5.0.4",
     "next": "13.1.1",
+    "notistack": "^2.0.8",
     "pino": "^8.8.0",
     "ramda": "^0.28.0",
     "random-int": "^3.0.0",

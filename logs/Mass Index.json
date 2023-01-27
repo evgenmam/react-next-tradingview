@@ -1,0 +1,249 @@
+{
+  "success": true,
+  "result": {
+    "IL": "lkW+frdGivNeGD/rwcA+YA==_GsPXqw87aEQGKYpLMFtgU26tvFP1emK5icLuNDUMEm8rJbIHcpskXMFaT0Ag0nKNcyadXV7H6wmxsJ4HKdN5aiLEYmw07/I3Mi4ysSEtPPOn4Pk0DVBsyVt3YxK/JadiSRKtxvojNFd4X+Y4Jp3qgQZdYDbjqEV8Ww9rIGHy45IwvkDe1piUaQdlMfP4humDVROAqWn8q6CY2hd0isxDcWHbx0jEsbrllZr15iEt2vacleEtObTAhnHlFLKDD1OAsLlDguUtm7VhH1p4LM6GkMcGdVxEVVjiEnTh0GV2PhEyN3uPYPM0/1sI36ULUrKdhxXj4F2yftjmAaFwFPB/OObDZvTcpmIAhypK1Q==",
+    "ilTemplate": "hWSWSsr1qVOwQVstXaAdoQ==_Xc5An4PBAWo0JqDqFKgYnb7e1wVh/uX1mNESlpUZezTU31qy4VIyG9HfBxOenhebdC97IkQKM4qROHBbolVc6p79JIlzNpOMeQGbYybljp2y4o47qI18o8w/ntAKkzzAcujOg7bznjvE30xcSm6Q8p+QFgydm+5gjrlsUtAtCrWyuBX/+EFB/EdSVbE8DTPnJyn8ZhOE8TvbkW7BezIUpokBlBrx8LGFGIUhS7cEsUeo9xD+58U8FVoc6Af08oaw8Yi4bZOxp56jX467mByVvZBsDHZ++ZLGoTjexQthVTqkuUraosmm+zOLfJSk7lUlUOH8KwIDovqmjWPfUZ4eLiRfeRlLVrbw6BiGdw==",
+    "metaInfo": {
+      "TVScriptMetaInfoExprs": {
+        "patchMap": {
+          "defaults.bands.1.value": "rm_0",
+          "defaults.bands.2.value": "rm_1"
+        },
+        "tree": "//@version=3\nbreakout=##input(defval=27,type='INPUT_INTEGER',##id='in_2')\n##root(root_metainfo,rm_0,breakout)\n##root(root_metainfo,rm_1,breakout-0.5)"
+      },
+      "_metainfoVersion": 52,
+      "bands": [
+        {
+          "id": "hline_0",
+          "isHidden": false,
+          "name": "Max Level"
+        },
+        {
+          "id": "hline_1",
+          "isHidden": false,
+          "name": "Breakout Level"
+        },
+        {
+          "id": "hline_2",
+          "isHidden": false,
+          "name": "Confirmation Level"
+        }
+      ],
+      "defaults": {
+        "bands": [
+          {
+            "color": "rgba(255,255,255,0)",
+            "linestyle": 1,
+            "linewidth": 1,
+            "value": 29,
+            "visible": true
+          },
+          {
+            "color": "#808080",
+            "linestyle": 1,
+            "linewidth": 1,
+            "value": 27,
+            "visible": true
+          },
+          {
+            "color": "#808080",
+            "linestyle": 1,
+            "linewidth": 1,
+            "value": 26.5,
+            "visible": true
+          }
+        ],
+        "filledAreasStyle": {
+          "fill_0": {
+            "color": "#3BB3E4",
+            "transparency": 80,
+            "visible": true
+          }
+        },
+        "inputs": {
+          "in_0": 9,
+          "in_1": 25,
+          "in_2": 27,
+          "pineId": "",
+          "pineVersion": "",
+          "text": "hWSWSsr1qVOwQVstXaAdoQ==_Xc5An4PBAWo0JqDqFKgYnb7e1wVh/uX1mNESlpUZezTU31qy4VIyG9HfBxOenhebdC97IkQKM4qROHBbolVc6p79JIlzNpOMeQGbYybljp2y4o47qI18o8w/ntAKkzzAcujOg7bznjvE30xcSm6Q8p+QFgydm+5gjrlsUtAtCrWyuBX/+EFB/EdSVbE8DTPnJyn8ZhOE8TvbkW7BezIUpokBlBrx8LGFGIUhS7cEsUeo9xD+58U8FVoc6Af08oaw8Yi4bZOxp56jX467mByVvZBsDHZ++ZLGoTjexQthVTqkuUraosmm+zOLfJSk7lUlUOH8KwIDovqmjWPfUZ4eLiRfeRlLVrbw6BiGdw=="
+        },
+        "palettes": {
+          "palette_0": {
+            "colors": {
+              "0": {
+                "color": "#ff9800",
+                "style": 0,
+                "width": 2
+              },
+              "1": {
+                "color": "#3c78d8",
+                "style": 0,
+                "width": 2
+              }
+            }
+          },
+          "palette_1": {
+            "colors": {
+              "0": {
+                "color": "#e06666",
+                "style": 0,
+                "width": 1
+              },
+              "1": {
+                "color": "rgba(255,255,255,0)",
+                "style": 0,
+                "width": 1
+              }
+            }
+          }
+        },
+        "styles": {
+          "plot_0": {
+            "color": "#3BB3E4",
+            "linestyle": 0,
+            "linewidth": 2,
+            "plottype": 0,
+            "trackPrice": false,
+            "transparency": 0,
+            "visible": true
+          }
+        }
+      },
+      "description": "Mass Index",
+      "filledAreas": [
+        {
+          "id": "fill_0",
+          "isHidden": false,
+          "objAId": "hline_0",
+          "objBId": "hline_1",
+          "palette": "palette_1",
+          "title": "Hlines Background",
+          "type": "hline_hline"
+        }
+      ],
+      "format": {
+        "type": "inherit"
+      },
+      "id": "Script$PUB;brG9YAPOEJ8KNkIH9FeBGr6QwesU2peS@tv-scripting-101",
+      "inputs": [
+        {
+          "defval": "hWSWSsr1qVOwQVstXaAdoQ==_Xc5An4PBAWo0JqDqFKgYnb7e1wVh/uX1mNESlpUZezTU31qy4VIyG9HfBxOenhebdC97IkQKM4qROHBbolVc6p79JIlzNpOMeQGbYybljp2y4o47qI18o8w/ntAKkzzAcujOg7bznjvE30xcSm6Q8p+QFgydm+5gjrlsUtAtCrWyuBX/+EFB/EdSVbE8DTPnJyn8ZhOE8TvbkW7BezIUpokBlBrx8LGFGIUhS7cEsUeo9xD+58U8FVoc6Af08oaw8Yi4bZOxp56jX467mByVvZBsDHZ++ZLGoTjexQthVTqkuUraosmm+zOLfJSk7lUlUOH8KwIDovqmjWPfUZ4eLiRfeRlLVrbw6BiGdw==",
+          "id": "text",
+          "isHidden": true,
+          "name": "ILScript",
+          "type": "text"
+        },
+        {
+          "defval": "",
+          "id": "pineId",
+          "isHidden": true,
+          "name": "pineId",
+          "type": "text"
+        },
+        {
+          "defval": "",
+          "id": "pineVersion",
+          "isHidden": true,
+          "name": "pineVersion",
+          "type": "text"
+        },
+        {
+          "defval": 9,
+          "id": "in_0",
+          "isFake": true,
+          "max": 1000000000000,
+          "min": -1000000000000,
+          "name": "Smoothing Length",
+          "type": "integer"
+        },
+        {
+          "defval": 25,
+          "id": "in_1",
+          "isFake": true,
+          "max": 1000000000000,
+          "min": -1000000000000,
+          "name": "Summation Length",
+          "type": "integer"
+        },
+        {
+          "defval": 27,
+          "id": "in_2",
+          "isFake": true,
+          "max": 1000000000000,
+          "min": -1000000000000,
+          "name": "Breakout Level",
+          "type": "integer"
+        }
+      ],
+      "isTVScript": true,
+      "isTVScriptStub": false,
+      "is_hidden_study": false,
+      "is_price_study": false,
+      "palettes": {
+        "palette_0": {
+          "colors": {
+            "0": {
+              "name": "Color 0"
+            },
+            "1": {
+              "name": "Color 1"
+            }
+          },
+          "valToIndex": {
+            "0": 0,
+            "1": 1
+          }
+        },
+        "palette_1": {
+          "colors": {
+            "0": {
+              "name": "Color 0"
+            },
+            "1": {
+              "name": "Color 1"
+            }
+          },
+          "valToIndex": {
+            "2": 0,
+            "3": 1
+          }
+        }
+      },
+      "pine": {
+        "digest": "4dbfef23e2e3597a828d6a5101ab0a4d0b9058ca",
+        "version": "1"
+      },
+      "plots": [
+        {
+          "id": "plot_0",
+          "type": "line"
+        },
+        {
+          "id": "plot_1",
+          "palette": "palette_0",
+          "target": "plot_0",
+          "type": "colorer"
+        },
+        {
+          "id": "plot_2",
+          "palette": "palette_1",
+          "target": "fill_0",
+          "type": "colorer"
+        }
+      ],
+      "scriptIdPart": "PUB;brG9YAPOEJ8KNkIH9FeBGr6QwesU2peS",
+      "shortDescription": "Mass Index",
+      "styles": {
+        "plot_0": {
+          "histogramBase": 0,
+          "isHidden": false,
+          "joinPoints": false,
+          "title": "Mass Index"
+        }
+      },
+      "usesPrivateLib": false,
+      "warnings": []
+    }
+  }
+}

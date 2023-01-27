@@ -1,4 +1,4 @@
-import Highcharts from "highcharts";
+import Highcharts, { YAxisOptions } from "highcharts";
 
 export const syncExtremes = function (
   this: Highcharts.Axis,
@@ -33,3 +33,37 @@ export const getNextLabel = (label: string) => ({
   },
   width: 0,
 });
+
+export const getLabelAxis = (
+  id: string,
+  label: string,
+  top: YAxisOptions["top"]
+): YAxisOptions => ({
+  id: `${id}-label}`,
+  opposite: false,
+  top,
+  width: 0,
+  panningEnabled: false,
+  gridLineWidth: 0,
+  left: 0,
+
+  zoomEnabled: false,
+  title: {
+    textAlign: "left",
+    rotation: 0,
+    text: label,
+    align: "high",
+    x: 20,
+    y: 24,
+    offset: 0,
+    margin: 0,
+    reserveSpace: false,
+    style: {
+      fontSize: "16px",
+      fontWeight: "300",
+    },
+  },
+});
+
+export const getTVLogo = (path: string) =>
+  `https://s3-symbol-logo.tradingview.com/${path}.svg`;

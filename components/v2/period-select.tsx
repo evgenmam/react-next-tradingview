@@ -7,7 +7,7 @@ import { useSettings } from "../../hooks/data.hook";
 const options = [
   { value: "1H", label: "1 hour", group: "Hours" },
   { value: "2H", label: "2 hours", group: "Hours" },
-  { value: "3H", label: "2 hours", group: "Hours" },
+  { value: "3H", label: "3 hours", group: "Hours" },
   { value: "4H", label: "4 hours", group: "Hours" },
   { value: "1D", label: "1 day", group: "Days" },
   { value: "3D", label: "3 days", group: "Days" },

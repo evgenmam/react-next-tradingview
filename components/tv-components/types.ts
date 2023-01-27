@@ -1,3 +1,8 @@
+export type ITVContract = {
+  description: string;
+  symbol: string;
+  typespecs: string[];
+};
 export type ITVSearchResult = {
   country: string;
   currency_code: string;
@@ -9,6 +14,7 @@ export type ITVSearchResult = {
   type: string;
   prefix?: string;
   typespecs: string[];
+  contracts?: ITVContract[];
 };
 
 export type ITVSearchData = {

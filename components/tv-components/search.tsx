@@ -28,6 +28,7 @@ import { useKeyboardNav } from "./hooks/keyboard-nav.hook";
 import { CBox } from "./helpers/c-box";
 import { useSearchData, useSplitText } from "./hooks/search-data.hook";
 import noop from "lodash.noop";
+import { TVSearchListItem } from "./search-list-item";
 
 const getLogo = (path: string) =>
   `https://s3-symbol-logo.tradingview.com/${path}.svg`;
@@ -45,6 +46,7 @@ export const TVSearch = ({
 }: Props) => {
   const [skip, setSkip] = useState(false);
   const [type, setType] = useState<ISearchType>("");
+  const [expanded, setExpanded] = useState(-1);
   const [results, setResults] = useState<ITVSearchData>({
     symbols: [],
     symbols_remaining: 0,
@@ -52,6 +54,7 @@ export const TVSearch = ({
 
   const { hl, setHl, onKeyDown, listRef } = useKeyboardNav({
     max: results.symbols?.length,
+    expanded,
   });
 
   const { text, onTextChange, onCursorChange, setSplitText, splitText } =
@@ -70,7 +73,8 @@ export const TVSearch = ({
 
   const commit = (r?: ITVSearchResult) => () => {
     if (!r) return;
-    const d = r.prefix || r.exchange + ":" + r.symbol;
+    const symbol = r.contracts ? r.contracts[0].symbol : r.symbol;
+    const d = r.prefix || r.exchange + ":" + symbol;
     setSplitText(d);
     return d;
   };
@@ -127,78 +131,18 @@ export const TVSearch = ({
               </CBox>
             ) : (
               <List size="sm" ref={listRef} sx={{ py: 0 }}>
-                {results?.symbols.map((r, idx) => (
-                  <>
-                    <ListItem
-                      key={r.symbol + r.description + r.exchange + r.country}
-                    >
-                      <ListItemButton
-                        onClick={() => {
-                          commit(r);
-                          onSelect(r);
-                        }}
-                        {...(idx === hl
-                          ? { selected: true, variant: "soft" }
-                          : {})}
-                      >
-                        <ListItemDecorator>
-                          <Avatar
-                            src={r.logoid && getLogo(`${r.logoid}`)}
-                            size="sm"
-                            variant="solid"
-                          >
-                            {r.symbol.slice(0, 1)}
-                          </Avatar>
-                        </ListItemDecorator>
-                        <ListItemContent>
-                          <Stack
-                            direction="row"
-                            spacing={1}
-                            px={1}
-                            alignItems="center"
-                          >
-                            <Typography
-                              minWidth={50}
-                              pr={1}
-                              fontWeight={600}
-                              level="body1"
-                            >
-                              {r.symbol}
-                            </Typography>
-                            <Typography level="body2">
-                              {r.description}
-                            </Typography>
-                          </Stack>
-                        </ListItemContent>
-                        <ListItemDecorator>
-                          {" "}
-                          <ListItemDecorator>
-                            <Stack
-                              direction="row"
-                              spacing={1}
-                              alignItems="center"
-                            >
-                              <Typography level="body2">{r.type}</Typography>
-                              <Typography>{r.exchange}</Typography>
-                              {r.country ? (
-                                <Avatar
-                                  src={getLogo(`country/${r.country}`)}
-                                  size="sm"
-                                  variant="solid"
-                                />
-                              ) : (
-                                <Avatar
-                                  src={getLogo(`provider/${r.provider_id}`)}
-                                  size="sm"
-                                  variant="solid"
-                                />
-                              )}
-                            </Stack>
-                          </ListItemDecorator>
-                        </ListItemDecorator>
-                      </ListItemButton>
-                    </ListItem>
-                  </>
+                {results?.symbols?.map((r, idx) => (
+                  <TVSearchListItem
+                    key={r.symbol + r.description + r.exchange + r.country}
+                    selected={hl === idx}
+                    commit={commit}
+                    onSelect={onSelect}
+                    expanded={expanded === idx}
+                    onExpand={() => {
+                      setExpanded((v) => (v === idx ? -1 : idx));
+                    }}
+                    r={r}
+                  />
                 ))}
               </List>
             )}

@@ -1,0 +1,768 @@
+{
+  "success": true,
+  "result": {
+    "IL": "p5HC18qbiQD/pskzwk9PeQ==_NllWuF/e7B0y/SpDhS3rhltale6K5xrIlZrpw6c5V0wgz++IakgFDJab5u/9HPu9I5Sb2WcY2k3XuMw+pZu670dcp623Of4qj/XtRqLiWAVsBv3bEaYzBBki4XaQD1i352c12WUDZ5GPJJKqd4nTKts2iL6EIr+k+loq+qFu28/n95WhfikWZgxSyCWe5QJajwmN85UUOFTRG8fq0/GNYyJMgzAFNcA8fujVpb8sr8GLDoPInxtqwTmilAGVxjytJhVpJVJIFT4dvfC27FWq/rIc+zLN12mFUtJdnU5WhxkRWEOw8tJCHcVB11AQt/gvFOCgtlWcyzbm+G16Jsss9PX4AOwcbPu7UeDsC2shC4cfBDHwAB5tMyN/YLlQAHfcWIrJ7gnxijUtnUXU+TgZwe4tzdP3KFr+ns5o0rueFDQMLsmTZF2bQS8psrRGGpzEZoY14NOGlT0qBI+YYkyDv07pKjbnMe6zWnL7J8bKsisQg6LEkkgt7RgWRxMbXEWTflfDtuP7Acflwe7M67jq7zBMQEixPfMwaRSFgVO7GrgN6DkJiyCd6Fk386hpQylSaUiVEM1EBglsl+ghr/34DjXTMJkydVIhKdf28fhcnFgevVCPFv993VUiua5BwbvEoq+okQyaHsv+ZajzPV1RUyNhmrkJ1CRG+EmOXP8IRRI6EZuvJELgx+H3gD13G/p0/j6s28GzMttBwM7B5XqThoY9emwYPB/RTkw87QQsJ97+GpyzxwrhWcpx889sN+Dt+uze8Dpw56lQWGeO7+iBnEOJ3qIq4tKyi+fFVCMaZfq/5Cn95e2NrC4ZBqRth145ZfS0/NzZWhL7tYe/qtSPWm5BCnVhWOsqnr7QwE4ZoxImycEUnrxUovxANGTsf6DbD5chbaY3vnSYNppJa/ousl6YEdd9qLdPTeE/CtuO8xVGGJrgkvvCfYekN70VKSIq7kzE25Gbu43Pe1L+W5kOzxhxnmUyj6ZWSz7fvbOnEqsJiNyuHYW/0l0TJv3QSYWPWRH1MU7a85H8zKkadv0pOWuYhkAjAlmb8Mj0+ILRcbThgHwvkSY3/CconVMzwkyDcO0uyUH+t+vBFzTPFdnbiSyNy94sEUuEHKJpbpWNPH9ROTR9FaRJqzIIBnTuGF4CKBmB5xpZY9gXeA6C//7f8DS32goYlAX+BN85WdABrmmtga1cuZ4LBMZW9eKdmO80i1WP/ctekiexcoSQspmCuh7xw/GM19FS1dagpcrPrW+K8N7jC4ppYjHR7oq2qaoC4oesr2KdwfGeEIMg6ZSahIIScSPlkjGD8d19S5po33bss1Shsbal17zAalmaXDX/Ndkg0I7a9adP/t78x49ncHp9Djv0vibRbbnyHGJ7vXiYsMz91hkbW+/Ap4VU8kC4ZhmM+RfkWFr5xjvNz6MHciwrEAnqDUW6fuhAp3YxJ4JkHuKm6QNFkKc1YtyXheX9b7UNBw89LkqQLd+d5OsHn1nfOn+f3GBqZts34VP5g6iWmvk1KY/zxRtkgBbj/f4IFs76g/eUl4vZhlA6vtbbGRXvQgA1yJ5be3MDLrPPDQW6SA6HV7oYB3aUcNQqrm/LPuLAGViAilTrKxSQKfD4kr/jeYnpKiRjGsqUCkhkSQ1Y4nXH/qufwYw5O3wagJxUpjNx0UR+SO28EzFLfUXe5IkC6g0Q5pzCiHF5+Qs=",
+    "ilTemplate": "vf2mDPAUZENsWPMumbIYOA==_woPO3Xj98zLX/LntMTfyFhj4OdFzWdLg8jO+eWbWuCdhux1xgOHw/v0qjeVBw4VmKpGj+u9rx1yQMpRojo4cRZZF62VLsu2zw3lCDoPBzs7hFQoUEUAiXY/inx3/RWOyuKFIX+va2BqVyCxruwGeb1CuzfasMhE3asfNs/tOOehNUEryFXQdpfjQwVN/v9FRIPBrIk0RUFhi1vCRKglrpKLWF6iI262QnSPFIFYjDKEK+gmk0wAJ44Vtusw1xbqqIK+14PSdlErdZaGjwWhH9d2+lJmzznVwX8ieaM2wndilDZETk13r9GKYRQcf5bOcMqB87doj8rEizvR+cOynEE7YmBGkOabwMtLba6mTaYIbpHkm5Q6hLBHutmVemyK14P9zmGBh8cO3qEKxg2FSy1IGDiXqhzTqsfTIR8kl5rhRyQke3emBDGffrWJFx3Ea1taY/8eCq0iziLEHYvOB3ztr8vwaz8qV4QFXTU4NuUDjJb6j84mMBQIXBdUy+DQCkCNXfEoxnlLjeY06UYoXXtgkAqrlswX9Xq4IK7LizOabkj+7h9KRA+SYgdDCVsm847vUs1STEBagDEd1J3Vyt/urOnPs73JzDrkta0soprPL7qDOTPioW0yRZFN4Zu2+w94Wmwc85uAPeEzu42HuSDq/c9oJ0CMgiI+XUffNTBqS/S7ibLuINhE4zHp2yx0P5t5T3Eh7ZvMLQhwgF1wJfx4B1jGWyUFruIfMWXsJytMfxiuZPvQAlxBIU+ZbrxRgxw5IRxlu2bV13BwmPDN5uw+BHENEaXRkgQgqJDBn3KZlhJc3sdwA03xAiDc5NJlYEE7fiSIUN128kn4vzZbkUYdnVBk3SLUiprVmOlurprXrL/fMTuB140DM1wK0zi6T96mWLn7JEIian7NazUYbeeaV0cA3bpp/A8sWe68OVPBOXwFi4Fmo1Fw+Xl8Eqxk8rBPH3E7zBBQjCdhW7nQcXQCF43pHuvMPyd3s+EIDx/B+UQFNU9PvrrbHaO25UkkK9H/VQylEeXCRmD/8fLnh3A0LuKdlczN7fA6hnyXrh5BAn/W+AJ8WE9xEuST1j7RvIPdApVuWnkUGWRel8VqJySYkxUhwfUlTE+6k/sxYcHXpCJnYpbJ5euWcC4dW1Fo1khXsfFoBbMF4119PkXUA9Cs1ixpxJ4qR4ZmKqRJ5RXssiK2FNk3zmqf/DkPJYE4nJjLclzXWJ/stgaJO8Yk8vpdwglBj9ZNvnOON9eljKrl8M9kljQO+GDbo5KMMINAGofCc3N3XHp0LEYVrYDvP8Q+z0IIdTRjFERc2apf3OGs/2VbphixleQGv45h1M/hGjCrwsyasNM3KRqQZ05NAwjJdls7lomWQSxcsN9LuoqogN2W1qbx6CNNxtKNrPmp/O1uQEdVOs43kP1KLH3oR6OxF5zN305ps6tngO0eB4NiwFblbbtUB7YCAduvBfcaJhX8cZQrXB5GvWlXjraSpW/dIAV3rdLKakmdkPVOqnaDyTGeD9f9LJwLFgyfUYTpVLWuAeOPq9J2Owh7DKTwDx0gr+NikBEYJSwkzyvBluLBPSs8ASjW4tFw+DsNQOvcLzX14S5HU1SddKS6F4YGKeEUV6HdlnGhAlnR6qC1OAaFtkY+JJdk5uC5+QeKhqmSkZk09Swd7FjoPAHrAgtyhMVAedRWADIw3tVT2JsA=",
+    "metaInfo": {
+      "_metainfoVersion": 52,
+      "defaults": {
+        "filledAreasStyle": {
+          "fill_0": {
+            "color": "#2196F3",
+            "transparency": 15,
+            "visible": true
+          },
+          "fill_1": {
+            "color": "#2196F3",
+            "transparency": 25,
+            "visible": true
+          },
+          "fill_2": {
+            "color": "#2196F3",
+            "transparency": 40,
+            "visible": true
+          },
+          "fill_3": {
+            "color": "#2196F3",
+            "transparency": 65,
+            "visible": true
+          },
+          "fill_4": {
+            "color": "#2196F3",
+            "transparency": 75,
+            "visible": true
+          },
+          "fill_5": {
+            "color": "#2196F3",
+            "transparency": 85,
+            "visible": true
+          },
+          "fill_6": {
+            "color": "#2196F3",
+            "transparency": 95,
+            "visible": true
+          }
+        },
+        "inputs": {
+          "in_0": true,
+          "in_1": "close",
+          "in_10": "SMMA 2",
+          "in_11": "SMMA 3",
+          "in_12": "",
+          "in_2": 5,
+          "in_3": 10,
+          "in_4": 25,
+          "in_5": 35,
+          "in_6": 50,
+          "in_7": 75,
+          "in_8": 100,
+          "in_9": 150,
+          "pineId": "",
+          "pineVersion": "",
+          "text": "vf2mDPAUZENsWPMumbIYOA==_woPO3Xj98zLX/LntMTfyFhj4OdFzWdLg8jO+eWbWuCdhux1xgOHw/v0qjeVBw4VmKpGj+u9rx1yQMpRojo4cRZZF62VLsu2zw3lCDoPBzs7hFQoUEUAiXY/inx3/RWOyuKFIX+va2BqVyCxruwGeb1CuzfasMhE3asfNs/tOOehNUEryFXQdpfjQwVN/v9FRIPBrIk0RUFhi1vCRKglrpKLWF6iI262QnSPFIFYjDKEK+gmk0wAJ44Vtusw1xbqqIK+14PSdlErdZaGjwWhH9d2+lJmzznVwX8ieaM2wndilDZETk13r9GKYRQcf5bOcMqB87doj8rEizvR+cOynEE7YmBGkOabwMtLba6mTaYIbpHkm5Q6hLBHutmVemyK14P9zmGBh8cO3qEKxg2FSy1IGDiXqhzTqsfTIR8kl5rhRyQke3emBDGffrWJFx3Ea1taY/8eCq0iziLEHYvOB3ztr8vwaz8qV4QFXTU4NuUDjJb6j84mMBQIXBdUy+DQCkCNXfEoxnlLjeY06UYoXXtgkAqrlswX9Xq4IK7LizOabkj+7h9KRA+SYgdDCVsm847vUs1STEBagDEd1J3Vyt/urOnPs73JzDrkta0soprPL7qDOTPioW0yRZFN4Zu2+w94Wmwc85uAPeEzu42HuSDq/c9oJ0CMgiI+XUffNTBqS/S7ibLuINhE4zHp2yx0P5t5T3Eh7ZvMLQhwgF1wJfx4B1jGWyUFruIfMWXsJytMfxiuZPvQAlxBIU+ZbrxRgxw5IRxlu2bV13BwmPDN5uw+BHENEaXRkgQgqJDBn3KZlhJc3sdwA03xAiDc5NJlYEE7fiSIUN128kn4vzZbkUYdnVBk3SLUiprVmOlurprXrL/fMTuB140DM1wK0zi6T96mWLn7JEIian7NazUYbeeaV0cA3bpp/A8sWe68OVPBOXwFi4Fmo1Fw+Xl8Eqxk8rBPH3E7zBBQjCdhW7nQcXQCF43pHuvMPyd3s+EIDx/B+UQFNU9PvrrbHaO25UkkK9H/VQylEeXCRmD/8fLnh3A0LuKdlczN7fA6hnyXrh5BAn/W+AJ8WE9xEuST1j7RvIPdApVuWnkUGWRel8VqJySYkxUhwfUlTE+6k/sxYcHXpCJnYpbJ5euWcC4dW1Fo1khXsfFoBbMF4119PkXUA9Cs1ixpxJ4qR4ZmKqRJ5RXssiK2FNk3zmqf/DkPJYE4nJjLclzXWJ/stgaJO8Yk8vpdwglBj9ZNvnOON9eljKrl8M9kljQO+GDbo5KMMINAGofCc3N3XHp0LEYVrYDvP8Q+z0IIdTRjFERc2apf3OGs/2VbphixleQGv45h1M/hGjCrwsyasNM3KRqQZ05NAwjJdls7lomWQSxcsN9LuoqogN2W1qbx6CNNxtKNrPmp/O1uQEdVOs43kP1KLH3oR6OxF5zN305ps6tngO0eB4NiwFblbbtUB7YCAduvBfcaJhX8cZQrXB5GvWlXjraSpW/dIAV3rdLKakmdkPVOqnaDyTGeD9f9LJwLFgyfUYTpVLWuAeOPq9J2Owh7DKTwDx0gr+NikBEYJSwkzyvBluLBPSs8ASjW4tFw+DsNQOvcLzX14S5HU1SddKS6F4YGKeEUV6HdlnGhAlnR6qC1OAaFtkY+JJdk5uC5+QeKhqmSkZk09Swd7FjoPAHrAgtyhMVAedRWADIw3tVT2JsA="
+        },
+        "palettes": {
+          "palette_0": {
+            "colors": {
+              "0": {
+                "color": "#FF5252",
+                "style": 0,
+                "width": 1
+              },
+              "1": {
+                "color": "#4CAF50",
+                "style": 0,
+                "width": 1
+              }
+            }
+          },
+          "palette_1": {
+            "colors": {
+              "0": {
+                "color": "#FF5252",
+                "style": 0,
+                "width": 1
+              },
+              "1": {
+                "color": "#4CAF50",
+                "style": 0,
+                "width": 1
+              }
+            }
+          },
+          "palette_2": {
+            "colors": {
+              "0": {
+                "color": "#FF5252",
+                "style": 0,
+                "width": 1
+              },
+              "1": {
+                "color": "#4CAF50",
+                "style": 0,
+                "width": 1
+              }
+            }
+          },
+          "palette_3": {
+            "colors": {
+              "0": {
+                "color": "#FF5252",
+                "style": 0,
+                "width": 1
+              },
+              "1": {
+                "color": "#4CAF50",
+                "style": 0,
+                "width": 1
+              }
+            }
+          },
+          "palette_4": {
+            "colors": {
+              "0": {
+                "color": "#FF5252",
+                "style": 0,
+                "width": 1
+              },
+              "1": {
+                "color": "#4CAF50",
+                "style": 0,
+                "width": 1
+              }
+            }
+          },
+          "palette_5": {
+            "colors": {
+              "0": {
+                "color": "#FF5252",
+                "style": 0,
+                "width": 1
+              },
+              "1": {
+                "color": "#4CAF50",
+                "style": 0,
+                "width": 1
+              }
+            }
+          },
+          "palette_6": {
+            "colors": {
+              "0": {
+                "color": "#FF5252",
+                "style": 0,
+                "width": 1
+              },
+              "1": {
+                "color": "#4CAF50",
+                "style": 0,
+                "width": 1
+              }
+            }
+          }
+        },
+        "styles": {
+          "plot_0": {
+            "color": "#FFFFFF",
+            "linestyle": 0,
+            "linewidth": 1,
+            "plottype": 0,
+            "trackPrice": false,
+            "transparency": 0,
+            "visible": true
+          },
+          "plot_1": {
+            "color": "#FFFFFF",
+            "linestyle": 0,
+            "linewidth": 1,
+            "plottype": 0,
+            "trackPrice": false,
+            "transparency": 0,
+            "visible": true
+          },
+          "plot_15": {
+            "color": "#FF5252",
+            "location": "Absolute",
+            "plottype": "shape_label_down",
+            "textColor": "#FFFFFF",
+            "transparency": 0,
+            "visible": true
+          },
+          "plot_16": {
+            "color": "#4CAF50",
+            "location": "Absolute",
+            "plottype": "shape_label_up",
+            "textColor": "#FFFFFF",
+            "transparency": 0,
+            "visible": true
+          },
+          "plot_2": {
+            "color": "#FFFFFF",
+            "linestyle": 0,
+            "linewidth": 1,
+            "plottype": 0,
+            "trackPrice": false,
+            "transparency": 0,
+            "visible": true
+          },
+          "plot_3": {
+            "color": "#4CAF50",
+            "linestyle": 0,
+            "linewidth": 1,
+            "plottype": 0,
+            "trackPrice": false,
+            "transparency": 100,
+            "visible": true
+          },
+          "plot_4": {
+            "color": "#4CAF50",
+            "linestyle": 0,
+            "linewidth": 1,
+            "plottype": 0,
+            "trackPrice": false,
+            "transparency": 100,
+            "visible": true
+          },
+          "plot_5": {
+            "color": "#4CAF50",
+            "linestyle": 0,
+            "linewidth": 1,
+            "plottype": 0,
+            "trackPrice": false,
+            "transparency": 100,
+            "visible": true
+          },
+          "plot_6": {
+            "color": "#4CAF50",
+            "linestyle": 0,
+            "linewidth": 1,
+            "plottype": 0,
+            "trackPrice": false,
+            "transparency": 100,
+            "visible": true
+          },
+          "plot_7": {
+            "color": "#4CAF50",
+            "linestyle": 0,
+            "linewidth": 1,
+            "plottype": 0,
+            "trackPrice": false,
+            "transparency": 100,
+            "visible": true
+          }
+        }
+      },
+      "description": "Multi Smoothed Moving Average v1.0.3",
+      "filledAreas": [
+        {
+          "fillgaps": false,
+          "id": "fill_0",
+          "isHidden": false,
+          "objAId": "plot_0",
+          "objBId": "plot_1",
+          "palette": "palette_0",
+          "title": "SMA 1 to 2",
+          "type": "plot_plot"
+        },
+        {
+          "fillgaps": false,
+          "id": "fill_1",
+          "isHidden": false,
+          "objAId": "plot_1",
+          "objBId": "plot_2",
+          "palette": "palette_1",
+          "title": "SMA 2 to 3",
+          "type": "plot_plot"
+        },
+        {
+          "fillgaps": false,
+          "id": "fill_2",
+          "isHidden": false,
+          "objAId": "plot_2",
+          "objBId": "plot_3",
+          "palette": "palette_2",
+          "title": "SMA 3 to 4",
+          "type": "plot_plot"
+        },
+        {
+          "fillgaps": false,
+          "id": "fill_3",
+          "isHidden": false,
+          "objAId": "plot_3",
+          "objBId": "plot_4",
+          "palette": "palette_3",
+          "title": "SMA 4 to 5",
+          "type": "plot_plot"
+        },
+        {
+          "fillgaps": false,
+          "id": "fill_4",
+          "isHidden": false,
+          "objAId": "plot_4",
+          "objBId": "plot_5",
+          "palette": "palette_4",
+          "title": "SMA 5 to 6",
+          "type": "plot_plot"
+        },
+        {
+          "fillgaps": false,
+          "id": "fill_5",
+          "isHidden": false,
+          "objAId": "plot_5",
+          "objBId": "plot_6",
+          "palette": "palette_5",
+          "title": "SMA 6 to 7",
+          "type": "plot_plot"
+        },
+        {
+          "fillgaps": false,
+          "id": "fill_6",
+          "isHidden": false,
+          "objAId": "plot_6",
+          "objBId": "plot_7",
+          "palette": "palette_6",
+          "title": "SMA 7 to 8",
+          "type": "plot_plot"
+        }
+      ],
+      "format": {
+        "type": "inherit"
+      },
+      "id": "Script$PUB;G4Qy6kpt8uaS8eWhJrQeCwRkszRwcJUu@tv-scripting-101",
+      "inputs": [
+        {
+          "defval": "vf2mDPAUZENsWPMumbIYOA==_woPO3Xj98zLX/LntMTfyFhj4OdFzWdLg8jO+eWbWuCdhux1xgOHw/v0qjeVBw4VmKpGj+u9rx1yQMpRojo4cRZZF62VLsu2zw3lCDoPBzs7hFQoUEUAiXY/inx3/RWOyuKFIX+va2BqVyCxruwGeb1CuzfasMhE3asfNs/tOOehNUEryFXQdpfjQwVN/v9FRIPBrIk0RUFhi1vCRKglrpKLWF6iI262QnSPFIFYjDKEK+gmk0wAJ44Vtusw1xbqqIK+14PSdlErdZaGjwWhH9d2+lJmzznVwX8ieaM2wndilDZETk13r9GKYRQcf5bOcMqB87doj8rEizvR+cOynEE7YmBGkOabwMtLba6mTaYIbpHkm5Q6hLBHutmVemyK14P9zmGBh8cO3qEKxg2FSy1IGDiXqhzTqsfTIR8kl5rhRyQke3emBDGffrWJFx3Ea1taY/8eCq0iziLEHYvOB3ztr8vwaz8qV4QFXTU4NuUDjJb6j84mMBQIXBdUy+DQCkCNXfEoxnlLjeY06UYoXXtgkAqrlswX9Xq4IK7LizOabkj+7h9KRA+SYgdDCVsm847vUs1STEBagDEd1J3Vyt/urOnPs73JzDrkta0soprPL7qDOTPioW0yRZFN4Zu2+w94Wmwc85uAPeEzu42HuSDq/c9oJ0CMgiI+XUffNTBqS/S7ibLuINhE4zHp2yx0P5t5T3Eh7ZvMLQhwgF1wJfx4B1jGWyUFruIfMWXsJytMfxiuZPvQAlxBIU+ZbrxRgxw5IRxlu2bV13BwmPDN5uw+BHENEaXRkgQgqJDBn3KZlhJc3sdwA03xAiDc5NJlYEE7fiSIUN128kn4vzZbkUYdnVBk3SLUiprVmOlurprXrL/fMTuB140DM1wK0zi6T96mWLn7JEIian7NazUYbeeaV0cA3bpp/A8sWe68OVPBOXwFi4Fmo1Fw+Xl8Eqxk8rBPH3E7zBBQjCdhW7nQcXQCF43pHuvMPyd3s+EIDx/B+UQFNU9PvrrbHaO25UkkK9H/VQylEeXCRmD/8fLnh3A0LuKdlczN7fA6hnyXrh5BAn/W+AJ8WE9xEuST1j7RvIPdApVuWnkUGWRel8VqJySYkxUhwfUlTE+6k/sxYcHXpCJnYpbJ5euWcC4dW1Fo1khXsfFoBbMF4119PkXUA9Cs1ixpxJ4qR4ZmKqRJ5RXssiK2FNk3zmqf/DkPJYE4nJjLclzXWJ/stgaJO8Yk8vpdwglBj9ZNvnOON9eljKrl8M9kljQO+GDbo5KMMINAGofCc3N3XHp0LEYVrYDvP8Q+z0IIdTRjFERc2apf3OGs/2VbphixleQGv45h1M/hGjCrwsyasNM3KRqQZ05NAwjJdls7lomWQSxcsN9LuoqogN2W1qbx6CNNxtKNrPmp/O1uQEdVOs43kP1KLH3oR6OxF5zN305ps6tngO0eB4NiwFblbbtUB7YCAduvBfcaJhX8cZQrXB5GvWlXjraSpW/dIAV3rdLKakmdkPVOqnaDyTGeD9f9LJwLFgyfUYTpVLWuAeOPq9J2Owh7DKTwDx0gr+NikBEYJSwkzyvBluLBPSs8ASjW4tFw+DsNQOvcLzX14S5HU1SddKS6F4YGKeEUV6HdlnGhAlnR6qC1OAaFtkY+JJdk5uC5+QeKhqmSkZk09Swd7FjoPAHrAgtyhMVAedRWADIw3tVT2JsA=",
+          "id": "text",
+          "isHidden": true,
+          "name": "ILScript",
+          "type": "text"
+        },
+        {
+          "defval": "",
+          "id": "pineId",
+          "isHidden": true,
+          "name": "pineId",
+          "type": "text"
+        },
+        {
+          "defval": "",
+          "id": "pineVersion",
+          "isHidden": true,
+          "name": "pineVersion",
+          "type": "text"
+        },
+        {
+          "defval": "",
+          "id": "in_12",
+          "inline": "study_mtf",
+          "isFake": true,
+          "isMTFResolution": true,
+          "name": "Indicator Timeframe",
+          "type": "resolution"
+        },
+        {
+          "defval": true,
+          "id": "in_0",
+          "isFake": true,
+          "name": "Show Signals",
+          "type": "bool"
+        },
+        {
+          "defval": "close",
+          "id": "in_1",
+          "isFake": true,
+          "name": "Source",
+          "options": [
+            "open",
+            "high",
+            "low",
+            "close",
+            "hl2",
+            "hlc3",
+            "ohlc4"
+          ],
+          "type": "source"
+        },
+        {
+          "defval": 5,
+          "id": "in_2",
+          "isFake": true,
+          "max": 1000000000000,
+          "min": -1000000000000,
+          "name": "SMMA 1",
+          "type": "integer"
+        },
+        {
+          "defval": 10,
+          "id": "in_3",
+          "isFake": true,
+          "max": 1000000000000,
+          "min": -1000000000000,
+          "name": "SMMA 2",
+          "type": "integer"
+        },
+        {
+          "defval": 25,
+          "id": "in_4",
+          "isFake": true,
+          "max": 1000000000000,
+          "min": -1000000000000,
+          "name": "SMMA 3",
+          "type": "integer"
+        },
+        {
+          "defval": 35,
+          "id": "in_5",
+          "isFake": true,
+          "max": 1000000000000,
+          "min": -1000000000000,
+          "name": "SMMA 4",
+          "type": "integer"
+        },
+        {
+          "defval": 50,
+          "id": "in_6",
+          "isFake": true,
+          "max": 1000000000000,
+          "min": -1000000000000,
+          "name": "SMMA 5",
+          "type": "integer"
+        },
+        {
+          "defval": 75,
+          "id": "in_7",
+          "isFake": true,
+          "max": 1000000000000,
+          "min": -1000000000000,
+          "name": "SMMA 6",
+          "type": "integer"
+        },
+        {
+          "defval": 100,
+          "id": "in_8",
+          "isFake": true,
+          "max": 1000000000000,
+          "min": -1000000000000,
+          "name": "SMMA 7",
+          "type": "integer"
+        },
+        {
+          "defval": 150,
+          "id": "in_9",
+          "isFake": true,
+          "max": 1000000000000,
+          "min": -1000000000000,
+          "name": "SMMA 8",
+          "type": "integer"
+        },
+        {
+          "defval": "SMMA 2",
+          "id": "in_10",
+          "isFake": true,
+          "name": "Cross Source 1",
+          "options": [
+            "SMMA 1",
+            "SMMA 2",
+            "SMMA 3",
+            "SMMA4",
+            "SMMA 5",
+            "SMMA 6",
+            "SMMA 7",
+            "SMMA 8"
+          ],
+          "type": "text"
+        },
+        {
+          "defval": "SMMA 3",
+          "id": "in_11",
+          "isFake": true,
+          "name": "Cross Source 2",
+          "options": [
+            "SMMA 1",
+            "SMMA 2",
+            "SMMA 3",
+            "SMMA4",
+            "SMMA 5",
+            "SMMA 6",
+            "SMMA 7",
+            "SMMA 8"
+          ],
+          "type": "text"
+        }
+      ],
+      "isMTFResolution": true,
+      "isTVScript": true,
+      "isTVScriptStub": false,
+      "is_hidden_study": false,
+      "is_price_study": true,
+      "palettes": {
+        "palette_0": {
+          "colors": {
+            "0": {
+              "name": "Color 0"
+            },
+            "1": {
+              "name": "Color 1"
+            }
+          },
+          "valToIndex": {
+            "0": 0,
+            "1": 1
+          }
+        },
+        "palette_1": {
+          "colors": {
+            "0": {
+              "name": "Color 0"
+            },
+            "1": {
+              "name": "Color 1"
+            }
+          },
+          "valToIndex": {
+            "0": 0,
+            "1": 1
+          }
+        },
+        "palette_2": {
+          "colors": {
+            "0": {
+              "name": "Color 0"
+            },
+            "1": {
+              "name": "Color 1"
+            }
+          },
+          "valToIndex": {
+            "0": 0,
+            "1": 1
+          }
+        },
+        "palette_3": {
+          "colors": {
+            "0": {
+              "name": "Color 0"
+            },
+            "1": {
+              "name": "Color 1"
+            }
+          },
+          "valToIndex": {
+            "0": 0,
+            "1": 1
+          }
+        },
+        "palette_4": {
+          "colors": {
+            "0": {
+              "name": "Color 0"
+            },
+            "1": {
+              "name": "Color 1"
+            }
+          },
+          "valToIndex": {
+            "0": 0,
+            "1": 1
+          }
+        },
+        "palette_5": {
+          "colors": {
+            "0": {
+              "name": "Color 0"
+            },
+            "1": {
+              "name": "Color 1"
+            }
+          },
+          "valToIndex": {
+            "0": 0,
+            "1": 1
+          }
+        },
+        "palette_6": {
+          "colors": {
+            "0": {
+              "name": "Color 0"
+            },
+            "1": {
+              "name": "Color 1"
+            }
+          },
+          "valToIndex": {
+            "0": 0,
+            "1": 1
+          }
+        }
+      },
+      "pine": {
+        "digest": "335863fe678220810bc30244d88829a22357cd1e",
+        "version": "4"
+      },
+      "plots": [
+        {
+          "id": "plot_0",
+          "type": "line"
+        },
+        {
+          "id": "plot_1",
+          "type": "line"
+        },
+        {
+          "id": "plot_2",
+          "type": "line"
+        },
+        {
+          "id": "plot_3",
+          "type": "line"
+        },
+        {
+          "id": "plot_4",
+          "type": "line"
+        },
+        {
+          "id": "plot_5",
+          "type": "line"
+        },
+        {
+          "id": "plot_6",
+          "type": "line"
+        },
+        {
+          "id": "plot_7",
+          "type": "line"
+        },
+        {
+          "id": "plot_8",
+          "palette": "palette_0",
+          "target": "fill_0",
+          "type": "colorer"
+        },
+        {
+          "id": "plot_9",
+          "palette": "palette_1",
+          "target": "fill_1",
+          "type": "colorer"
+        },
+        {
+          "id": "plot_10",
+          "palette": "palette_2",
+          "target": "fill_2",
+          "type": "colorer"
+        },
+        {
+          "id": "plot_11",
+          "palette": "palette_3",
+          "target": "fill_3",
+          "type": "colorer"
+        },
+        {
+          "id": "plot_12",
+          "palette": "palette_4",
+          "target": "fill_4",
+          "type": "colorer"
+        },
+        {
+          "id": "plot_13",
+          "palette": "palette_5",
+          "target": "fill_5",
+          "type": "colorer"
+        },
+        {
+          "id": "plot_14",
+          "palette": "palette_6",
+          "target": "fill_6",
+          "type": "colorer"
+        },
+        {
+          "id": "plot_15",
+          "type": "shapes"
+        },
+        {
+          "id": "plot_16",
+          "type": "shapes"
+        }
+      ],
+      "scriptIdPart": "PUB;G4Qy6kpt8uaS8eWhJrQeCwRkszRwcJUu",
+      "shortDescription": "Multi SMMA v1.0.3",
+      "styles": {
+        "plot_0": {
+          "histogramBase": 0,
+          "isHidden": false,
+          "joinPoints": false,
+          "title": "SMMA 1"
+        },
+        "plot_1": {
+          "histogramBase": 0,
+          "isHidden": false,
+          "joinPoints": false,
+          "title": "SMMA 2"
+        },
+        "plot_15": {
+          "isHidden": false,
+          "size": "large",
+          "text": "Sell",
+          "title": "Sell Shape"
+        },
+        "plot_16": {
+          "isHidden": false,
+          "size": "large",
+          "text": "Buy",
+          "title": "Buy Shape"
+        },
+        "plot_2": {
+          "histogramBase": 0,
+          "isHidden": false,
+          "joinPoints": false,
+          "title": "SMMA 3"
+        },
+        "plot_3": {
+          "histogramBase": 0,
+          "isHidden": false,
+          "joinPoints": false,
+          "title": "SMMA 4"
+        },
+        "plot_4": {
+          "histogramBase": 0,
+          "isHidden": false,
+          "joinPoints": false,
+          "title": "SMMA 5"
+        },
+        "plot_5": {
+          "histogramBase": 0,
+          "isHidden": false,
+          "joinPoints": false,
+          "title": "SMMA 6"
+        },
+        "plot_6": {
+          "histogramBase": 0,
+          "isHidden": false,
+          "joinPoints": false,
+          "title": "SMMA 7"
+        },
+        "plot_7": {
+          "histogramBase": 0,
+          "isHidden": false,
+          "joinPoints": false,
+          "title": "SMMA 8"
+        }
+      },
+      "usesPrivateLib": false,
+      "warnings": [
+        "line 23: The function 'sma' should be called on each calculation for consistency. It is recommended to extract the call from the ternary operator or from the scope.",
+        "line 43: The `transp` argument will be deprecated soon. We recommend using color.new() or color.rgb() functions to specify the transparency of the plots instead.",
+        "line 44: The `transp` argument will be deprecated soon. We recommend using color.new() or color.rgb() functions to specify the transparency of the plots instead.",
+        "line 45: The `transp` argument will be deprecated soon. We recommend using color.new() or color.rgb() functions to specify the transparency of the plots instead.",
+        "line 46: The `transp` argument will be deprecated soon. We recommend using color.new() or color.rgb() functions to specify the transparency of the plots instead.",
+        "line 47: The `transp` argument will be deprecated soon. We recommend using color.new() or color.rgb() functions to specify the transparency of the plots instead.",
+        "line 50: The `transp` argument will be deprecated soon. We recommend using color.new() or color.rgb() functions to specify the transparency of the plots instead.",
+        "line 51: The `transp` argument will be deprecated soon. We recommend using color.new() or color.rgb() functions to specify the transparency of the plots instead.",
+        "line 52: The `transp` argument will be deprecated soon. We recommend using color.new() or color.rgb() functions to specify the transparency of the plots instead.",
+        "line 53: The `transp` argument will be deprecated soon. We recommend using color.new() or color.rgb() functions to specify the transparency of the plots instead.",
+        "line 54: The `transp` argument will be deprecated soon. We recommend using color.new() or color.rgb() functions to specify the transparency of the plots instead.",
+        "line 55: The `transp` argument will be deprecated soon. We recommend using color.new() or color.rgb() functions to specify the transparency of the plots instead.",
+        "line 56: The `transp` argument will be deprecated soon. We recommend using color.new() or color.rgb() functions to specify the transparency of the plots instead."
+      ]
+    }
+  }
+}

@@ -2,7 +2,8 @@ import * as R from "ramda";
 import fs from "fs";
 import path from "path";
 import { v4 } from "uuid";
-import { TimescaleUpdate, TSOHLC, TVWSEvent } from "./types";
+import { MetaInfo, TimescaleUpdate, TSOHLC, TVWSEvent } from "./types";
+import { ITVIndicator } from "../components/tv-components/types";
 const n = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 export const hashh = () => {
@@ -28,7 +29,7 @@ export const randomHash = () => {
 export const s = "~m~";
 export const readMessages = (e: string): (string | TVWSEvent)[] => {
   let msgs = e.split(/~m~\d+~m~/);
-  msgs = msgs.map((v, i) => {
+  msgs = msgs.slice(1).map((v, i) => {
     try {
       const parsed = JSON.parse(v);
       // console.warn("MSG::" + parsed.m);
@@ -50,26 +51,31 @@ export const readMessages = (e: string): (string | TVWSEvent)[] => {
   });
   return msgs;
 };
+export const isPing = (v = "") => /~m~\d+~m~~h~\d+/.test(v);
 
-export const getPineInputs = (val: Record<string, any>) =>
-  Object.keys(val)
-    .filter((v) => v.startsWith("in_"))
-    .reduce((acc, v) => {
-      const r = val[v as keyof typeof val];
-      return {
-        ...acc,
-        [v]: {
-          v: r,
-          f: true,
-          t:
-            typeof r === "number"
-              ? "integer"
-              : typeof r === "boolean"
-              ? "bool"
-              : "text",
-        },
-      };
-    }, {});
+export const getT = (v: string) => {};
+export const getPineInputs = (metaInfo: MetaInfo, ind: ITVIndicator) =>
+  metaInfo.inputs
+    .map((v) => {
+      switch (v.id) {
+        case "text":
+          return [v.id, v.defval];
+        case "pineId":
+          return [v.id, ind.scriptIdPart];
+        case "pineVersion":
+          return [v.id, `${ind.version}`];
+        default:
+          return [
+            v.id,
+            {
+              v: v.defval,
+              f: v.isFake,
+              t: v.type,
+            },
+          ];
+      }
+    })
+    .reduce((acc, [k, v]) => ({ ...acc, [k as string]: v }), {});
 
 export const timescaleToOHLC = (timescale: TimescaleUpdate) =>
   timescale?.s
@@ -83,3 +89,32 @@ export const timescaleToOHLC = (timescale: TimescaleUpdate) =>
       close,
       volume,
     }));
+
+const a = {
+  m: "create_study",
+  p: [
+    "cs_JZ58WMscVJsf",
+    "st4",
+    "st1",
+    "sds_1",
+    "Script@tv-scripting-101!",
+    {
+      text: "+eVDRA9QoN6kquE0q/4kwA==_53QKXYtsO33xJipbYGn/v07fXrj1GZh0Ql8fn8EFFfdlO12jkW8CsIqzsGjjGPkBTv3j74mwamc2ZbLBtx6LpBkR6q5bWO6uVK3Dx6lVVee6Id5PxwAWF7T5Ihcnrk7xLQYB6aAQgY7V/urCTu1LD5loDrnm50EaHjfiveaVpbGQ+pKdhJAHWYUv9JBTWbMNxrppLdMdApzltyYFIJRvC0WIGXDs/+twGUaE2QHhYa2IywWc0uQXd2pWOs2jJiBJFR18l5lQYZuQ6ca0e41874FnsSx5jwqNcUO873hIQziB7jzgxA3brL4O9EVfU4/tJMxFP1RMD3PZVsFaRG4HOj8ts02p8vgWA6JEVl0Y5kedy9pAAeZz4d8nagHeAKb+4hdS1QnydWu8pgob4STF1pC2p2B8xMME0l/tLWN1F+UXMaBfWIr4Dk9PPcdS6LLPPwGUsUnCJU9TqBGpgbTWa3J83C67eg6M4Fx0jbpekHHOHQc6c717SSKeIOwWYQyaFIdyrgMsYo/KYhWEHp6VMDU1YYv1WV7DB2pp8Oy6W3NgihaUeGXsNLWylu7w281u4QkhSwMZOk6yve1C2l8rO438RcbXzwZax49elJmqXnx0cYOmsoptrzBL/n+Vane4G2XA156Xj8AItICMUKp8Wt0c5II2DmkzYJ4uNfMY7RxpcziWNkH5lijry0bqUYg+GJiKvWAleQjvCe22gLXsVAy4ZzpTyHn9TyfZllwbI+AmQ2olw2mJQU8itjHd87qSNkNzwMKdp8gnd8bE3uHZcmM/8mYsCwDsR4+AnB69egl9+KrbNb40AmaET5Nnn7Mc7AXFEF7zT6l/Gv7HY06Vc0w1Ab5AKemcv7FRVYe+QVosEnEi/xOahbYtwazMZZHzOEt9plSH64GVjwylc925zrKU08e6bK8FGDsCOE8i2AYMi6Co7MnoTj4HiXyoupwcER8X5vLlHcFAVZ/fjnAYsCfk80nWXRblzKDYQSDWjT2NeUyDdc+rtiVHs6TpabvRzQxoQrQ53NkxVkeOLsthvf3rpkgaxw+m3zTTHHTZ9PfTnF2Q64DdO2nd/uDtIyNKp57LxgJhFdDKpNdPRvyzEpFv8Jh0xYk0qCkvjA5XdaLzl3M9OCnbLVnsFT/jAWpoOXExsb+tZgmBt+P86bvFt59HT2pAeLs2QIIhTEv8YyIm6CWmEBKX0V01DGPPExn1Cy2Ewz7vCKermRXhgrHpDMKSIM8AHLmpL8J8HGW+J2OZQXDXKxsQyUb+jyZHZnXUFckmfCdhoSTB8nXvk9u6P4+tg4LipkZgPhcG2asTroCmtHWG9acYywUoT1O4ylHbzOtNWl3LY/507blYysx2X2g8HhODcqjFJx+m8J6keyGvq+K3HjqJSPpIXerzkPk/UdwQ51E6V9QoydBu8mP76cbn5muHJZTvHzkcp5fTslZDq/gYGB3c43+yOaG0pU/uyYFRgnmIO91VmiDORTr1T0NVMlMqE689lsLS/g10jna7zK2pYuGYX9JdEhu3ErSyCkNVw33II0XY1SJf1vZRa3YzlS6vi6tOC3vBg0Hrlm/sMLgoK0bHBh42CY2LEhgkh1sx6TEK3LEn4gdmdUfcG5ejMI+Jgk55iZLNgLX7TQcu13m6JpJBkRd8HxCy+gNxxp6p1SnvUiLIupjqPdsKNhRdOXSVKIOF0oAhypQ=",
+      pineId: "PUB;G4Qy6kpt8uaS8eWhJrQeCwRkszRwcJUu",
+      pineVersion: "4.0",
+      in_12: { v: "", f: true, t: "resolution" },
+      in_0: { v: true, f: true, t: "bool" },
+      in_1: { v: "close", f: true, t: "source" },
+      in_2: { v: 5, f: true, t: "integer" },
+      in_3: { v: 10, f: true, t: "integer" },
+      in_4: { v: 25, f: true, t: "integer" },
+      in_5: { v: 35, f: true, t: "integer" },
+      in_6: { v: 50, f: true, t: "integer" },
+      in_7: { v: 75, f: true, t: "integer" },
+      in_8: { v: 100, f: true, t: "integer" },
+      in_9: { v: 150, f: true, t: "integer" },
+      in_10: { v: "SMMA 2", f: true, t: "text" },
+      in_11: { v: "SMMA 3", f: true, t: "text" },
+    },
+  ],
+};

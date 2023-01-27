@@ -13,12 +13,12 @@ import { HoverWatcher } from "../data/hover-watcher";
 import { useRows, useSettings } from "../../hooks/data.hook";
 import { useTradesData } from "../../hooks/charts/trades.hook";
 import { DataWatcher } from "../data/data-watcher";
+import PerfectScrollbar from "perfect-scrollbar";
 
 const signalsHeight = 10;
 const sourceHeight = 500;
 
 export const DisplayChart = () => {
-  const { target } = useSettings();
   const ref = useRef<HighchartsReact.RefObject | null>(null);
   const signals = useSignalsData({ height: signalsHeight });
   const indicators = useIndicatorsData({
@@ -29,7 +29,8 @@ export const DisplayChart = () => {
 
   const source = useSourceData({
     height: sourceHeight,
-    next: [...indicators.yAxis.map<string>(R.propOr("", "id")), target],
+    top: signalsHeight,
+    next: [...indicators.yAxis.map<string>(R.propOr("", "id")), "target"],
   });
   const sourceChart = R.reduce<
     Partial<Highcharts.Options>,
@@ -68,6 +69,7 @@ export const DisplayChart = () => {
     nextLabel: target2,
   });
   const targetData2 = useChartData({
+    height: theight,
     dataset: "target2",
     top: firstChartHeight + theight,
   });
@@ -85,10 +87,14 @@ export const DisplayChart = () => {
 
   const height = [chartData?.yAxis]
     ?.flat()
+    ?.filter((v) => {
+      return v?.opposite !== false;
+    })
     ?.reduce(
       (acc, v) => acc + (typeof v?.height === "number" ? v?.height : 0),
       180
     );
+
   const stackRef = useRef<HTMLDivElement | null>(null);
   const options: Highcharts.Options = {
     chart: {
@@ -103,8 +109,27 @@ export const DisplayChart = () => {
     ...chartData,
   };
 
+  const h = stackRef?.current?.querySelector(
+    ".highcharts-scrolling"
+  )?.clientHeight;
+  useEffect(() => {
+    const el = stackRef?.current?.querySelector(".highcharts-scrolling");
+    let ps: PerfectScrollbar;
+    if (el) {
+      ps = new PerfectScrollbar(el);
+    }
+    return () => {
+      ps?.destroy();
+    };
+  }, [h]);
+
   return (
-    <Stack height="100%" ref={stackRef} flexGrow={1}>
+    <Stack
+      height="100%"
+      ref={stackRef}
+      flexGrow={1}
+      sx={{ ".highcharts-scrollable-mask": { display: "none" } }}
+    >
       <HStock options={options} ref={ref} />
       {ref?.current?.chart && <HoverWatcher chart={ref?.current?.chart} />}
       {ref?.current?.chart && <DataWatcher chart={ref?.current?.chart} />}

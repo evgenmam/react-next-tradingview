@@ -1,6 +1,6 @@
 import { KeyboardEventHandler, useCallback, useRef, useState } from "react";
 import * as R from "ramda";
-export const useKeyboardNav = ({ max = 0 }) => {
+export const useKeyboardNav = ({ max = 0, expanded = -1 }) => {
   const [hl, setHl] = useState<number>(-1);
 
   const listRef = useRef<HTMLUListElement>(null);

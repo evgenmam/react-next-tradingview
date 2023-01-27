@@ -3,7 +3,7 @@ import pino from "pino";
 import WS from "ws";
 import TVApi from "../tradingview";
 import { TimescaleUpdate, TSOHLC, TVWSEvent } from "../types";
-import { readMessages, timescaleToOHLC } from "../utils";
+import { isPing, readMessages, timescaleToOHLC } from "../utils";
 const URL = "wss://prodata.tradingview.com/socket.io/websocket";
 const BUILD_ID = "2023_01_26-12_41";
 const CHART_ID = "lfNsKpYG";
@@ -38,13 +38,31 @@ export class TVClientC {
     this.handlers[msg] = cb;
   };
 
+  clearListeners = (prefix: string) => {
+    this.listener.eventNames().forEach((v) => {
+      if (v.toString().startsWith(prefix)) this.listener.removeAllListeners(v);
+    });
+  };
+
   handle = () => {
     this.ws.on("message", this.receive);
+    this.ws.on("error", (_: WS, error: Error) => {
+      pino({ name: "TVClientC" }).error({ error, msg: "WS_ERROR" });
+    });
+    this.ws.on("close", (_: WS, code: number, reason: Buffer) => {
+      pino({ name: "TVClientC" }).error({ code, reason, msg: "WS_CLOSE" });
+    });
   };
 
   sessionEvent = (e: TVWSEvent) => {
     pino({ name: "SESSION_EVENT" }).warn({ msg: e.m });
     const [ses, ...body] = e.p;
+    if (e.m.includes("_error")) {
+      const ms = { msg: e.m, body };
+      pino({ name: "SESSION_ERROR" }).error(ms);
+      this.listener.emit(`${ses}:error`, ms);
+      return;
+    }
     switch (e.m) {
       case "symbol_resolved":
         const [sym, r, t, t_ms] = body;
@@ -69,15 +87,12 @@ export class TVClientC {
 
   receive = async (data: WS.RawData) => {
     const message = data.toString();
-    if (message.startsWith("~m~")) {
+    if (isPing(message)) {
+      return this.ws.send(message);
+    } else if (message.startsWith("~m~")) {
       const messages = readMessages(message);
       messages.forEach((v) => {
-        if (typeof v === "string" && v.startsWith("~m~")) {
-          this.ws.send(message);
-        } else if (typeof v === "object" && v.m) {
-          if (v.m.indexOf("error") > -1) {
-            pino({ name: "TVClient" }).error({ error: v.p, message: v.m });
-          }
+        if (typeof v === "object" && v.m) {
           this.handlers[v.m]?.(v.p);
           if (v?.p?.[0]?.startsWith?.("cs_")) {
             this.sessionEvent(v);
@@ -88,17 +103,22 @@ export class TVClientC {
   };
 
   waitFor = (...args: string[]) =>
-    new Promise((resolve, reject) => {
-      const t = setTimeout(() => {
-        this.listener.removeAllListeners();
-        reject();
-      }, 7500);
+    new Promise((resolve) => {
       const cb = (v: any) => {
         this.listener.removeListener(args.join(":"), cb);
-        clearTimeout(t);
         resolve(v);
       };
       this.listener.once(args.join(":"), cb);
+    });
+
+  onError = (prefix: string) =>
+    new Promise(async (resolve) => {
+      const cb = (v: any) => {
+        this.listener.removeListener(`${prefix}:error`, cb);
+        resolve(v);
+      };
+      this.listener.once(`${prefix}:error`, cb);
+      return () => this.listener.removeListener(`${prefix}:error`, cb);
     });
 
   send = async (
@@ -108,7 +128,7 @@ export class TVClientC {
     const ms = { m, p: data };
     const message = JSON.stringify(ms);
     const encoded = `~m~${message.length}~m~${message}`;
-    pino({ name: "TVClient" }).info({ sending: ms });
+    pino({ name: "TVClient" }).info({ sending: m });
     this.ws.send(encoded);
   };
 

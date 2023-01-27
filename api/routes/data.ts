@@ -18,28 +18,33 @@ router.get("/search", async (req: Request, res: Response) => {
   res.send(results);
 });
 
-const getSymbol = async (symbol: string, indicators: ITVIndicator[] = []) => {
-  const nSession = new TVChartSession();
+const getSymbol = async (
+  res: Response,
+  symbol: string,
+  indicators: ITVIndicator[] = []
+) => {
+  const nSession = new TVChartSession(res);
   await nSession.init();
   let data = await nSession.getSymbol(symbol);
   for (const indicator of indicators) {
     const d: any[] = await nSession.getIndicator(symbol, indicator);
     data = (data as any[]).map((v, i) => ({ ...v, ...d[i] }));
   }
+  nSession.cleanup();
   return data;
 };
 
 router.post("/market-data", async (req: Request, res: Response) => {
-  const resp = {} as any;
   if (req.body.numerator && req.body.denominator) {
     const s = `${req.body.numerator}/${req.body.denominator}`;
     const [numerator, denominator, split] = await Promise.all([
-      getSymbol(req.body.numerator),
-      getSymbol(req.body.denominator),
-      getSymbol(s, req.body.indicators),
+      getSymbol(res, req.body.numerator),
+      getSymbol(res, req.body.denominator),
+      getSymbol(res, s, req.body.indicators),
     ]);
-    res.send({ numerator, denominator, split });
+    if (!res.headersSent) return res.send({ numerator, denominator, split });
   }
+  if (!res.headersSent) res.send({});
 });
 
 router.get("/reconnect", (req, res: Response) => {

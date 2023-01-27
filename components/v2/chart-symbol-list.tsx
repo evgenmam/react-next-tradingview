@@ -18,7 +18,7 @@ export const V2ChartSymbolList = ({ config }: Props) => {
   return (
     <Stack>
       <List>
-        {list?.symbols.map((s) => (
+        {list?.symbols?.map((s) => (
           <V2ChartListItem
             key={s?.symbol + s.provider_id + s.prefix}
             symbol={s}
