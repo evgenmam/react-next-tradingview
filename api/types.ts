@@ -237,8 +237,18 @@ export enum PlotType {
   Shapes = "shapes",
 }
 
+
+export interface MetaInfoStyle {
+  histogramBase: number;
+  isHidden: boolean;
+  joinPoints: boolean;
+  size: string;
+  text: string;
+  title: string;
+}
+
 export interface MetaInfoStyles {
-  [plot_0: string]: LivingstoneSouthernWhiteFacedOwl | FluffyPlot1 | Plot3;
+  [plot: string]: MetaInfoStyle;
 }
 
 export interface LivingstoneSouthernWhiteFacedOwl {

@@ -1,16 +1,14 @@
 import * as R from "ramda";
-import fs from "fs";
-import path from "path";
-import { v4 } from "uuid";
 import {
   MetaInfo,
   StudyData,
   TimescaleUpdate,
-  TSOHLC,
+  Input,
   TVWSEvent,
   St,
 } from "./types";
 import { ITVIndicator } from "../components/tv-components/types";
+import { ColorTool } from "../utils/color.utils";
 const n = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 export const hashh = () => {
@@ -64,6 +62,8 @@ export const getT = (v: string) => {};
 export const getPineInputs = (metaInfo: MetaInfo, ind: ITVIndicator) =>
   metaInfo.inputs
     .map((v) => {
+      console.log(v);
+
       switch (v.id) {
         case "text":
           return [v.id, v.defval];
@@ -80,6 +80,18 @@ export const getPineInputs = (metaInfo: MetaInfo, ind: ITVIndicator) =>
               t: v.type,
             },
           ];
+      }
+    })
+    .map(([k, v]) => {
+      const vv = v as any;
+      switch (vv?.t) {
+        case "color":
+          return [
+            k,
+            { ...vv, v: new ColorTool((v as any)?.v! as string).argb },
+          ];
+        default:
+          return [k, v];
       }
     })
     .reduce((acc, [k, v]) => ({ ...acc, [k as string]: v }), {});

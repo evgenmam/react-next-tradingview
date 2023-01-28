@@ -14,8 +14,10 @@ export const useV2Status = () => {
   };
   useEffect(() => {
     const interval = setInterval(async () => {
-      const { data } = await axios.get("/api/status");
-      setStatus(data?.status || 0);
+      try {
+        const { data } = await axios.get("/api/status");
+        setStatus(data?.status || 0);
+      } catch (error) {}
     }, 4000);
     return () => clearInterval(interval);
   }, []);

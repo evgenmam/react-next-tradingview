@@ -24,14 +24,16 @@ export const DisplayDataStudy = ({ study }: Props) => {
       </Typography>
       <table>
         <tbody>
-          {keys.map((field) => (
-            <DisplayDataRow
-              key={field}
-              value={data?.[field]}
-              prev={prev?.[field]}
-              field={field}
-            />
-          ))}
+          {keys
+            .filter((f) => f.title)
+            .map((field) => (
+              <DisplayDataRow
+                key={field?.key}
+                value={data?.[field?.key]}
+                prev={prev?.[field?.key]}
+                field={field.title}
+              />
+            ))}
         </tbody>
       </table>
     </Stack>

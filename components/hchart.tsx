@@ -3,6 +3,7 @@ import Highcharts, { Chart } from "highcharts";
 
 import HighchartsStock from "highcharts/highstock";
 import HighchartsExporting from "highcharts/modules/exporting";
+import HighchartsAnnotations from "highcharts/modules/annotations";
 import HighchartsMore from "highcharts/highcharts-more";
 import HighchartsReact from "highcharts-react-official";
 import {
@@ -24,6 +25,7 @@ if (typeof Highcharts === "object") {
   HighchartsExporting(Highcharts);
   HighchartsExporting(HighchartsStock);
   HighchartsMore(HighchartsStock);
+  HighchartsAnnotations(HighchartsStock);
   dragPanes(HighchartsStock);
   if (localStorage.getItem("joy-mode") === "dark") {
     DarkTheme(HighchartsStock);
@@ -43,6 +45,11 @@ const rangeButtons: Array<Highcharts.RangeSelectorButtonsOptions> = R.range(
 const defaults: HighchartsReact.Props["options"] = {
   chart: {
     animation: false,
+  },
+  plotOptions: {
+    series: {
+      animation: false,
+    },
   },
   accessibility: {
     enabled: false,

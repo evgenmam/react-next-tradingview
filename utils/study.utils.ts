@@ -2,6 +2,7 @@ import * as R from "ramda";
 import { Palette } from "../api/types";
 import { ITVStudy } from "../components/tv-components/types";
 import { getLabelAxis } from "./chart.utils";
+import { ColorTool } from "./color.utils";
 
 const PlotTypes = {
   0: "Line",
@@ -101,7 +102,7 @@ export const getCircles = (plots: ITVPlot[], study: ITVStudy) => {
     yAxis: study.meta?.is_price_study ? "source" : `${study?.data?.node}`,
     zoneAxis: "x",
     color: styles?.color,
-    type: "spline",
+    type: "spline" as string,
     lineWidth: 0,
     marker: {
       enabled: true,
@@ -117,6 +118,41 @@ export const getCircles = (plots: ITVPlot[], study: ITVStudy) => {
       ?.filter(({ plot }) => plot.target === id)
       .flatMap(colorerToZone),
   }));
+};
+
+export const getShapes = (plots: ITVPlot[], study: ITVStudy) => {
+  // console.log(plots);
+};
+
+export const getAlerts = (
+  plots: ITVPlot[],
+  study: ITVStudy
+): Highcharts.SeriesFlagsOptions[] => {
+  const alerts = plots?.filter?.(
+    (p) => p.plot?.type === "alertcondition" && p.data?.some((v) => v[1])
+  );
+  return alerts?.map(({ title, id, data }, idx) => {
+    return {
+      yAxis: "source-left",
+      onSeries: "source-ds",
+      type: "flags" as const,
+      data: data.filter((c) => c[1])?.map((c) => ({ x: c[0], title })),
+      style: {
+        fontSize: '8px',
+      },
+      // lineWidth: 0,
+      // marker: {
+      //   enabled: true,
+      //   symbol: "circle",
+      //   radius: 4,
+      // },
+      // states: {
+      //   hover: {
+      //     lineWidthPlus: 0,
+      //   },
+      // },
+    };
+  });
 };
 
 export const studyToChart = (
@@ -136,6 +172,7 @@ export const studyToChart = (
       plot: { id, ...s },
       palette: meta?.defaults?.palettes?.[s?.palette || ""],
     }))
+    ?.filter((v) => !meta?.styles?.[v?.id]?.isHidden)
     .filter(isGoodPlot);
   const filled = meta?.filledAreas
     ?.map(({ id, objAId, objBId }, idx) => ({
@@ -150,9 +187,11 @@ export const studyToChart = (
   const arearange = getFilled(filled, study);
 
   const circles = getCircles(plots, study);
-  console.log(circles);
+  const shapes = getShapes(plots, study);
+  const alerts = getAlerts(plots, study);
+  console.log(alerts);
   return {
-    series: [...lines, ...arearange, ...circles],
+    series: [...lines, ...arearange, ...circles, ...alerts],
     yAxis: meta?.is_price_study
       ? []
       : [
@@ -168,14 +207,17 @@ export const studyToChart = (
 };
 
 export const getStudyFields = (study: ITVStudy) =>
-  study?.meta?.plots?.map(({ id }) => study?.meta?.styles?.[id]?.title);
+  study?.meta?.plots?.map(({ id }) => ({
+    title: study?.meta?.styles?.[id]?.title,
+    key: id,
+  }));
 
 export const getKeyedStudyData = (
   study: ITVStudy
 ): Record<string, number>[] => {
-  const keys = ["time", ...getStudyFields(study)];
+  const keys = [{ key: "time", title: "time" }, ...getStudyFields(study)];
   // ?.filter((v) => v);
   return study?.data?.st?.map(({ v }) =>
-    keys.reduce((acc, key, i) => (key ? { ...acc, [key]: v[i] } : acc), {})
+    keys.reduce((acc, key, i) => (key ? { ...acc, [key.key]: v[i] } : acc), {})
   );
 };

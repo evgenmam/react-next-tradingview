@@ -45,8 +45,9 @@ export const DisplayChart = () => {
     R.mergeDeepWith(R.concat),
     {}
   )([signals, source, indicators]);
-  const firstChartHeight = [sourceChart?.yAxis]
+  const firstChartHeight = [sourceChart?.yAxis, ...studies?.map((v) => v.yAxis)]
     ?.flat()
+    ?.filter((v) => v?.opposite !== false)
     ?.reduce(
       (acc, v) => acc + (typeof v?.height === "number" ? v?.height : 0),
       0
@@ -89,7 +90,8 @@ export const DisplayChart = () => {
   >(
     R.mergeDeepWith(R.concat),
     {}
-  )([sourceChart, ...studies]);
+    // @ts-ignore
+  )([sourceChart, targetData, targetData2, ...studies]);
 
   const height = [chartData?.yAxis]
     ?.flat()

@@ -37,23 +37,27 @@ export const getNextLabel = (label: string) => ({
 export const getLabelAxis = (
   id: string,
   label: string,
-  top: YAxisOptions["top"] = 24
+  top: YAxisOptions["top"] = 24,
+  height = 200
 ): YAxisOptions => ({
-  id: `${id}-label}`,
+  id: `${id}-left`,
   opposite: false,
   top,
+  height,
   width: 0,
   panningEnabled: false,
   gridLineWidth: 0,
   left: 0,
-
+  labels: {
+    enabled: false,
+  },
   zoomEnabled: false,
   title: {
     textAlign: "left",
     rotation: 0,
     text: label,
     align: "high",
-    x: 20,
+    x: 30,
     y: 24,
     offset: 0,
     margin: 0,

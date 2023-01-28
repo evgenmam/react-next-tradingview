@@ -97,20 +97,16 @@ export class TVChartSession extends TVSession {
       "Script@tv-scripting-101!",
       data,
     ]);
+    writeFileSync(
+      path.resolve("logs", ind.scriptName + "-data.json"),
+      JSON.stringify(data)
+    );
     const values = await this.waitFor(ind.scriptName, "du");
     return {
       data: values,
       meta: res.result.metaInfo,
       id: (values as StudyData)?.t,
     };
-    // return (values as IndicatorDU)?.st
-    //   ?.filter?.((v) => v.i >= 0)
-    //   .map?.((v) =>
-    //     fields.reduce(
-    //       (acc, field, i) => ({ ...acc, [sd + ":" + field]: v?.v?.[i + 1] }),
-    //       {}
-    //     )
-    //   );
   };
 }
 

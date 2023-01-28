@@ -18,13 +18,14 @@ export const useSourceData = ({
   const series: Highcharts.SeriesCandlestickOptions[] = [
     {
       type: "candlestick",
-      data: rows.map((row) => [
-        row.time,
-        row.open,
-        row.high,
-        row.low,
-        row.close,
-      ]),
+      data: rows.map((row) => ({
+        x: row.time,
+        open: row.open,
+        high: row.high,
+        low: row.low,
+        close: row.close,
+        id: `s${row.time}`,
+      })),
       color: colors.palette.danger.outlinedColor,
       upColor: colors.palette.success.outlinedColor,
       lineColor: colors.palette.danger.outlinedColor,
@@ -32,6 +33,7 @@ export const useSourceData = ({
       name: "source",
       tooltip: {},
       yAxis: "source",
+      id: "source-ds",
     },
   ];
 
@@ -47,7 +49,8 @@ export const useSourceData = ({
         },
       }),
     },
-    getLabelAxis("source", dsname, 48),
+
+    getLabelAxis("source", dsname, 48, height),
   ];
   return { series, yAxis };
 };
