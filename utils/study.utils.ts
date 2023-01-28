@@ -50,19 +50,20 @@ const colorerToZone = (
     R.map<SZ[], SZ>(R.head)
   )(colorer);
 
-const isGoodLine = (p: ITVPlot) =>
-  p.styles?.plottype === PlotTypes.Line &&
+const isGoodPlot = (p: ITVPlot) =>
   p.data?.some(([, y]) => !isNaN(y) && y !== 1e100);
+const isGoodLine = (p: ITVPlot) => p.styles?.plottype === PlotTypes.Line;
 
 const getLines = (
   plots: ITVPlot[],
-  nodeId: string
+  study: ITVStudy
 ): Highcharts.SeriesLineOptions[] => {
   const lines = plots?.filter?.(isGoodLine);
-  return lines.map(({ data, id, styles }) => ({
+  return lines.map(({ data, id, styles, title }) => ({
     data,
     type: "line" as const,
-    yAxis: `${nodeId}`,
+    yAxis: study.meta?.is_price_study ? "source" : `${study?.data?.node}`,
+    name: title,
     zoneAxis: "x",
     lineWidth: styles?.linewidth,
     color: styles?.color,
@@ -79,12 +80,42 @@ type ITVFilled = {
   style: ITVStudy["meta"]["defaults"]["filledAreasStyle"][number];
 };
 
-const getFilled = (filled: ITVFilled[], nodeId: string) => {
-  return filled.map(({ data1, data2, style }) => ({
-    type: "arearange" as const,
-    data: data1?.data?.map((v, idx) => [v[0], v[1], data2?.data?.[idx][1]]),
-    yAxis: `${nodeId}`,
-    color: style?.color,
+const getFilled = (filled: ITVFilled[], study: ITVStudy) => {
+  return (
+    filled?.map(({ data1, data2, style }) => ({
+      type: "arearange" as const,
+      data: data1?.data?.map((v, idx) => [v[0], v[1], data2?.data?.[idx][1]]),
+      yAxis: study.meta?.is_price_study ? "source" : `${study?.data?.node}`,
+      color: style?.color,
+    })) || []
+  );
+};
+
+export const getCircles = (plots: ITVPlot[], study: ITVStudy) => {
+  const circles = plots?.filter?.(
+    (p) => p.styles?.plottype === PlotTypes.Circles
+  );
+  return circles.map(({ data, id, styles, title }) => ({
+    data,
+    name: title,
+    yAxis: study.meta?.is_price_study ? "source" : `${study?.data?.node}`,
+    zoneAxis: "x",
+    color: styles?.color,
+    type: "spline",
+    lineWidth: 0,
+    marker: {
+      enabled: true,
+      symbol: "circle",
+      radius: 4,
+    },
+    states: {
+      hover: {
+        lineWidthPlus: 0,
+      },
+    },
+    zones: plots
+      ?.filter(({ plot }) => plot.target === id)
+      .flatMap(colorerToZone),
   }));
 };
 
@@ -93,18 +124,19 @@ export const studyToChart = (
   height: Highcharts.YAxisOptions["height"] = 300,
   top: Highcharts.YAxisOptions["top"]
 ) => {
-  console.log(study);
   const { data, meta } = study || {};
   const rows = data?.st?.filter?.((v) => v.i >= 0);
-  const plots = meta?.plots?.map(({ id, ...s }, idx) => ({
-    id,
-    info: meta?.styles?.[id],
-    title: meta?.styles?.[id]?.title,
-    styles: meta?.defaults?.styles?.[id],
-    data: rows?.map?.((v) => [v?.v?.[0], v?.v?.[idx + 1]]),
-    plot: { id, ...s },
-    palette: meta?.defaults?.palettes?.[s?.palette || ""],
-  }));
+  const plots = meta?.plots
+    ?.map(({ id, ...s }, idx) => ({
+      id,
+      info: meta?.styles?.[id],
+      title: meta?.styles?.[id]?.title,
+      styles: meta?.defaults?.styles?.[id],
+      data: rows?.map?.((v) => [v?.v?.[0], v?.v?.[idx + 1]]),
+      plot: { id, ...s },
+      palette: meta?.defaults?.palettes?.[s?.palette || ""],
+    }))
+    .filter(isGoodPlot);
   const filled = meta?.filledAreas
     ?.map(({ id, objAId, objBId }, idx) => ({
       id,
@@ -113,26 +145,24 @@ export const studyToChart = (
       style: meta?.defaults?.filledAreasStyle?.[idx],
     }))
     .filter(({ data1, data2 }) => data1 && data2);
-  // const bands = meta?.bands?.map(({ id, ...s }, idx) => ({
-  //   id,
-  //   info: meta?.styles?.[id],
-  //   title: meta?.styles?.[id]?.title,
-  //   styles: meta?.defaults?.bands?.[idx],
-  //   data: rows?.map?.((v) => [v?.v?.[0], v?.v?.[idx + 1]]),
-  //   band: { id, ...s },
-  // }));
-  const lines = getLines(plots, data?.node);
-  const arearange = getFilled(filled, data?.node);
+
+  const lines = getLines(plots, study);
+  const arearange = getFilled(filled, study);
+
+  const circles = getCircles(plots, study);
+  console.log(circles);
   return {
-    series: [...lines, ...arearange],
-    yAxis: [
-      {
-        id: `${data?.node}`,
-        height,
-        top,
-      },
-      getLabelAxis(data?.node, study?.meta?.description, top),
-    ],
+    series: [...lines, ...arearange, ...circles],
+    yAxis: meta?.is_price_study
+      ? []
+      : [
+          {
+            id: `${data?.node}`,
+            height,
+            top,
+          },
+          getLabelAxis(data?.node, study?.meta?.description, top),
+        ],
   };
   // const data =
 };
