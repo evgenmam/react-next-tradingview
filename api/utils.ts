@@ -144,3 +144,27 @@ export const duFixTimestamp = R.over<StudyData, St[]>(
     R.over<St, number[]>(R.lensProp("v"), R.adjust(0, R.multiply(1000)))
   )
 );
+
+export const mergeDataAndStudies = (
+  data: { time: number; [i: string]: number }[],
+  studies: { data: StudyData; meta: MetaInfo }[]
+) => {
+  const s = studies.map(({ data, meta }) =>
+    data?.st
+      ?.filter(({ i }) => i >= 0)
+      .map(({ v }) =>
+        meta?.plots?.reduce(
+          (acc, { id }, idx) =>
+            meta?.styles?.[id]?.title
+              ? {
+                  ...acc,
+                  [`${meta?.description}:${meta?.styles?.[id]?.title}:${id}`]:
+                    v[idx + 1],
+                }
+              : acc,
+          {}
+        )
+      )
+  );
+  return data.map((d, idx) => ({ ...d, ...R.mergeAll(s.map((v) => v[idx])) }));
+};

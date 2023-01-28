@@ -1,7 +1,6 @@
-import { Divider, Grid, Stack } from "@mui/joy";
+import { Grid, Stack } from "@mui/joy";
 import { Box } from "@mui/system";
-import { memo, useState } from "react";
-import { useThrottledCallback } from "use-debounce";
+import { memo } from "react";
 import { useRows } from "../../hooks/data.hook";
 import { ChartData } from "./chart-data";
 import { Indicators } from "./indicators";

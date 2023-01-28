@@ -32,6 +32,8 @@ export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
               return prevA < prevB && a > b;
             case "crossesDown":
               return prevA > prevB && a < b;
+            case "true":
+              return !!a;
             default:
               return false;
           }

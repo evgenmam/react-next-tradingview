@@ -101,7 +101,84 @@ const migrations = async () => {
   if (presets.length === 0) {
     await IDB.presets.add({
       name: "Preset 1",
-      indicators: [],
+      indicators: [
+        {
+          imageUrl: "ZGl2xWym",
+          scriptName: "LuxAlgo Price Action Concepts (Premium)",
+          scriptSource: "",
+          access: 3,
+          scriptIdPart: "PUB;iHcwTCS7vLUQ2jDDXVIVM4B8kZG7HqHC",
+          version: "12",
+          extra: {
+            kind: "study",
+            sourceInputsCount: 0,
+          },
+          agreeCount: 4805,
+          author: {
+            id: 793152,
+            username: "LuxAlgo",
+            is_broker: false,
+          },
+          weight: 24736,
+        },
+        {
+          imageUrl: "LFBaHNuA",
+          scriptName: "Pivot Points Algo",
+          scriptSource: "",
+          access: 3,
+          scriptIdPart: "PUB;kGJGLu77vLikIl1P4H1OuIWM7m7OA271",
+          version: "36",
+          extra: {
+            kind: "study",
+            sourceInputsCount: 1,
+          },
+          agreeCount: 367,
+          author: {
+            id: 833418,
+            username: "dman103",
+            is_broker: false,
+          },
+          weight: 43502,
+        },
+        {
+          imageUrl: "6VH4kH8l",
+          scriptName: "TAS Boxes + TAS Vega + TAS Compass [TASMarketProfile]",
+          scriptSource: "",
+          access: 3,
+          scriptIdPart: "PUB;d2ac68ba96c2432182159828c9928764",
+          version: "1",
+          extra: {
+            kind: "study",
+            sourceInputsCount: 0,
+          },
+          agreeCount: 33,
+          author: {
+            id: 668758,
+            username: "TASMarketProfile",
+            is_broker: false,
+          },
+          weight: 24814,
+        },
+        {
+          imageUrl: "S8svsT4N",
+          scriptName: "LuxAlgo Oscillators (Premium)",
+          scriptSource: "",
+          access: 3,
+          scriptIdPart: "PUB;8bBrCmCGspE390DLRNWYlXrtDxRIoZYe",
+          version: "12",
+          extra: {
+            kind: "study",
+            sourceInputsCount: 0,
+          },
+          agreeCount: 2492,
+          author: {
+            id: 599151,
+            username: "LuxAlgo",
+            is_broker: false,
+          },
+          weight: 6639,
+        },
+      ],
       selected: true,
     });
   }

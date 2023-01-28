@@ -156,6 +156,7 @@ export class TvAPIWorker {
         f: true,
         v: res.result.metaInfo.defaults.inputs.pineFeatures,
       },
+      // @ts-ignore
       ...getPineInputs(res.result.metaInfo.defaults.inputs),
     };
 

@@ -8,6 +8,7 @@ type Props = {};
 export const V2PresetsSelect = () => {
   const { presets, addPreset, selected, setSelected, removePreset } =
     useV2Presets();
+  console.log(presets);
   const [newPreset, setNewPreset] = useState("");
   const onNew = async () => {
     setSelected(await addPreset({ name: newPreset, indicators: [] }));

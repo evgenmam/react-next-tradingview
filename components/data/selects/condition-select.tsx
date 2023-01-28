@@ -9,6 +9,7 @@ export const ConditionSelect = (props: SelectProps<string>) => {
     "less",
     "greaterOrEqual",
     "lessOrEqual",
+    "true"
   ];
   return (
     <FormControl size="sm">

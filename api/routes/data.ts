@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { ITVIndicator } from "../../components/tv-components/types";
 import { TVChartSession, reconnect, status } from "../helpers/tv-market-data";
 import TVApi from "../tradingview";
+import { mergeDataAndStudies } from "../utils";
 import indicatorsRoutes from "./indicators";
 
 const router = Router();
@@ -35,7 +36,8 @@ const getSymbol = async (
     studies.push(await nSession.getIndicator(symbol, indicator));
   }
   nSession.cleanup();
-  return [data, studies];
+  //@ts-ignore
+  return [mergeDataAndStudies(data, studies), studies];
 };
 
 router.post("/market-data", async (req: Request, res: Response) => {
