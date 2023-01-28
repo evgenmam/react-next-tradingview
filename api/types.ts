@@ -69,12 +69,24 @@ export interface MetaInfoBand {
   name: string;
 }
 
+export type Palette = {
+  colors: Record<
+    number,
+    {
+      color: string;
+      style: number;
+      width: number;
+    }
+  >;
+};
+export type Palettes = Record<string, Palette>;
 export interface Defaults {
   bands: DefaultsBand[];
   filledAreasStyle: FilledAreasStyle;
   graphics: DefaultsGraphics;
   inputs: Inputs;
   styles: DefaultsStyles;
+  palettes: Palettes;
 }
 
 export interface DefaultsBand {
@@ -86,10 +98,7 @@ export interface DefaultsBand {
 }
 
 export interface FilledAreasStyle {
-  fill_0: Fill;
-  fill_1: Fill;
-  fill_2: Fill;
-  fill_3: Fill;
+  [fill_0: string]: Fill;
 }
 
 export interface Fill {
@@ -129,45 +138,30 @@ export interface Inputs {
 }
 
 export interface DefaultsStyles {
-  plot_0: TartuGecko;
-  plot_1: TartuGecko;
-  plot_10: TartuGecko;
-  plot_12: TartuGecko;
-  plot_14: TartuGecko;
-  plot_15: TartuGecko;
-  plot_16: PurplePlot1;
-  plot_17: PurplePlot1;
-  plot_18: TartuGecko;
-  plot_19: TartuGecko;
-  plot_20: TartuGecko;
-  plot_21: TartuGecko;
-  plot_22: TartuGecko;
-  plot_24: TartuGecko;
-  plot_25: TartuGecko;
-  plot_26: TartuGecko;
-  plot_28: TartuGecko;
-  plot_4: TartuGecko;
-  plot_6: TartuGecko;
-  plot_7: TartuGecko;
-  plot_8: TartuGecko;
-  plot_9: TartuGecko;
+  [plot: string]: TartuGecko;
 }
+
+type PlotTypesN = {
+  0: "Line";
+  1: "Histogram";
+  3: "Cross";
+  4: "Area";
+  5: "Columns";
+  6: "Circles";
+  7: "LineWithBreaks";
+  8: "AreaWithBreaks";
+  9: "StepLine";
+  10: "StepLineWithDiamonds";
+};
 
 export interface TartuGecko {
-  color: string;
-  display: number;
   linestyle: number;
   linewidth: number;
-  plottype: number;
+  plottype: keyof PlotTypesN;
   trackPrice: boolean;
-  transparency: number;
-}
-
-export interface PurplePlot1 {
   color: string;
   display: number;
   location: string;
-  plottype: string;
   textColor: string;
   transparency: number;
 }
@@ -233,6 +227,7 @@ export interface Plot {
   id: string;
   type: PlotType;
   target?: string;
+  palette?: string;
 }
 
 export enum PlotType {
@@ -243,35 +238,7 @@ export enum PlotType {
 }
 
 export interface MetaInfoStyles {
-  plot_0: LivingstoneSouthernWhiteFacedOwl;
-  plot_1: LivingstoneSouthernWhiteFacedOwl;
-  plot_10: LivingstoneSouthernWhiteFacedOwl;
-  plot_12: LivingstoneSouthernWhiteFacedOwl;
-  plot_14: LivingstoneSouthernWhiteFacedOwl;
-  plot_15: LivingstoneSouthernWhiteFacedOwl;
-  plot_16: FluffyPlot1;
-  plot_17: FluffyPlot1;
-  plot_18: LivingstoneSouthernWhiteFacedOwl;
-  plot_19: LivingstoneSouthernWhiteFacedOwl;
-  plot_20: LivingstoneSouthernWhiteFacedOwl;
-  plot_21: LivingstoneSouthernWhiteFacedOwl;
-  plot_22: LivingstoneSouthernWhiteFacedOwl;
-  plot_24: LivingstoneSouthernWhiteFacedOwl;
-  plot_25: LivingstoneSouthernWhiteFacedOwl;
-  plot_26: LivingstoneSouthernWhiteFacedOwl;
-  plot_28: LivingstoneSouthernWhiteFacedOwl;
-  plot_33: Plot3;
-  plot_34: Plot3;
-  plot_35: Plot3;
-  plot_36: Plot3;
-  plot_37: Plot3;
-  plot_38: Plot3;
-  plot_39: Plot3;
-  plot_4: LivingstoneSouthernWhiteFacedOwl;
-  plot_6: LivingstoneSouthernWhiteFacedOwl;
-  plot_7: LivingstoneSouthernWhiteFacedOwl;
-  plot_8: LivingstoneSouthernWhiteFacedOwl;
-  plot_9: LivingstoneSouthernWhiteFacedOwl;
+  [plot_0: string]: LivingstoneSouthernWhiteFacedOwl | FluffyPlot1 | Plot3;
 }
 
 export interface LivingstoneSouthernWhiteFacedOwl {
@@ -340,7 +307,7 @@ export type St = {
   v: number[];
 };
 
-export type IndicatorDU = {
+export type StudyData = {
   node: string;
   st: St[];
   ns: NS;

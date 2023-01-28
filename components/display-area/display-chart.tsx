@@ -14,6 +14,8 @@ import { useRows, useSettings } from "../../hooks/data.hook";
 import { useTradesData } from "../../hooks/charts/trades.hook";
 import { DataWatcher } from "../data/data-watcher";
 import PerfectScrollbar from "perfect-scrollbar";
+import { useV2Studies } from "../v2/hooks/v2-data.hook";
+import { useV2StudyData } from "../v2/hooks/v2-study-data.hook";
 
 const signalsHeight = 10;
 const sourceHeight = 500;
@@ -23,6 +25,10 @@ export const DisplayChart = () => {
   const signals = useSignalsData({ height: signalsHeight });
   const indicators = useIndicatorsData({
     sourceHeight: sourceHeight + signalsHeight,
+  });
+  const studies = useV2StudyData({
+    top: sourceHeight + signalsHeight,
+    height: 200,
   });
   const { target2 } = useSettings();
   const hoverSet = useHoverSet();
@@ -83,7 +89,7 @@ export const DisplayChart = () => {
   >(
     R.mergeDeepWith(R.concat),
     {}
-  )([sourceChart, targetData, targetData2, trades, trades2]);
+  )([sourceChart, ...studies]);
 
   const height = [chartData?.yAxis]
     ?.flat()

@@ -6,7 +6,7 @@ import { v4 } from "uuid";
 import { ITVIndicator } from "../../components/tv-components/types";
 import TVClient, { TVClientC } from "../helpers/tv-client";
 import TVApi from "../tradingview";
-import { IndicatorDU } from "../types";
+import { StudyData } from "../types";
 import { getPineInputs, randomHash } from "../utils";
 
 const tvc = new TVClient();
@@ -89,7 +89,6 @@ export class TVChartSession extends TVSession {
     const sd = res?.result?.metaInfo?.shortDescription;
     const data = getPineInputs(res.result.metaInfo, ind);
 
-    console.log(JSON.stringify(data, null, 2));
     await tvc.send("create_study", [
       this.session,
       ind.scriptName,
@@ -99,14 +98,19 @@ export class TVChartSession extends TVSession {
       data,
     ]);
     const values = await this.waitFor(ind.scriptName, "du");
-    return (values as IndicatorDU)?.st
-      ?.filter?.((v) => v.i >= 0)
-      .map?.((v) =>
-        fields.reduce(
-          (acc, field, i) => ({ ...acc, [sd + ":" + field]: v?.v?.[i + 1] }),
-          {}
-        )
-      );
+    return {
+      data: values,
+      meta: res.result.metaInfo,
+      id: (values as StudyData)?.t,
+    };
+    // return (values as IndicatorDU)?.st
+    //   ?.filter?.((v) => v.i >= 0)
+    //   .map?.((v) =>
+    //     fields.reduce(
+    //       (acc, field, i) => ({ ...acc, [sd + ":" + field]: v?.v?.[i + 1] }),
+    //       {}
+    //     )
+    //   );
   };
 }
 

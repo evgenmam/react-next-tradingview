@@ -2,11 +2,17 @@ import EventEmitter from "events";
 import pino from "pino";
 import WS from "ws";
 import TVApi from "../tradingview";
-import { TimescaleUpdate, TSOHLC, TVWSEvent } from "../types";
-import { isPing, readMessages, timescaleToOHLC } from "../utils";
+import { StudyData, TimescaleUpdate, TSOHLC, TVWSEvent } from "../types";
+import {
+  duFixTimestamp,
+  isPing,
+  readMessages,
+  timescaleToOHLC,
+} from "../utils";
 const URL = "wss://prodata.tradingview.com/socket.io/websocket";
 const BUILD_ID = "2023_01_26-12_41";
 const CHART_ID = "lfNsKpYG";
+import * as R from "ramda";
 
 const handlers = {
   quote_add_symbols: (data: any) => {},
@@ -78,7 +84,11 @@ export class TVClientC {
       case "du":
         const [d] = body;
         Object.entries(d).forEach(([sym, v]) => {
-          this.listener.emit(`${ses}:${sym}:${e.m}`, v);
+          if (R.has("st", v))
+            this.listener.emit(
+              `${ses}:${sym}:${e.m}`,
+              duFixTimestamp(v as StudyData)
+            );
         });
       default:
         this.listener.emit(`${ses}:${e.m}`, e.p);

@@ -1,5 +1,9 @@
 import Dexie from "dexie";
-import { ITVSymbolList } from "../components/tv-components/types";
+import {
+  ITVSeries,
+  ITVStudy,
+  ITVSymbolList,
+} from "../components/tv-components/types";
 import { IChartConfig, IPreset } from "../components/v2/v2.types";
 import {
   IChartData,
@@ -9,7 +13,7 @@ import {
   IStrategy,
 } from "../types/app.types";
 
-const DB_VERSION = 2.6;
+const DB_VERSION = 2.9;
 
 class DB extends Dexie {
   rows!: Dexie.Table<IChartData, number>;
@@ -21,11 +25,13 @@ class DB extends Dexie {
   lists!: Dexie.Table<ITVSymbolList, number>;
   charts!: Dexie.Table<IChartConfig, string>;
   presets!: Dexie.Table<IPreset, number>;
+  series!: Dexie.Table<ITVSeries, string>;
+  studies!: Dexie.Table<ITVStudy, string>;
 
   constructor() {
     super("bg-db");
     this.version(DB_VERSION).stores({
-      rows: "id++, dataset",
+      rows: "id++, dataset, period",
       fields: "id++, dataset",
       indicators: "name",
       settings: "key",
@@ -34,6 +40,8 @@ class DB extends Dexie {
       lists: "id++",
       charts: "name",
       presets: "id++",
+      series: "dataset",
+      studies: "id",
     });
   }
 }

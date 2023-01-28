@@ -5,9 +5,9 @@ export const filterEmpty = (data: IChartData[], fields: string[]) =>
   fields.filter((f) => data.some((d) => !!d[f]));
 
 export const findClosestIndexByTime =
-  (time: number) => (data: IChartData[]) => {
-    const index = data.findIndex((d) => d.time >= time);
-    return Math.abs(time - data[index]?.time || 0) >
+  (time: number) => (data: { time: number }[]) => {
+    const index = data.findIndex((d) => d.time! >= time);
+    return Math.abs(time - data[index]?.time! || 0) >
       Math.abs(time - data[index - 1]?.time || 0)
       ? index - 1
       : index;

@@ -3,6 +3,7 @@ import Highcharts, { Chart } from "highcharts";
 
 import HighchartsStock from "highcharts/highstock";
 import HighchartsExporting from "highcharts/modules/exporting";
+import HighchartsMore from "highcharts/highcharts-more";
 import HighchartsReact from "highcharts-react-official";
 import {
   cloneElement,
@@ -22,6 +23,7 @@ import * as R from "ramda";
 if (typeof Highcharts === "object") {
   HighchartsExporting(Highcharts);
   HighchartsExporting(HighchartsStock);
+  HighchartsMore(HighchartsStock);
   dragPanes(HighchartsStock);
   if (localStorage.getItem("joy-mode") === "dark") {
     DarkTheme(HighchartsStock);

@@ -2,7 +2,14 @@ import * as R from "ramda";
 import fs from "fs";
 import path from "path";
 import { v4 } from "uuid";
-import { MetaInfo, TimescaleUpdate, TSOHLC, TVWSEvent } from "./types";
+import {
+  MetaInfo,
+  StudyData,
+  TimescaleUpdate,
+  TSOHLC,
+  TVWSEvent,
+  St,
+} from "./types";
 import { ITVIndicator } from "../components/tv-components/types";
 const n = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -118,3 +125,10 @@ const a = {
     },
   ],
 };
+
+export const duFixTimestamp = R.over<StudyData, St[]>(
+  R.lensProp("st"),
+  R.map<St, St>(
+    R.over<St, number[]>(R.lensProp("v"), R.adjust(0, R.multiply(1000)))
+  )
+);

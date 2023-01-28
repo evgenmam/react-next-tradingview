@@ -1,6 +1,6 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import IDB from "../../../db/db";
-import { ITVIndicator, ITVSymbol } from "../../tv-components/types";
+import { ITVIndicator, ITVStudy, ITVSymbol } from "../../tv-components/types";
 import { IChartConfig, IPreset } from "../v2.types";
 import * as R from "ramda";
 export const useV2ChartConfigs = () => {
@@ -97,4 +97,44 @@ export const useV2Presets = () => {
     setSelected,
     addIndicator,
   };
+};
+
+export const useActiveStudies = () => {
+  const studies =
+    useLiveQuery(async () => {
+      const preset = await IDB.presets.filter((p) => !!p.selected).first();
+      const dataset = await IDB.settings.where("key").equals("source").first();
+      if (!preset || !dataset) return [];
+      return await IDB.studies
+        .where("id")
+        .anyOf(
+          preset.indicators?.map?.((v) => `${dataset.value}_${v.scriptName}`)
+        )
+        .toArray();
+    }) || [];
+
+  return { studies };
+};
+
+export const useV2Studies = () => {
+  const studies =
+    useLiveQuery(async () => {
+      return await IDB.studies.toArray();
+    }) || [];
+
+  const putStudy = async (study: ITVStudy) => {
+    await IDB.studies.put(study, study.id);
+  };
+  const putStudies = async (studies: ITVStudy[]) => {
+    for (const study of studies) await IDB.studies.put(study, study.id);
+  };
+  return { studies, putStudy, putStudies };
+};
+
+export const useV2Study = (id: number) => {
+  const study =
+    useLiveQuery(async () => {
+      return await IDB.studies.where("id").equals(id).first();
+    }, [id]) || null;
+  return { study };
 };

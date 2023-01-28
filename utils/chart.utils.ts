@@ -37,7 +37,7 @@ export const getNextLabel = (label: string) => ({
 export const getLabelAxis = (
   id: string,
   label: string,
-  top: YAxisOptions["top"]
+  top: YAxisOptions["top"] = 24
 ): YAxisOptions => ({
   id: `${id}-label}`,
   opposite: false,

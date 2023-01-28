@@ -2,6 +2,7 @@ import { Box, Divider } from "@mui/joy";
 import { Stack } from "@mui/system";
 import { Indicators } from "../data/indicators";
 import XScrollbar from "../utils/scrollbars";
+import { DisplayDataStudies } from "./display-data-studies";
 import { DisplayDataTable } from "./display-data-table";
 
 export const DisplayData = () => {
@@ -12,7 +13,9 @@ export const DisplayData = () => {
           <Stack spacing={2} width="100%">
             <Divider>Source</Divider>
             <DisplayDataTable dataset="source" />
-            <Indicators />
+            <Divider>Studies</Divider>
+            <DisplayDataStudies />
+            {/* <Indicators /> */}
             <Divider>Target</Divider>
             <DisplayDataTable dataset="target" />
             <DisplayDataTable dataset="target2" />

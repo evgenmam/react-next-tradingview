@@ -7,6 +7,7 @@ export type IChartData = {
   low: number;
   time: number;
   dataset: string;
+  period: number;
 } & Record<string, number>;
 
 export type ISettings = {

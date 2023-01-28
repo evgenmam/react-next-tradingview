@@ -5,6 +5,7 @@ import { useSettings } from "../../hooks/data.hook";
 import { DatasetSelect } from "../data/selects/dataset-select";
 import XScrollbar from "../utils/scrollbars";
 import { DisplayChart } from "./display-chart";
+import { DisplayChartV2 } from "./display-chart.v2";
 import { DisplayData } from "./display-data";
 
 export const DisplayArea = () => {

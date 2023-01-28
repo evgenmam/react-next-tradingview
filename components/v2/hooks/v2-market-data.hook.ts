@@ -3,7 +3,7 @@ import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useRows, useSetting, useSettings } from "../../../hooks/data.hook";
 import { getSymbolKey } from "../../tv-components/utils/symbol.utils";
-import { useV2ChartConfigs, useV2Presets } from "./v2-data.hook";
+import { useV2ChartConfigs, useV2Presets, useV2Studies } from "./v2-data.hook";
 
 export const useV2MarketData = (active: boolean) => {
   const { configs } = useV2ChartConfigs();
@@ -17,8 +17,9 @@ export const useV2MarketData = (active: boolean) => {
   const spl = useRows("source");
   const target1 = useRows("target");
   const target2 = useRows("target2");
-  const { sett } = useSettings();
+  const { sett, period } = useSettings();
   const snack = useSnackbar();
+  const { putStudies } = useV2Studies();
   useEffect(() => {
     let cancel: Canceler;
     const getData = async () => {
@@ -30,6 +31,7 @@ export const useV2MarketData = (active: boolean) => {
             numerator,
             denominator,
             indicators: selected?.indicators,
+            period,
           },
           {
             cancelToken: new axios.CancelToken((c) => {
@@ -43,6 +45,7 @@ export const useV2MarketData = (active: boolean) => {
         spl.setRows(data?.split || []);
         target1.setRows(data?.numerator || []);
         target2.setRows(data?.denominator || []);
+        putStudies(data?.studies || []);
       } catch (error) {
         if (!axios.isCancel(error))
           snack.enqueueSnackbar(
@@ -62,5 +65,5 @@ export const useV2MarketData = (active: boolean) => {
     return () => {
       cancel?.();
     };
-  }, [numerator, denominator, active]);
+  }, [numerator, denominator, active, selected?.indicators, period]);
 };

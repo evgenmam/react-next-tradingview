@@ -1,4 +1,5 @@
 import { Router, Request, Response } from "express";
+import dynamic from "next/dynamic";
 import { ITVIndicator } from "../../components/tv-components/types";
 import { TVChartSession, reconnect, status } from "../helpers/tv-market-data";
 import TVApi from "../tradingview";
@@ -21,28 +22,32 @@ router.get("/search", async (req: Request, res: Response) => {
 const getSymbol = async (
   res: Response,
   symbol: string,
+  period: string = "1W",
   indicators: ITVIndicator[] = []
 ) => {
   const nSession = new TVChartSession(res);
   await nSession.init();
-  let data = await nSession.getSymbol(symbol);
+  let data = await nSession.getSymbol(symbol, period);
+  const studies = [];
   for (const indicator of indicators) {
-    const d: any[] = await nSession.getIndicator(symbol, indicator);
-    data = (data as any[]).map((v, i) => ({ ...v, ...d[i] }));
+    // const d: any[] = await nSession.getIndicator(symbol, indicator);
+    // data = (data as any[]).map((v, i) => ({ ...v, ...d[i] }));
+    studies.push(await nSession.getIndicator(symbol, indicator));
   }
   nSession.cleanup();
-  return data;
+  return [data, studies];
 };
 
 router.post("/market-data", async (req: Request, res: Response) => {
   if (req.body.numerator && req.body.denominator) {
     const s = `${req.body.numerator}/${req.body.denominator}`;
-    const [numerator, denominator, split] = await Promise.all([
-      getSymbol(res, req.body.numerator),
-      getSymbol(res, req.body.denominator),
-      getSymbol(res, s, req.body.indicators),
+    const [[numerator], [denominator], [split, studies]] = await Promise.all([
+      getSymbol(res, req.body.numerator, req.body.period),
+      getSymbol(res, req.body.denominator, req.body.period),
+      getSymbol(res, s, req.body.period, req.body.indicators),
     ]);
-    if (!res.headersSent) return res.send({ numerator, denominator, split });
+    if (!res.headersSent)
+      return res.send({ numerator, denominator, split, studies });
   }
   if (!res.headersSent) res.send({});
 });

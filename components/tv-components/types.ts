@@ -1,3 +1,5 @@
+import { MetaInfo, StudyData } from "../../api/types";
+
 export type ITVContract = {
   description: string;
   symbol: string;
@@ -54,4 +56,15 @@ export type ITVSymbolList = {
   name: string;
   symbols: ITVSymbol[];
   selected?: boolean;
+};
+
+export type ITVSeries = {
+  dataset: string;
+  data: number[];
+};
+
+export type ITVStudy = {
+  id: string;
+  data: StudyData;
+  meta: MetaInfo;
 };
