@@ -56,10 +56,14 @@ export const DisplayChart = () => {
   const tooltip: Highcharts.TooltipOptions = {
     outside: true,
     split: true,
-    formatter: function () {
+    formatter: function (tooltip) {
+      // console.log(this);
       if (typeof this.x === "number") {
         hoverSet(this.x);
-        return [new Date(this.x).toUTCString()];
+        return [
+          new Date(this.x).toUTCString(),
+          ...(this.points?.map((v) => v?.point?.options?.label || "") || []),
+        ];
       } else {
         hoverSet(-1);
         return [];

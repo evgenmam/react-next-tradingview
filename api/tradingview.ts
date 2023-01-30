@@ -84,9 +84,3 @@ class TVApiC {
 const TVApi = new TVApiC();
 
 export default TVApi;
-
-console.log(
-  // new ColorTool("rgba(76,175,80,0.5)").argb,
-  // 4283477836,
-  new ColorTool(13941760).rgba
-);

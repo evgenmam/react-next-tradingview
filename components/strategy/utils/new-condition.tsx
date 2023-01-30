@@ -15,71 +15,65 @@ export const NewCondition = ({ first, value, setCondition }: Props) => {
     setCondition({ ...value, [key]: v });
   };
   return (
-    <Grid container spacing={1} columns={30}>
-      <Grid xs={30} md={11}>
-        <Stack direction="row">
-          <Box flexGrow={1}>
-            <FieldSelect
-              exclude={["time", "id", "dataset"]}
-              hideLabel
-              value={value.a.field}
-              onChange={(_, e) => {
-                e && setC("a")({ ...value.a, field: e });
-              }}
-            />
-          </Box>
-          <Box flexShrink={1}>
-            <Input
-              type="number"
-              size="sm"
-              fullWidth={false}
-              sx={{ width: 55 }}
-              value={value.a.offset}
-              onChange={(e) => {
-                if (+e.target.value <= 0) {
-                  setC("a")({ ...value.a, offset: +e.target.value });
-                }
-              }}
-            />
-          </Box>
-        </Stack>
-      </Grid>
-      <Grid xs={30} md={8}>
-        <ConditionSelect
-          value={value.operator}
-          onChange={(_, e) => {
-            e && setC("operator")(e);
-          }}
-        />
-      </Grid>
-      <Grid xs={30} md={11}>
-        <Stack direction="row">
-          <Box flexGrow={1}>
-            <FieldSelect
-              exclude={["time", "id", "dataset"]}
-              hideLabel
-              value={value.b.field}
-              onChange={(_, e) => {
-                e && setC("b")({ ...value.b, field: e });
-              }}
-            />
-          </Box>
-          <Box flexShrink={1}>
-            <Input
-              type="number"
-              size="sm"
-              fullWidth={false}
-              sx={{ width: 55 }}
-              value={value.b.offset}
-              onChange={(e) => {
-                if (+e.target.value <= 0) {
-                  setC("b")({ ...value.b, offset: +e.target.value });
-                }
-              }}
-            />
-          </Box>
-        </Stack>
-      </Grid>
-    </Grid>
+    <Stack spacing={1}>
+      <Stack direction="row">
+        <Box flexGrow={1}>
+          <FieldSelect
+            exclude={["time", "id", "dataset"]}
+            hideLabel
+            value={value.a.field}
+            onChange={(_, e) => {
+              e && setC("a")({ ...value.a, field: e });
+            }}
+          />
+        </Box>
+        <Box flexShrink={1}>
+          <Input
+            type="number"
+            size="sm"
+            fullWidth={false}
+            sx={{ width: 55 }}
+            value={value.a.offset}
+            onChange={(e) => {
+              if (+e.target.value <= 0) {
+                setC("a")({ ...value.a, offset: +e.target.value });
+              }
+            }}
+          />
+        </Box>
+      </Stack>
+      <ConditionSelect
+        value={value.operator}
+        onChange={(_, e) => {
+          e && setC("operator")(e);
+        }}
+      />
+      <Stack direction="row">
+        <Box flexGrow={1}>
+          <FieldSelect
+            exclude={["time", "id", "dataset"]}
+            hideLabel
+            value={value.b.field}
+            onChange={(_, e) => {
+              e && setC("b")({ ...value.b, field: e });
+            }}
+          />
+        </Box>
+        <Box flexShrink={1}>
+          <Input
+            type="number"
+            size="sm"
+            fullWidth={false}
+            sx={{ width: 55 }}
+            value={value.b.offset}
+            onChange={(e) => {
+              if (+e.target.value <= 0) {
+                setC("b")({ ...value.b, offset: +e.target.value });
+              }
+            }}
+          />
+        </Box>
+      </Stack>
+    </Stack>
   );
 };

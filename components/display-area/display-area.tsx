@@ -3,10 +3,12 @@ import { Divider, Stack, Typography } from "@mui/joy";
 import { Box } from "@mui/system";
 import { useSettings } from "../../hooks/data.hook";
 import { DatasetSelect } from "../data/selects/dataset-select";
+import { HStock } from "../hchart";
 import XScrollbar from "../utils/scrollbars";
 import { DisplayChart } from "./display-chart";
 import { DisplayChartV2 } from "./display-chart.v2";
 import { DisplayData } from "./display-data";
+import { TestChart } from "./test-chart";
 
 export const DisplayArea = () => {
   const { source } = useSettings();
@@ -43,6 +45,7 @@ export const DisplayArea = () => {
           /> */}
         </Stack>
         <Stack direction="row" height="100%">
+
           <DisplayChart />
           <DisplayData />
         </Stack>

@@ -67,4 +67,7 @@ export type ITVStudy = {
   id: string;
   data: StudyData;
   meta: MetaInfo;
+  hidden?: boolean;
+  collapsed?: boolean;
+  hiddenFields?: string[];
 };

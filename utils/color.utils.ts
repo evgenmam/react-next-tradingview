@@ -48,7 +48,7 @@ export class ColorTool {
     if (this.isHex) {
       return this.hex2rgba(this.color as string);
     } else if (this.isRGBA) {
-      return this.color;
+      return this.color as string;
     } else if (this.isRGB) {
       return this.rgb2rgba(this.color as string);
     } else if (this.isARGB) {
@@ -167,3 +167,5 @@ export class ColorTool {
     return "rgba(" + r + "," + g + "," + b + "," + a.toFixed(2) + ")";
   }
 }
+
+console.log(new ColorTool(1750284).hex)

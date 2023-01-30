@@ -131,10 +131,13 @@ export const useV2Studies = () => {
   return { studies, putStudy, putStudies };
 };
 
-export const useV2Study = (id: number) => {
+export const useV2Study = (id: string) => {
   const study =
     useLiveQuery(async () => {
       return await IDB.studies.where("id").equals(id).first();
     }, [id]) || null;
-  return { study };
+  const updateStudy = async (study: Partial<ITVStudy>) => {
+    await IDB.studies.update(id, study);
+  };
+  return { study, updateStudy };
 };

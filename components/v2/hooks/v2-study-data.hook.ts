@@ -11,7 +11,7 @@ export const useV2StudyData = ({
 }) => {
   const { studies } = useActiveStudies();
   const chart = useMemo(
-    () => studies.map((v) => studyToChart(v, height, top)),
+    () => studies?.filter(v => !v.hidden).map((v) => studyToChart(v, height, top)),
     [studies, height, top]
   );
   return chart;

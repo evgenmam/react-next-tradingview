@@ -45,7 +45,7 @@ const colorerToZone = (
     R.propOr([] as number[][], "data"),
     R.map<number[], SZ>(([x, y]) => ({
       value: x,
-      color: colorer?.palette?.colors?.[y]?.color,
+      color: colorer?.palette?.colors?.[y]?.color || new ColorTool(y).rgba,
     })),
     R.groupWith((a, b) => a.color === b.color),
     R.map<SZ[], SZ>(R.head)
@@ -79,15 +79,19 @@ type ITVFilled = {
   data1: ITVPlot;
   data2: ITVPlot;
   style: ITVStudy["meta"]["defaults"]["filledAreasStyle"][number];
+  colorer?: ITVPlot;
 };
 
 const getFilled = (filled: ITVFilled[], study: ITVStudy) => {
   return (
-    filled?.map(({ data1, data2, style }) => ({
+    filled?.map(({ data1, data2, style, colorer, id }) => ({
+      name: data1?.title + " - " + data2?.title,
+      zoneAxis: "x",
       type: "arearange" as const,
       data: data1?.data?.map((v, idx) => [v[0], v[1], data2?.data?.[idx][1]]),
       yAxis: study.meta?.is_price_study ? "source" : `${study?.data?.node}`,
-      color: style?.color,
+      // color: style?.color,
+      zones: colorer ? colorerToZone(colorer) : [],
     })) || []
   );
 };
@@ -127,30 +131,40 @@ export const getShapes = (plots: ITVPlot[], study: ITVStudy) => {
 export const getAlerts = (
   plots: ITVPlot[],
   study: ITVStudy
-): Highcharts.SeriesFlagsOptions[] => {
+): Highcharts.SeriesSplineOptions[] => {
   const alerts = plots?.filter?.(
     (p) => p.plot?.type === "alertcondition" && p.data?.some((v) => v[1])
   );
-  return alerts?.map(({ title, id, data }, idx) => {
+  return alerts?.map(({ title, id, data, plot }, idx) => {
     return {
+      name: `alert:${study.meta?.description}:${title}`,
       yAxis: "source-left",
-      onSeries: "source-ds",
-      type: "flags" as const,
-      data: data.filter((c) => c[1])?.map((c) => ({ x: c[0], title })),
+      // onSeries: "source-ds",
+      type: "spline" as const,
+      data: data
+        .filter((c) => c[1])
+        ?.map((c) => ({ x: c[0], y: 0, label: title })),
       style: {
-        fontSize: '8px',
+        fontSize: "8px",
       },
-      // lineWidth: 0,
-      // marker: {
-      //   enabled: true,
-      //   symbol: "circle",
-      //   radius: 4,
-      // },
-      // states: {
-      //   hover: {
-      //     lineWidthPlus: 0,
-      //   },
-      // },
+      states: {
+        hover: {
+          lineWidthPlus: 0,
+        },
+      },
+      lineWidth: 0,
+      marker: {
+        enabled: true,
+        symbol: "circle",
+        radius: 6,
+        color: "purple",
+      },
+      color: "red",
+      dataLabels: {
+        formatter: function () {
+          return "1";
+        },
+      },
     };
   });
 };
@@ -161,6 +175,7 @@ export const studyToChart = (
   top: Highcharts.YAxisOptions["top"]
 ) => {
   const { data, meta } = study || {};
+  console.log(study);
   const rows = data?.st?.filter?.((v) => v.i >= 0);
   const plots = meta?.plots
     ?.map(({ id, ...s }, idx) => ({
@@ -173,23 +188,23 @@ export const studyToChart = (
       palette: meta?.defaults?.palettes?.[s?.palette || ""],
     }))
     ?.filter((v) => !meta?.styles?.[v?.id]?.isHidden)
-    .filter(isGoodPlot);
+    .filter(isGoodPlot)
+    .filter((v) => !study?.hiddenFields?.includes(v.id));
   const filled = meta?.filledAreas
-    ?.map(({ id, objAId, objBId }, idx) => ({
+    ?.map(({ id, objAId, objBId }) => ({
       id,
       data1: plots?.find((plot) => plot.id === objAId)!,
       data2: plots?.find((plot) => plot.id === objBId)!,
-      style: meta?.defaults?.filledAreasStyle?.[idx],
+      style: meta?.defaults?.filledAreasStyle?.[id],
+      colorer: plots?.find((p) => p.plot?.target === id),
     }))
     .filter(({ data1, data2 }) => data1 && data2);
-
   const lines = getLines(plots, study);
   const arearange = getFilled(filled, study);
-
   const circles = getCircles(plots, study);
   const shapes = getShapes(plots, study);
   const alerts = getAlerts(plots, study);
-  console.log(alerts);
+
   return {
     series: [...lines, ...arearange, ...circles, ...alerts],
     yAxis: meta?.is_price_study
@@ -203,7 +218,6 @@ export const studyToChart = (
           getLabelAxis(data?.node, study?.meta?.description, top),
         ],
   };
-  // const data =
 };
 
 export const getStudyFields = (study: ITVStudy) =>

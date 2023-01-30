@@ -95,9 +95,9 @@ export const useStrategyHover = (chart: Highcharts.Chart, active: number) => {
     if (series?.length) {
       series.forEach((v) => {
         v.setState("hover");
-        v.yAxis.series
-          .filter((v) => v.type === "candlestick")
-          .forEach((v) => {
+        v?.yAxis?.series
+          ?.filter((v) => v.type === "candlestick")
+          ?.forEach((v) => {
             v.setState("inactive");
           });
         v.data?.forEach((v) => {
@@ -106,9 +106,9 @@ export const useStrategyHover = (chart: Highcharts.Chart, active: number) => {
       });
       return () => {
         series.forEach((v) => {
-          v.yAxis.series
-            .filter((v) => v.type === "candlestick")
-            .forEach((v) => {
+          v?.yAxis?.series
+            ?.filter((v) => v.type === "candlestick")
+            ?.forEach((v) => {
               v.setState("normal");
             });
           v.setState("normal");
@@ -119,12 +119,69 @@ export const useStrategyHover = (chart: Highcharts.Chart, active: number) => {
   }, [active]);
 };
 
+export const useAlertConditionHover = (
+  chart: Highcharts.Chart,
+  active: number
+) => {
+  useEffect(() => {
+    const alerts = chart?.series?.filter((v) => v.name?.startsWith?.("alert"));
+    alerts.forEach((a) => {
+      const idx = findClosestIndexByX(active, 1)(a?.points || []);
+      const p = a?.points?.[idx];
+      a?.points?.forEach((v) => v.setState("inactive"));
+      if (p) {
+        a?.setState?.("hover");
+        p?.setState?.("hover");
+      }
+    });
+    return () => {
+      alerts.forEach((a) => {
+        a?.setState?.("normal");
+        a?.points?.forEach((v) => v.setState("normal"));
+      });
+    };
+
+    // const series = chart?.series
+    //   ?.filter((v) => v.name?.startsWith?.("strategy"))
+    //   .filter(
+    //     (v) =>
+    //       v?.points[0]?.x <= active &&
+    //       v?.points[v?.points.length - 1]?.x >= active
+    //   );
+    // if (series?.length) {
+    //   series.forEach((v) => {
+    //     v.setState("hover");
+    //     v?.yAxis?.series
+    //       ?.filter((v) => v.type === "candlestick")
+    //       ?.forEach((v) => {
+    //         v.setState("inactive");
+    //       });
+    //     v.data?.forEach((v) => {
+    //       v.setState("inactive");
+    //     });
+    //   });
+    //   return () => {
+    //     series.forEach((v) => {
+    //       v?.yAxis?.series
+    //         ?.filter((v) => v.type === "candlestick")
+    //         ?.forEach((v) => {
+    //           v.setState("normal");
+    //         });
+    //       v.setState("normal");
+    //       v.points.forEach((v) => v.setState("normal"));
+    //     });
+    //   };
+    // }
+  }, [active]);
+};
+
 Highcharts.Pointer.prototype.reset = function () {
   return undefined;
 };
 export const HoverWatcher1 = ({ chart }: { chart: Highcharts.Chart }) => {
   const active = useHoverGet();
 
+  // useAlertConditionHover(chart, active);
   useSignalHover(chart, active);
   useStrategyHover(chart, active);
   return null;

@@ -51,7 +51,7 @@ export const useSourceData = ({
     },
 
     // @ts-ignore
-    getLabelAxis("source", dsname, 48, height),
+    getLabelAxis("source", dsname, 48, 30),
   ];
   return { series, yAxis };
 };

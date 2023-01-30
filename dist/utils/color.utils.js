@@ -151,7 +151,6 @@ var ColorTool = /** @class */ (function () {
         var g = parseInt(rgbaArr[1]);
         var b = parseInt(rgbaArr[2]);
         var a = Math.round(parseFloat(rgbaArr[3]) * 255);
-        console.log(r, g, b, a);
         return (a << 24) | (b << 16) | (g << 8) | r;
     };
     ColorTool.prototype.argb2hex = function (argb) {

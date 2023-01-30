@@ -147,7 +147,3 @@ var TVApiC = /** @class */ (function () {
 }());
 var TVApi = new TVApiC();
 exports.default = TVApi;
-console.log(
-// new ColorTool("rgba(76,175,80,0.5)").argb,
-// 4283477836,
-new color_utils_1.ColorTool(13941760).rgba);
