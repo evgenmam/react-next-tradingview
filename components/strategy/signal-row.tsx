@@ -31,16 +31,18 @@ export const SignalRow = ({ signal }: Props) => {
     <List>
       {signal.condition.map((c, idx) => (
         <ListItem key={idx}>
-          <Stack direction={"row"} spacing={0.5}>
+          <Stack direction={"row"} spacing={0.5} alignItems="start">
             <StopIcon color={signal.color} width={18} />
 
-            <Typography fontWeight={700}>
-              {c.a.field}[{c.a.offset}]
-            </Typography>
-            <Typography>{sentenceCase(c.operator)}</Typography>
-            <Typography fontWeight={700}>
-              {c.b.field}[{c.b.offset}]
-            </Typography>
+            <Stack>
+              <Typography fontWeight={700} lineHeight={1}>
+                {c.a.field}[{c.a.offset}]
+              </Typography>
+              <Typography lineHeight={1}>{sentenceCase(c.operator)}</Typography>
+              <Typography fontWeight={700} lineHeight={1}>
+                {c.b.field}[{c.b.offset}]
+              </Typography>
+            </Stack>
           </Stack>
           <ListItemSecondaryAction>
             <IconButton

@@ -3,6 +3,8 @@ import {
   ITVSeries,
   ITVStudy,
   ITVSymbolList,
+  ITVIndicator,
+  ITVStudyConfig,
 } from "../components/tv-components/types";
 import { IChartConfig, IPreset } from "../components/v2/v2.types";
 import {
@@ -13,7 +15,7 @@ import {
   IStrategy,
 } from "../types/app.types";
 
-const DB_VERSION = 2.9;
+const DB_VERSION = 3.1;
 
 class DB extends Dexie {
   rows!: Dexie.Table<IChartData, number>;
@@ -27,6 +29,8 @@ class DB extends Dexie {
   presets!: Dexie.Table<IPreset, number>;
   series!: Dexie.Table<ITVSeries, string>;
   studies!: Dexie.Table<ITVStudy, string>;
+  savedScripts!: Dexie.Table<ITVIndicator & { type: "private" }, string>;
+  studyConfigs!: Dexie.Table<ITVStudyConfig>;
 
   constructor() {
     super("bg-db");
@@ -42,6 +46,8 @@ class DB extends Dexie {
       presets: "id++",
       series: "dataset",
       studies: "id",
+      savedScripts: "scriptIdPart",
+      studyConfigs: "id",
     });
   }
 }
@@ -103,23 +109,41 @@ const migrations = async () => {
       name: "Preset 1",
       indicators: [
         {
-          imageUrl: "ZGl2xWym",
-          scriptName: "LuxAlgo Price Action Concepts (Premium)",
+          imageUrl: "S8svsT4N",
+          scriptName: "LuxAlgo Oscillators (Premium)",
           scriptSource: "",
           access: 3,
-          scriptIdPart: "PUB;iHcwTCS7vLUQ2jDDXVIVM4B8kZG7HqHC",
+          scriptIdPart: "PUB;8bBrCmCGspE390DLRNWYlXrtDxRIoZYe",
           version: "12",
           extra: {
             kind: "study",
             sourceInputsCount: 0,
           },
-          agreeCount: 4805,
+          agreeCount: 2492,
           author: {
-            id: 793152,
+            id: 599151,
             username: "LuxAlgo",
             is_broker: false,
           },
-          weight: 24736,
+          weight: 6639,
+        },
+        {
+          imageUrl: "fYHlrAoz",
+          scriptName: "LuxAlgo Signals & Overlays (Premium)",
+          scriptSource: "",
+          access: 3,
+          scriptIdPart: "PUB;7pIlmOh7nrutyvfmHTPJQEHlK26okwvl",
+          version: "57",
+          extra: {
+            kind: "study",
+            sourceInputsCount: 1,
+          },
+          agreeCount: 16137,
+          author: {
+            id: 763650,
+            username: "LuxAlgo",
+            is_broker: false,
+          },
         },
         {
           imageUrl: "LFBaHNuA",
@@ -159,28 +183,46 @@ const migrations = async () => {
           },
           weight: 24814,
         },
-        {
-          imageUrl: "S8svsT4N",
-          scriptName: "LuxAlgo Oscillators (Premium)",
-          scriptSource: "",
-          access: 3,
-          scriptIdPart: "PUB;8bBrCmCGspE390DLRNWYlXrtDxRIoZYe",
-          version: "12",
-          extra: {
-            kind: "study",
-            sourceInputsCount: 0,
-          },
-          agreeCount: 2492,
-          author: {
-            id: 599151,
-            username: "LuxAlgo",
-            is_broker: false,
-          },
-          weight: 6639,
-        },
       ],
       selected: true,
     });
+    await IDB.studyConfigs.bulkAdd([
+      {
+        id: "PUB;7pIlmOh7nrutyvfmHTPJQEHlK26okwvl",
+        collapsed: true,
+        showFields: [
+          "plot_46",
+          "plot_44",
+          "plot_47",
+          "plot_48",
+          "plot_49",
+          "plot_45",
+          "plot_61",
+        ],
+      },
+      {
+        id: "PUB;8bBrCmCGspE390DLRNWYlXrtDxRIoZYe",
+        collapsed: true,
+        showFields: [
+          "plot_0",
+          "plot_1",
+          "plot_28",
+          "plot_25",
+          "plot_26",
+          "plot_24",
+        ],
+      },
+      {
+        id: "PUB;d2ac68ba96c2432182159828c9928764",
+        collapsed: true,
+        showFields: ["plot_0", "plot_2", "plot_1"],
+      },
+      {
+        id: "PUB;kGJGLu77vLikIl1P4H1OuIWM7m7OA271",
+        collapsed: true,
+        showFields: ["plot_24", "plot_25", "plot_28", "plot_29"],
+      },
+    ]);
   }
 };
 migrations();

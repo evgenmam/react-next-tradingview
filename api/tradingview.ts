@@ -1,4 +1,5 @@
 import axios from "axios";
+import FormData from "form-data";
 import fs from "fs";
 import client from "ws";
 import { ITVIndicator } from "../components/tv-components/types";
@@ -6,7 +7,7 @@ import { ColorTool } from "../utils/color.utils";
 import { TVTranslateResponse } from "./types";
 
 class TVApiC {
-  login = async () => {
+  l = async () => {
     const headers = new Headers();
     headers.append("Referer", "https://www.tradingview.com/");
 
@@ -23,14 +24,29 @@ class TVApiC {
         body,
       }
     );
-    const r = await response.json();
-    fs.writeFileSync("res.json", JSON.stringify(r, null, 2));
-    return r;
+    return response;
+  };
+  login = async () => {
+    const response = await this.l();
+    return response.json();
   };
 
   getAuthToken = async () => {
     const res = await this.login();
     return res.auth_token;
+  };
+
+  getAuthCookie = async () => {
+    const res = await this.l();
+    const h = res.headers.get("set-cookie");
+    if (h) {
+      return h
+        ?.split("; ")
+        ?.filter((c) => c.startsWith("Secure, "))
+        ?.map((v) => v.replace("Secure, ", ""))
+        ?.join("; ");
+    }
+    return;
   };
 
   search = async (query: {
@@ -76,6 +92,25 @@ class TVApiC {
           referer: "https://www.tradingview.com/",
         },
       }
+    );
+    return data;
+  };
+
+  getPrivateScripts = async () => {
+    const cookie = await this.getAuthCookie();
+    const cfg = { headers: { cookie, origin: "https://www.tradingview.com" } };
+
+    const { data: scripts } = await axios.post(
+      "https://www.tradingview.com/pine_perm/list_scripts/",
+      {},
+      cfg
+    );
+    const fd = new FormData();
+    fd.append("scriptIdPart", scripts.join(","));
+    const { data } = await axios.post(
+      "https://www.tradingview.com/pubscripts-get/",
+      fd,
+      cfg
     );
     return data;
   };

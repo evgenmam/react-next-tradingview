@@ -14,4 +14,8 @@ indicatorsRoutes.post("/translate", async (req: Request, res: Response) => {
   res.send(await TVApi.translateIndicator(req.body));
 });
 
+indicatorsRoutes.get("/private", async (req: Request, res: Response) => {
+  res.send(await TVApi.getPrivateScripts());
+});
+
 export default indicatorsRoutes;

@@ -54,6 +54,9 @@ const defaults: HighchartsReact.Props["options"] = {
   accessibility: {
     enabled: false,
   },
+  xAxis: {
+    range: 12 * 30 * 24 * 3600 * 1000,
+  },
 };
 export const HChart = (props: HighchartsReact.Props) => {
   return <HighchartsReact highcharts={Highcharts} {...props} />;

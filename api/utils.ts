@@ -62,8 +62,6 @@ export const getT = (v: string) => {};
 export const getPineInputs = (metaInfo: MetaInfo, ind: ITVIndicator) =>
   metaInfo.inputs
     .map((v) => {
-      console.log(v);
-
       switch (v.id) {
         case "text":
           return [v.id, v.defval];
@@ -158,7 +156,7 @@ export const mergeDataAndStudies = (
             meta?.styles?.[id]?.title
               ? {
                   ...acc,
-                  [`${meta?.description}:${meta?.styles?.[id]?.title}:${id}`]:
+                  [`${meta?.description}:${meta?.styles?.[id]?.title}----${id}`]:
                     v[idx + 1],
                 }
               : acc,

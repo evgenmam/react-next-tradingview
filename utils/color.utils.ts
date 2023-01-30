@@ -136,7 +136,6 @@ export class ColorTool {
     let g = parseInt(rgbaArr[1]);
     let b = parseInt(rgbaArr[2]);
     let a = Math.round(parseFloat(rgbaArr[3]) * 255);
-    console.log(r,g,b,a);
 
     return (a << 24) | (b << 16) | (g << 8) | r;
   }
@@ -167,5 +166,3 @@ export class ColorTool {
     return "rgba(" + r + "," + g + "," + b + "," + a.toFixed(2) + ")";
   }
 }
-
-console.log(new ColorTool(1750284).hex)

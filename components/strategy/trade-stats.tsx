@@ -13,19 +13,19 @@ import { calculateStrategy, withRunningTotal } from "../../utils/calculations";
 import { HumanDate } from "../utils/human-date";
 import * as R from "ramda";
 import XScrollbar from "../utils/scrollbars";
+import { IStrategy } from "../../types/app.types";
 export const TradeStats = () => {
   const { rows: targetRows } = useRows("target");
   const { rows: targetRows2 } = useRows("target2");
   const { strategies } = useStrategies();
   const { rows: source } = useRows("source");
   // const stats1 = .map(calculateStrategy(source, target));
-  const { target = [], target2 = [] } = R.groupBy(
-    R.propOr("target", "dataset"),
-    strategies
-  );
+  const { target = [], target2 = [] } = R.pipe(
+    R.filter<IStrategy>((v) => !v.hide),
+    R.groupBy(R.propOr("target", "dataset"))
+  )(strategies);
   const stats1 = target.map(calculateStrategy(source, targetRows));
   const stats2 = target2.map(calculateStrategy(source, targetRows2));
-
   const stats = R.pipe(
     R.concat(stats2),
     R.unnest,
@@ -54,8 +54,7 @@ export const TradeStats = () => {
             {stats.map((s) => (
               <TableRow
                 key={`${s.openPrice}${s.opened}${s.closePrice}${s.closed}${s.strategy.dataset}`}
-                onMouseEnter={() => {
-                }}
+                onMouseEnter={() => {}}
               >
                 <TableCell>
                   <Typography

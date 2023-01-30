@@ -1,8 +1,14 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import IDB from "../../../db/db";
-import { ITVIndicator, ITVStudy, ITVSymbol } from "../../tv-components/types";
+import {
+  ITVIndicator,
+  ITVStudy,
+  ITVStudyConfig,
+  ITVSymbol,
+} from "../../tv-components/types";
 import { IChartConfig, IPreset } from "../v2.types";
 import * as R from "ramda";
+import { useState } from "react";
 export const useV2ChartConfigs = () => {
   const configs =
     useLiveQuery(async () => {
@@ -100,33 +106,62 @@ export const useV2Presets = () => {
 };
 
 export const useActiveStudies = () => {
+  const [loading, setLoading] = useState(false);
   const studies =
     useLiveQuery(async () => {
+      setLoading(true);
       const preset = await IDB.presets.filter((p) => !!p.selected).first();
       const dataset = await IDB.settings.where("key").equals("source").first();
       if (!preset || !dataset) return [];
-      return await IDB.studies
+      const data = await IDB.studies
         .where("id")
         .anyOf(
           preset.indicators?.map?.((v) => `${dataset.value}_${v.scriptName}`)
         )
         .toArray();
+      const configs = await IDB.studyConfigs
+        .where("id")
+        .anyOf(data?.map((v) => v.meta?.scriptIdPart))
+        .toArray();
+
+      setLoading(false);
+      return data.map((s) => ({
+        ...s,
+        config: configs.find((c) => c.id === s.meta?.scriptIdPart),
+      }));
     }) || [];
 
-  return { studies };
+  return { studies, loading };
 };
 
 export const useV2Studies = () => {
   const studies =
     useLiveQuery(async () => {
-      return await IDB.studies.toArray();
+      const studies = await IDB.studies.toArray();
+      const configs = await IDB.studyConfigs
+        .where("id")
+        .anyOf(studies?.map((v) => v.id))
+        .toArray();
+      return studies.map((s) => ({
+        ...s,
+        config: configs.find((c) => c.id === s.meta?.scriptIdPart) || {},
+      }));
     }) || [];
 
   const putStudy = async (study: ITVStudy) => {
     await IDB.studies.put(study, study.id);
   };
   const putStudies = async (studies: ITVStudy[]) => {
-    for (const study of studies) await IDB.studies.put(study, study.id);
+    for (const study of studies) {
+      await IDB.studies.put({ ...study }, study.id);
+      const id = study.meta?.scriptIdPart;
+      if (!(await IDB.studyConfigs.where("id").equals(id).first()))
+        await IDB.studyConfigs.put({
+          id: id,
+          collapsed: true,
+          showFields: [],
+        });
+    }
   };
   return { studies, putStudy, putStudies };
 };
@@ -139,5 +174,37 @@ export const useV2Study = (id: string) => {
   const updateStudy = async (study: Partial<ITVStudy>) => {
     await IDB.studies.update(id, study);
   };
-  return { study, updateStudy };
+  const config = useLiveQuery(async () => {
+    const study = await IDB.studies.where("id").equals(id).first();
+    if (study?.meta?.scriptIdPart)
+      return await IDB.studyConfigs
+        .where("id")
+        .equals(study?.meta?.scriptIdPart!)
+        .first();
+  }, [id]);
+
+  const updateStudyConfig = async (studyConfig: Partial<ITVStudyConfig>) => {
+    const study = await IDB.studies.where("id").equals(id).first();
+    if (study?.meta?.scriptIdPart)
+      await IDB.studyConfigs.update(study?.meta?.scriptIdPart, studyConfig);
+  };
+
+  return { study, updateStudy, updateStudyConfig, config };
+};
+
+export const useV2PrivateScripts = () => {
+  const privateScripts =
+    useLiveQuery(async () => {
+      return await IDB.savedScripts
+        .filter((v) => v.type === "private")
+        .toArray();
+    }) || [];
+
+  const setPrivateScripts = async (scripts: ITVIndicator[]) => {
+    await IDB.savedScripts.clear();
+    await IDB.savedScripts.bulkAdd(
+      scripts.map((v) => ({ ...v, type: "private" }))
+    );
+  };
+  return { privateScripts, setPrivateScripts };
 };

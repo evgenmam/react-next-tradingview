@@ -68,6 +68,9 @@ const getLines = (
     zoneAxis: "x",
     lineWidth: styles?.linewidth,
     color: styles?.color,
+    marker: {
+      enabled: false,
+    },
     zones: plots
       ?.filter(({ plot }) => plot.target === id)
       .flatMap(colorerToZone),
@@ -82,7 +85,10 @@ type ITVFilled = {
   colorer?: ITVPlot;
 };
 
-const getFilled = (filled: ITVFilled[], study: ITVStudy) => {
+const getFilled = (
+  filled: ITVFilled[],
+  study: ITVStudy
+): Highcharts.SeriesArearangeOptions[] => {
   return (
     filled?.map(({ data1, data2, style, colorer, id }) => ({
       name: data1?.title + " - " + data2?.title,
@@ -96,7 +102,10 @@ const getFilled = (filled: ITVFilled[], study: ITVStudy) => {
   );
 };
 
-export const getCircles = (plots: ITVPlot[], study: ITVStudy) => {
+export const getCircles = (
+  plots: ITVPlot[],
+  study: ITVStudy
+): Highcharts.SeriesSplineOptions[] => {
   const circles = plots?.filter?.(
     (p) => p.styles?.plottype === PlotTypes.Circles
   );
@@ -106,7 +115,7 @@ export const getCircles = (plots: ITVPlot[], study: ITVStudy) => {
     yAxis: study.meta?.is_price_study ? "source" : `${study?.data?.node}`,
     zoneAxis: "x",
     color: styles?.color,
-    type: "spline" as string,
+    type: "spline" as const,
     lineWidth: 0,
     marker: {
       enabled: true,
@@ -125,7 +134,6 @@ export const getCircles = (plots: ITVPlot[], study: ITVStudy) => {
 };
 
 export const getShapes = (plots: ITVPlot[], study: ITVStudy) => {
-  // console.log(plots);
 };
 
 export const getAlerts = (
@@ -136,6 +144,19 @@ export const getAlerts = (
     (p) => p.plot?.type === "alertcondition" && p.data?.some((v) => v[1])
   );
   return alerts?.map(({ title, id, data, plot }, idx) => {
+    const t = title?.toLowerCase();
+    const b =
+      (t?.includes("buy") && !t?.includes("exit buy")) ||
+      t?.includes("long") ||
+      t?.includes("exit sell");
+    const s =
+      (t?.includes("sell") && !t?.includes("exit sell")) ||
+      t?.includes("short") ||
+      t?.includes("exit buy");
+    const isBuy = b && !s;
+    const isSell = s && !b;
+    const fillColor = isBuy ? "green" : isSell ? "red" : undefined;
+    const symbol = isBuy ? "triangle" : isSell ? "triangle-down" : "circle";
     return {
       name: `alert:${study.meta?.description}:${title}`,
       yAxis: "source-left",
@@ -151,20 +172,18 @@ export const getAlerts = (
         hover: {
           lineWidthPlus: 0,
         },
+        inactive: {
+          opacity: 1,
+        }
       },
       lineWidth: 0,
       marker: {
         enabled: true,
-        symbol: "circle",
+        symbol,
         radius: 6,
-        color: "purple",
+        fillColor,
       },
-      color: "red",
-      dataLabels: {
-        formatter: function () {
-          return "1";
-        },
-      },
+      zIndex: isBuy ? 100 : isSell ? 100 : 90,
     };
   });
 };
@@ -175,7 +194,6 @@ export const studyToChart = (
   top: Highcharts.YAxisOptions["top"]
 ) => {
   const { data, meta } = study || {};
-  console.log(study);
   const rows = data?.st?.filter?.((v) => v.i >= 0);
   const plots = meta?.plots
     ?.map(({ id, ...s }, idx) => ({
@@ -189,7 +207,10 @@ export const studyToChart = (
     }))
     ?.filter((v) => !meta?.styles?.[v?.id]?.isHidden)
     .filter(isGoodPlot)
-    .filter((v) => !study?.hiddenFields?.includes(v.id));
+    .filter(
+      (v) =>
+        study?.config?.showFields?.includes(v.id) || v?.plot?.type === "colorer"
+    );
   const filled = meta?.filledAreas
     ?.map(({ id, objAId, objBId }) => ({
       id,
@@ -204,7 +225,6 @@ export const studyToChart = (
   const circles = getCircles(plots, study);
   const shapes = getShapes(plots, study);
   const alerts = getAlerts(plots, study);
-
   return {
     series: [...lines, ...arearange, ...circles, ...alerts],
     yAxis: meta?.is_price_study

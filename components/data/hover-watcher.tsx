@@ -141,37 +141,37 @@ export const useAlertConditionHover = (
       });
     };
 
-    // const series = chart?.series
-    //   ?.filter((v) => v.name?.startsWith?.("strategy"))
-    //   .filter(
-    //     (v) =>
-    //       v?.points[0]?.x <= active &&
-    //       v?.points[v?.points.length - 1]?.x >= active
-    //   );
-    // if (series?.length) {
-    //   series.forEach((v) => {
-    //     v.setState("hover");
-    //     v?.yAxis?.series
-    //       ?.filter((v) => v.type === "candlestick")
-    //       ?.forEach((v) => {
-    //         v.setState("inactive");
-    //       });
-    //     v.data?.forEach((v) => {
-    //       v.setState("inactive");
-    //     });
-    //   });
-    //   return () => {
-    //     series.forEach((v) => {
-    //       v?.yAxis?.series
-    //         ?.filter((v) => v.type === "candlestick")
-    //         ?.forEach((v) => {
-    //           v.setState("normal");
-    //         });
-    //       v.setState("normal");
-    //       v.points.forEach((v) => v.setState("normal"));
-    //     });
-    //   };
-    // }
+    const series = chart?.series
+      ?.filter((v) => v.name?.startsWith?.("strategy"))
+      .filter(
+        (v) =>
+          v?.points[0]?.x <= active &&
+          v?.points[v?.points.length - 1]?.x >= active
+      );
+    if (series?.length) {
+      series.forEach((v) => {
+        v.setState("hover");
+        v?.yAxis?.series
+          ?.filter((v) => v.type === "candlestick")
+          ?.forEach((v) => {
+            v.setState("inactive");
+          });
+        v.data?.forEach((v) => {
+          v.setState("inactive");
+        });
+      });
+      return () => {
+        series.forEach((v) => {
+          v?.yAxis?.series
+            ?.filter((v) => v.type === "candlestick")
+            ?.forEach((v) => {
+              v.setState("normal");
+            });
+          v.setState("normal");
+          v.points.forEach((v) => v.setState("normal"));
+        });
+      };
+    }
   }, [active]);
 };
 
@@ -181,7 +181,6 @@ Highcharts.Pointer.prototype.reset = function () {
 export const HoverWatcher1 = ({ chart }: { chart: Highcharts.Chart }) => {
   const active = useHoverGet();
 
-  // useAlertConditionHover(chart, active);
   useSignalHover(chart, active);
   useStrategyHover(chart, active);
   return null;

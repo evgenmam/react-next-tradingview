@@ -73,6 +73,9 @@ export const Settings = () => {
             <Button
               onClick={() => {
                 IDB.delete();
+                setTheme("dark");
+                window.localStorage.clear();
+                window.location.reload();
               }}
             >
               Reset Data

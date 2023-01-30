@@ -24,13 +24,13 @@ export const DisplayDataStudy = ({ study }: Props) => {
   const keys = getStudyFields(study).filter((v) => v);
   const data = getKeyedStudyData(study)[idx];
   const prev = getKeyedStudyData(study)[idx - 1];
-  const { study: s, updateStudy } = useV2Study(study?.id);
-  const isHidden = (key: string) => s?.hiddenFields?.includes(key);
+  const { config, updateStudyConfig } = useV2Study(study?.id);
+  const isHidden = (key: string) => !config?.showFields?.includes(key);
   const toggleField = (key: string) => {
-    updateStudy({
-      hiddenFields: isHidden(key)
-        ? s?.hiddenFields?.filter((f) => f !== key)
-        : [...(s?.hiddenFields || []), key],
+    updateStudyConfig({
+      showFields: !isHidden(key)
+        ? config?.showFields?.filter((f) => f !== key)
+        : [...(config?.showFields || []), key],
     });
   };
   return (
@@ -38,13 +38,13 @@ export const DisplayDataStudy = ({ study }: Props) => {
       <Stack direction="row" alignItems="center">
         <ButtonBase
           onClick={() => {
-            updateStudy({ collapsed: !s?.collapsed });
+            updateStudyConfig({ collapsed: !config?.collapsed });
           }}
           sx={{ mr: 0.5 }}
         >
           <ChevronDownIcon
             width={15}
-            style={s?.collapsed ? { transform: "rotate(-90deg)" } : {}}
+            style={!config?.collapsed ? { transform: "rotate(-90deg)" } : {}}
           />
         </ButtonBase>
         <Typography fontSize={14} fontWeight={600}>
@@ -53,12 +53,12 @@ export const DisplayDataStudy = ({ study }: Props) => {
         <Box ml="auto">
           <IconButton
             onClick={() => {
-              updateStudy({ hidden: !study?.hidden });
+              updateStudyConfig({ hidden: !config?.hidden });
             }}
             size="sm"
-            color={study?.hidden ? "neutral" : "primary"}
+            color={config?.hidden ? "neutral" : "primary"}
           >
-            {study?.hidden ? (
+            {config?.hidden ? (
               <EyeSlashIcon width={15} />
             ) : (
               <EyeIcon width={15} />
@@ -66,7 +66,7 @@ export const DisplayDataStudy = ({ study }: Props) => {
           </IconButton>
         </Box>
       </Stack>
-      <Collapse in={!s?.collapsed}>
+      {!config?.collapsed && (
         <table>
           <tbody>
             {keys
@@ -83,7 +83,7 @@ export const DisplayDataStudy = ({ study }: Props) => {
               ))}
           </tbody>
         </table>
-      </Collapse>
+      )}
     </Stack>
   );
 };

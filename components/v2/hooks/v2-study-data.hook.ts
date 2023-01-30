@@ -1,3 +1,10 @@
+import {
+  SeriesArearangeOptions,
+  SeriesLineOptions,
+  SeriesSplineOptions,
+  SeriesZonesOptionsObject,
+  YAxisOptions,
+} from "highcharts";
 import { useMemo } from "react";
 import { studyToChart } from "../../../utils/study.utils";
 import { useActiveStudies } from "./v2-data.hook";
@@ -8,11 +15,24 @@ export const useV2StudyData = ({
 }: {
   top: Highcharts.YAxisOptions["top"];
   height: Highcharts.YAxisOptions["height"];
-}) => {
-  const { studies } = useActiveStudies();
+}): [
+  s: {
+    series: (
+      | SeriesLineOptions
+      | SeriesSplineOptions
+      | SeriesArearangeOptions
+    )[];
+    yAxis: YAxisOptions[];
+  }[],
+  l: boolean
+] => {
+  const { studies, loading } = useActiveStudies();
   const chart = useMemo(
-    () => studies?.filter(v => !v.hidden).map((v) => studyToChart(v, height, top)),
+    () =>
+      studies
+        ?.filter((v) => !v.config?.hidden)
+        .map((v) => studyToChart(v, height, top)),
     [studies, height, top]
   );
-  return chart;
+  return [chart, loading];
 };

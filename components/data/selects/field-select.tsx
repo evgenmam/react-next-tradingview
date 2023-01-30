@@ -23,7 +23,14 @@ export const FieldSelect = ({
     <FormControl size="sm">
       {!hideLabel && <FormLabel>Data</FormLabel>}
       <SelectDialog
-        options={options}
+        options={options
+          .map((v) => ({
+            label: v.split("---")[0].split(":")[1] || v,
+            value: v,
+            group: v.split("---")[0]?.includes(":")
+              ? v.split("---")[0].split(":")[0]
+              : "null",
+          }))}
         value={props.value}
         onChange={(v) => {
           props.onChange?.(null, v!);

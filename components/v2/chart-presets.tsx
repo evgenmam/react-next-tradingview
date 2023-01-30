@@ -1,5 +1,6 @@
 import { Box, Divider, List, Typography } from "@mui/joy";
 import { Stack } from "@mui/system";
+import { TVScriptsDialog } from "../tv-components/dialogs/scripts-dialog";
 import { TVIndicatorSearch } from "../tv-components/indicator-search";
 import { useV2Presets } from "./hooks/v2-data.hook";
 import { V2PresetIndicatorListItem } from "./preset-indicator-list-item";
@@ -20,9 +21,10 @@ export const V2ChartPresets = ({}: Props) => {
         <Typography>Presets</Typography>
         <V2PresetsSelect />
       </Stack>
-      <Box p={1}>
+      <Stack p={1} direction="row" justifyContent="space-between">
         <TVIndicatorSearch onSelect={addIndicator} />
-      </Box>
+        <TVScriptsDialog onSelect={addIndicator} />
+      </Stack>
       <List>
         {selected?.indicators?.map((i) => (
           <V2PresetIndicatorListItem

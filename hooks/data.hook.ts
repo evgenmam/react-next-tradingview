@@ -4,6 +4,7 @@ import { IChartData, IIndicator, ISignal, IStrategy } from "../types/app.types";
 import * as R from "ramda";
 import IDB from "../db/db";
 import { ITVSymbol } from "../components/tv-components/types";
+import { useState } from "react";
 
 export const useIndicators = () => {
   const indicators =
@@ -41,14 +42,15 @@ const getMinRow = async () => {
 };
 
 export const useRows = (datasetName: string) => {
+  const [loading, setLoading] = useState(false);
   const rows =
     useLiveQuery(async () => {
+      setLoading(true);
       const minRow = await getMinRow();
       const dataset = (await IDB.settings.get(datasetName))?.value;
       if (!dataset) return [];
       const maxDigits = (await IDB.settings.get("maxDigits"))?.value;
-
-      return (
+      const data = (
         await IDB.rows
           .where("dataset")
           .equals(dataset)
@@ -60,6 +62,8 @@ export const useRows = (datasetName: string) => {
           R.mapObjIndexed((v, k) => (k === "time" ? v : +v.toFixed(maxDigits)))
         )
       );
+      setLoading(false);
+      return data;
     }) || [];
   const count = useLiveQuery(async () => {
     const dataset = (await IDB.settings.get(datasetName))?.value;
@@ -91,6 +95,7 @@ export const useRows = (datasetName: string) => {
     indexed,
     dataset,
     count,
+    loading,
   };
 };
 
@@ -169,20 +174,14 @@ export const useSignals = () => {
 };
 
 export const useStrategies = () => {
+  const [loading, setLoading] = useState(false);
   const strategies =
     useLiveQuery(async () => {
-      return await IDB.strategies.toArray();
+      setLoading(true);
+      const data = await IDB.strategies.toArray();
+      setLoading(false);
+      return data;
     }) || [];
-
-  // const sourcedata =
-  //   useLiveQuery(async () => {
-  //     const dataset = (await IDB.settings.get("target"))?.value;
-  //     if (!dataset) return [];
-  //     await IDB.strategies
-  //       .where("dataset")
-  //       .equals(dataset)
-  //       .first()
-  //   }) || [];
 
   const addStrategy = async (strategy: Omit<IStrategy, "id">) => {
     await IDB.strategies.add(strategy);
@@ -197,7 +196,7 @@ export const useStrategies = () => {
       await IDB.strategies.update(strategy.id, strategy);
     }
   };
-  return { strategies, addStrategy, removeStrategy, updateStrategy };
+  return { strategies, addStrategy, removeStrategy, updateStrategy, loading };
 };
 
 export const useSettings = () => {

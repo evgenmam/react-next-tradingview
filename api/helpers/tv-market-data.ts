@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { writeFileSync } from "fs";
+// import { writeFileSync } from "fs";
 import path from "path";
 import pino from "pino";
 import { v4 } from "uuid";
@@ -79,10 +79,10 @@ export class TVChartSession extends TVSession {
 
   getIndicator = async (symbol: string, ind: ITVIndicator) => {
     const res = await TVApi.translateIndicator(ind);
-    writeFileSync(
-      path.resolve("logs", ind.scriptName + ".json"),
-      JSON.stringify(res, null, 2)
-    );
+    // writeFileSync(
+    //   path.resolve("logs", ind.scriptName + ".json"),
+    //   JSON.stringify(res, null, 2)
+    // );
     const fields = Object.values(res?.result?.metaInfo?.styles)?.map?.(
       (v: any) => v?.title
     );
@@ -97,10 +97,10 @@ export class TVChartSession extends TVSession {
       "Script@tv-scripting-101!",
       data,
     ]);
-    writeFileSync(
-      path.resolve("logs", ind.scriptName + "-data.json"),
-      JSON.stringify(data)
-    );
+    // writeFileSync(
+    //   path.resolve("logs", ind.scriptName + "-data.json"),
+    //   JSON.stringify(data)
+    // );
     const values = await this.waitFor(ind.scriptName, "du");
     return {
       data: values,

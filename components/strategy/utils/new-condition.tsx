@@ -48,32 +48,34 @@ export const NewCondition = ({ first, value, setCondition }: Props) => {
           e && setC("operator")(e);
         }}
       />
-      <Stack direction="row">
-        <Box flexGrow={1}>
-          <FieldSelect
-            exclude={["time", "id", "dataset"]}
-            hideLabel
-            value={value.b.field}
-            onChange={(_, e) => {
-              e && setC("b")({ ...value.b, field: e });
-            }}
-          />
-        </Box>
-        <Box flexShrink={1}>
-          <Input
-            type="number"
-            size="sm"
-            fullWidth={false}
-            sx={{ width: 55 }}
-            value={value.b.offset}
-            onChange={(e) => {
-              if (+e.target.value <= 0) {
-                setC("b")({ ...value.b, offset: +e.target.value });
-              }
-            }}
-          />
-        </Box>
-      </Stack>
+      {value?.operator !== "true" && (
+        <Stack direction="row">
+          <Box flexGrow={1}>
+            <FieldSelect
+              exclude={["time", "id", "dataset"]}
+              hideLabel
+              value={value.b.field}
+              onChange={(_, e) => {
+                e && setC("b")({ ...value.b, field: e });
+              }}
+            />
+          </Box>
+          <Box flexShrink={1}>
+            <Input
+              type="number"
+              size="sm"
+              fullWidth={false}
+              sx={{ width: 55 }}
+              value={value.b.offset}
+              onChange={(e) => {
+                if (+e.target.value <= 0) {
+                  setC("b")({ ...value.b, offset: +e.target.value });
+                }
+              }}
+            />
+          </Box>
+        </Stack>
+      )}
     </Stack>
   );
 };

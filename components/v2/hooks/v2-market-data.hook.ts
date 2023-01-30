@@ -24,28 +24,41 @@ export const useV2MarketData = (active: boolean) => {
     let cancel: Canceler;
     const getData = async () => {
       try {
-        sett("fetching")(true);
-        const { data } = await axios.post(
-          "/api/market-data",
-          {
-            numerator,
-            denominator,
-            indicators: selected?.indicators,
-            period,
-          },
-          {
-            cancelToken: new axios.CancelToken((c) => {
-              cancel = c;
-            }),
-          }
-        );
-        sett("source")(`${numerator}/${denominator}`);
-        sett("target")(`${numerator}`);
-        sett("target2")(`${denominator}`);
-        spl.setRows(data?.split || []);
-        target1.setRows(data?.numerator || []);
-        target2.setRows(data?.denominator || []);
-        putStudies(data?.studies || []);
+        const lastFetched = JSON.stringify({
+          numerator,
+          denominator,
+          studies: selected?.indicators?.map((v) => v.scriptIdPart),
+          period,
+        });
+        if (
+          window.localStorage.getItem("last-fetched") !== lastFetched &&
+          numerator &&
+          denominator
+        ) {
+          sett("fetching")(true);
+          const { data } = await axios.post(
+            "/api/market-data",
+            {
+              numerator,
+              denominator,
+              indicators: selected?.indicators,
+              period,
+            },
+            {
+              cancelToken: new axios.CancelToken((c) => {
+                cancel = c;
+              }),
+            }
+          );
+          sett("source")(`${numerator}/${denominator}`);
+          sett("target")(`${numerator}`);
+          sett("target2")(`${denominator}`);
+          spl.setRows(data?.split || []);
+          target1.setRows(data?.numerator || []);
+          target2.setRows(data?.denominator || []);
+          putStudies(data?.studies || []);
+          window.localStorage.setItem("last-fetched", lastFetched);
+        }
       } catch (error) {
         if (!axios.isCancel(error))
           snack.enqueueSnackbar(
@@ -61,9 +74,9 @@ export const useV2MarketData = (active: boolean) => {
         sett("fetching")(false);
       }
     };
-    if (active) getData();
+    getData();
     return () => {
       cancel?.();
     };
-  }, [numerator, denominator, active, selected?.indicators, period]);
+  }, [numerator, denominator, selected?.indicators, period]);
 };

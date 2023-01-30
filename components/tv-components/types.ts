@@ -45,7 +45,7 @@ export type ITVIndicator = {
   extra: ITVIndicatorExtra;
   agreeCount: number;
   author: ITVIndicatorAuthor;
-  weight: number;
+  weight?: number;
   hidden?: boolean;
 };
 
@@ -67,7 +67,12 @@ export type ITVStudy = {
   id: string;
   data: StudyData;
   meta: MetaInfo;
-  hidden?: boolean;
+  config?: ITVStudyConfig;
+};
+
+export type ITVStudyConfig = {
+  id: string;
   collapsed?: boolean;
-  hiddenFields?: string[];
+  showFields?: string[];
+  hidden?: boolean;
 };
