@@ -40,7 +40,6 @@ export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
         }
     })
   );
-  console.log(data);
   return {
     data,
     signal,
@@ -81,7 +80,6 @@ export const calculateStrategy =
         action: "close",
       })),
     };
-    console.log(signals);
     let trades = signals.open
       .map((o) => ({
         strategy: strategy,

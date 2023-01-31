@@ -102,6 +102,7 @@ export class TVChartSession extends TVSession {
     //   JSON.stringify(data)
     // );
     const values = await this.waitFor(ind.scriptName, "du");
+    await tvc.send("remove_study", [this.session, ind.scriptName]);
     return {
       data: values,
       meta: res.result.metaInfo,

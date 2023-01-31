@@ -48,6 +48,9 @@ export const TargetChart1 = ({
           },
           { x: closed, y: closePrice },
         ],
+        dataGrouping: {
+          enabled: false,
+        },
       })
     ) || [];
   const options: Highcharts.Options = {

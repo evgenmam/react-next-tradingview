@@ -17,13 +17,13 @@ import {
 } from "react";
 import dragPanes from "highcharts/modules/drag-panes";
 import { useSettings } from "../hooks/data.hook";
-import DarkTheme from "highcharts/themes/dark-blue";
+import DarkTheme from "highcharts/themes/dark-unica";
 import LightTheme from "highcharts/themes/brand-light";
 import { deepmerge } from "@mui/utils";
 import * as R from "ramda";
 if (typeof Highcharts === "object") {
   HighchartsExporting(Highcharts);
-  HighchartsExporting(HighchartsStock);
+  // HighchartsExporting(HighchartsStock);
   HighchartsMore(HighchartsStock);
   HighchartsAnnotations(HighchartsStock);
   dragPanes(HighchartsStock);

@@ -12,7 +12,7 @@ const joyTheme = extendJoyTheme({
   cssVarPrefix: "mui",
 });
 
-const muiTheme = extendMuiTheme();
+const muiTheme = extendMuiTheme({});
 
 export const Theme = deepmerge(joyTheme, muiTheme);
 

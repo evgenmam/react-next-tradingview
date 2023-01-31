@@ -133,8 +133,7 @@ export const getCircles = (
   }));
 };
 
-export const getShapes = (plots: ITVPlot[], study: ITVStudy) => {
-};
+export const getShapes = (plots: ITVPlot[], study: ITVStudy) => {};
 
 export const getAlerts = (
   plots: ITVPlot[],
@@ -174,7 +173,7 @@ export const getAlerts = (
         },
         inactive: {
           opacity: 1,
-        }
+        },
       },
       lineWidth: 0,
       marker: {
@@ -250,7 +249,6 @@ export const getKeyedStudyData = (
   study: ITVStudy
 ): Record<string, number>[] => {
   const keys = [{ key: "time", title: "time" }, ...getStudyFields(study)];
-  // ?.filter((v) => v);
   return study?.data?.st?.map(({ v }) =>
     keys.reduce((acc, key, i) => (key ? { ...acc, [key.key]: v[i] } : acc), {})
   );
