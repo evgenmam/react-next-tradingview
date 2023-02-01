@@ -138,8 +138,16 @@ const a = {
 
 export const duFixTimestamp = R.over<StudyData, St[]>(
   R.lensProp("st"),
-  R.map<St, St>(
-    R.over<St, number[]>(R.lensProp("v"), R.adjust(0, R.multiply(1000)))
+  R.pipe(
+    R.map<St, St>(
+      R.over<St, number[]>(R.lensProp("v"), R.adjust(0, R.multiply(1000)))
+    ),
+    R.map<St, St>(
+      R.over<St, number[]>(
+        R.lensProp("v"),
+        R.map(R.when(R.equals(1e100), R.always(0)))
+      )
+    )
   )
 );
 

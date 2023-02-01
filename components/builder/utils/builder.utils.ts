@@ -16,3 +16,21 @@ export const colorerToZone = (
     R.groupWith((a, b) => a.color === b.color),
     R.map<SZ[], SZ>(R.head)
   )(colorer);
+
+export const isAllSame = R.pipe(R.pluck(1), R.uniq, R.length, R.equals(1));
+
+export const getIdFromPoint = (point: Highcharts.Point): string => {
+  const { name, id, title } = point?.series?.options as any;
+  return [id?.split(":")[1], name, title].filter(Boolean).join(":");
+};
+
+export const conditionOptions = [
+  "true",
+  "crossesUp",
+  "crossesDown",
+  "equals",
+  "greater",
+  "less",
+  "greaterOrEqual",
+  "lessOrEqual",
+] as const;

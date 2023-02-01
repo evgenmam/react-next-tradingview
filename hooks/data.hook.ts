@@ -5,6 +5,7 @@ import * as R from "ramda";
 import IDB from "../db/db";
 import { ITVSymbol } from "../components/tv-components/types";
 import { useState } from "react";
+import { toHeikinAshi } from "../utils/chart.utils";
 
 export const useIndicators = () => {
   const indicators =
@@ -48,9 +49,10 @@ export const useRows = (datasetName: string) => {
       setLoading(true);
       const minRow = await getMinRow();
       const dataset = (await IDB.settings.get(datasetName))?.value;
+      const chartType = (await IDB.settings.get("chartType"))?.value;
       if (!dataset) return [];
       const maxDigits = (await IDB.settings.get("maxDigits"))?.value;
-      const data = (
+      let data = (
         await IDB.rows
           .where("dataset")
           .equals(dataset)
@@ -63,6 +65,8 @@ export const useRows = (datasetName: string) => {
         )
       );
       setLoading(false);
+      if (chartType === "heikin-ashi" && data.length > 0)
+        data = toHeikinAshi(data as IChartData[]) as IChartData[];
       return data;
     }) || [];
   const count = useLiveQuery(async () => {
@@ -110,21 +114,6 @@ export const useDatasets = () => {
   };
 
   return { datasets: datasets as string[], remove };
-};
-
-export const useSetting = (k: string, defaultValue?: any) => {
-  const value = useLiveQuery(async () => {
-    const value = (await IDB.settings.get(k))?.value;
-    if (R.isNil(value)) {
-      IDB.settings.put({ key: k, value: defaultValue });
-      return defaultValue;
-    }
-    return value || null;
-  });
-  const setter = async (v: any) => {
-    await IDB.settings.put({ key: k, value: v });
-  };
-  return [value, setter];
 };
 
 export const useFields = (datasetName = "source") => {
@@ -199,49 +188,6 @@ export const useStrategies = () => {
   return { strategies, addStrategy, removeStrategy, updateStrategy, loading };
 };
 
-export const useSettings = () => {
-  const [hideEmpty, setHideEmpty] = useSetting("hideEmpty", true);
-  const [maxDigits, setMaxDigits] = useSetting("maxDigits", 4);
-  const [source, setSource] = useSetting("source", "");
-  const [target, setTarget] = useSetting("target", "");
-  const [target2, setTarget2] = useSetting("target2", "");
-  const [fetching, setFetching] = useSetting("fetching", false);
-  const [showSignals, setShowSignals] = useSetting("signals", true);
-  const [showStrategies, setShowStrategies] = useSetting("strategies", true);
-  const [period, setPeriod] = useSetting("period", "1W");
-  const [theme, setTheme] = useSetting("theme", "dark") as [
-    theme: "dark" | "light",
-    setTheme: (theme: "dark" | "light") => void
-  ];
-  const sett = (k: string) => async (v: any) => {
-    await IDB.settings.put({ key: k, value: v });
-  };
-
-  return {
-    hideEmpty,
-    setHideEmpty,
-    maxDigits,
-    setMaxDigits,
-    source,
-    setSource,
-    target,
-    setTarget,
-    sett,
-    showSignals,
-    setShowSignals,
-    showStrategies,
-    setShowStrategies,
-    theme,
-    setTheme,
-    target2,
-    setTarget2,
-    fetching,
-    setFetching,
-    period,
-    setPeriod,
-  };
-};
-
 export const useActiveList = () => {
   const list = useLiveQuery(async () => {
     let l = await IDB.lists?.filter((v) => !!v.selected).first();
@@ -280,3 +226,5 @@ export const useLists = () => {
   };
   return { lists, createList, deleteList };
 };
+
+export { useSetting, useSettings } from "./settings.hook";

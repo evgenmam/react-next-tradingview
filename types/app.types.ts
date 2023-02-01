@@ -43,7 +43,7 @@ export type IConditionEntry = {
 
 export type ICondition = {
   a: IConditionEntry;
-  b: IConditionEntry;
+  b?: IConditionEntry;
   operator:
     | "crossesUp"
     | "crossesDown"

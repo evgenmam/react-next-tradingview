@@ -1,5 +1,6 @@
 import Highcharts, { YAxisOptions } from "highcharts";
 import * as R from "ramda";
+import { IChartData } from "../types/app.types";
 export const syncExtremes = function (
   this: Highcharts.Axis,
   e: Highcharts.AxisSetExtremesEventObject
@@ -84,7 +85,7 @@ export const chartZoomScroll = (
   if (point) {
     const extr = chart?.xAxis[0].getExtremes();
     if (ev.deltaY) {
-      const percent = 0.2 * (ev.deltaY > 0 ? 1 : -1);
+      const percent = 0.4 * (ev.deltaY > 0 ? 1 : -1);
 
       const range = extr.max - extr.min;
       const newRange = range + range * percent;
@@ -95,7 +96,7 @@ export const chartZoomScroll = (
 
       chart?.xAxis[0].setExtremes(c(newMin), c(newMax), undefined, false);
     } else if (ev.deltaX) {
-      const percent = 0.05 * (ev.deltaX > 0 ? 1 : -1);
+      const percent = 0.2 * (ev.deltaX > 0 ? 1 : -1);
       const range = extr.max - extr.min;
       const newMin = extr.min + range * percent;
       const newMax = extr.max + range * percent;
@@ -119,3 +120,24 @@ export const chartZoomScroll = (
     }
   }
 };
+
+export const toHeikinAshi = (data: IChartData[]) =>
+  data
+    .map((v, idx) =>
+      data[idx - 1]
+        ? {
+            ...v,
+            open: (data[idx - 1].open + data[idx - 1].close) / 2,
+            close: (v.close + v.open + v.high + v.low) / 4,
+          }
+        : v
+    )
+    .map((v, idx) =>
+      data[idx - 1]
+        ? {
+            ...v,
+            high: Math.max(v.high, v.close, v.open),
+            close: Math.min(v.low, v.close, v.open),
+          }
+        : v
+    );

@@ -37,7 +37,7 @@ export const StudyChartH = ({ study, chartRef }: Props) => {
     );
   };
   return (
-    <Box ref={boxRef} height="100%">
+    <Box ref={boxRef} height="100%" position="relative">
       <HStock
         options={options}
         callback={initSetter}

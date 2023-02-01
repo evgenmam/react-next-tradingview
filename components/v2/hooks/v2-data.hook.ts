@@ -131,7 +131,13 @@ export const useActiveStudies = () => {
       }));
     }) || [];
 
-  return { studies, loading };
+  const toggleStudy = async (study: ITVStudy) => {
+    await IDB.studyConfigs.update(study.meta?.scriptIdPart, {
+      hidden: !study.config?.hidden,
+    });
+  };
+
+  return { studies, loading, toggleStudy };
 };
 
 export const useV2Studies = () => {

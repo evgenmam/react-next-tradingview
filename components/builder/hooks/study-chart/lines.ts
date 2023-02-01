@@ -3,12 +3,11 @@ import { useMemo } from "react";
 
 import { ITVStudy, ITVStudyConfig } from "../../../tv-components/types";
 import { PlotTypes } from "../../configs";
-import { colorerToZone } from "../../utils/builder.utils";
+import { colorerToZone, isAllSame } from "../../utils/builder.utils";
 import { ITVPlot } from "./plots";
 
 const isGoodLine = (p: ITVPlot) =>
-  p.styles?.plottype === PlotTypes.Line &&
-  !p?.data?.some((v) => v[1] > 1000000000000);
+  p.styles?.plottype === PlotTypes.Line && !isAllSame(p.data);
 
 export const useStudyChartLines = (
   study?: ITVStudy,
@@ -17,11 +16,13 @@ export const useStudyChartLines = (
 ): Highcharts.SeriesLineOptions[] => {
   return useMemo(
     () =>
-      plots?.filter(isGoodLine)?.map(({ data, id, styles, title }) => ({
+      plots?.filter(isGoodLine)?.map(({ data, id, styles, title, name }) => ({
         data,
         type: "line" as const,
         yAxis: study?.meta?.is_price_study ? "source" : "main",
-        name: title,
+        name,
+        title,
+        id,
         zoneAxis: "x",
         lineWidth: styles?.linewidth,
         color: styles?.color,
@@ -31,6 +32,11 @@ export const useStudyChartLines = (
         zones: plots
           ?.filter(({ plot }) => plot.target === id)
           .flatMap(colorerToZone),
+        // events: {
+        //   click: function (e) {
+        //     this.
+        //   }
+        // },
       })) || [],
     [plots, study?.meta?.is_price_study]
   );

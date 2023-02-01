@@ -17,6 +17,7 @@ import { useV2MarketData } from "./hooks/v2-market-data.hook";
 import { V2PeriodSelect } from "./period-select";
 import { Drawer } from "@mui/material";
 import { useSettings } from "../../hooks/data.hook";
+import { TVChartTypeSelect } from "../tv-components/helpers/chart-type-select";
 type Props = {} & ButtonProps;
 
 const getLogo = (path: string) =>
@@ -70,7 +71,10 @@ export const ChartConfigDrawer = () => {
               justifyContent="space-between"
             >
               <Typography level="h6">Symbols</Typography>
-              <V2PeriodSelect />
+              <Stack direction="row" spacing={1}>
+                <V2PeriodSelect />
+                <TVChartTypeSelect />{" "}
+              </Stack>
             </Stack>
             {configs.map((c) => (
               <V2ChartConfig key={c.name} config={c} />

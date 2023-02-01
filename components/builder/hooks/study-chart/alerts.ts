@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { IChartData } from "../../../../types/app.types";
 import { ITVStudy } from "../../../tv-components/types";
+import { isAllSame } from "../../utils/builder.utils";
 import { ITVPlot } from "./plots";
 
 export const useStudyChartAlerts = (
@@ -9,14 +10,12 @@ export const useStudyChartAlerts = (
   source?: Highcharts.SeriesLineOptions[]
 ) => {
   const alerts = plots?.filter?.(
-    (p) =>
-      p.plot?.type === "alertcondition" &&
-      p.data?.some((v) => v[1] && !p?.data?.some((v) => v[1] > 1e10))
+    (p) => p.plot?.type === "alertcondition" && !isAllSame(p.data)
   );
   return useMemo(
     () =>
-      alerts?.map(({ title, id, data, plot }, idx) => {
-        const t = title?.toLowerCase();
+      alerts?.map(({ title, id, data, name }, idx) => {
+        const t = name?.toLowerCase();
         const b =
           (t?.includes("buy") && !t?.includes("exit buy")) ||
           t?.includes("long") ||
@@ -30,8 +29,9 @@ export const useStudyChartAlerts = (
         const fillColor = isBuy ? "green" : isSell ? "red" : undefined;
         const symbol = isBuy ? "triangle" : isSell ? "triangle-down" : "circle";
         return {
-          name: `${title}`,
-          id: `alert-${id}`,
+          id,
+          name,
+          title,
           yAxis: study?.meta?.is_price_study ? "source" : "main",
           type: "spline" as const,
           data: data

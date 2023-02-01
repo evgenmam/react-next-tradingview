@@ -74,5 +74,9 @@ export type ITVStudyConfig = {
   id: string;
   collapsed?: boolean;
   showFields?: string[];
+  hideFields?: Record<string, boolean>;
   hidden?: boolean;
 };
+
+export const ChartType = ["candlestick", "heikin-ashi", "bars"] as const;
+export type ITVChartType = typeof ChartType[number];

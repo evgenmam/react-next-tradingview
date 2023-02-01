@@ -7,28 +7,21 @@ import HighchartsAnnotations from "highcharts/modules/annotations";
 import HighchartsMore from "highcharts/highcharts-more";
 import HighchartsReact from "highcharts-react-official";
 import {
-  cloneElement,
-  createContext,
-  FC,
   forwardRef,
-  useContext,
-  useEffect,
-  useState,
 } from "react";
 import dragPanes from "highcharts/modules/drag-panes";
 import { useSettings } from "../hooks/data.hook";
-import DarkTheme from "highcharts/themes/dark-unica";
+import DarkMLTheme from "./themes/hc-dark";
 import LightTheme from "highcharts/themes/brand-light";
 import { deepmerge } from "@mui/utils";
 import * as R from "ramda";
 if (typeof Highcharts === "object") {
   HighchartsExporting(Highcharts);
-  // HighchartsExporting(HighchartsStock);
   HighchartsMore(HighchartsStock);
   HighchartsAnnotations(HighchartsStock);
   dragPanes(HighchartsStock);
   if (localStorage.getItem("joy-mode") === "dark") {
-    DarkTheme(HighchartsStock);
+    DarkMLTheme.apply(HighchartsStock);
   } else {
     LightTheme(HighchartsStock);
   }

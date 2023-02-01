@@ -18,7 +18,6 @@ export const mouseOver = function (this: Highcharts.Series) {
   Highcharts.charts?.forEach((chart) => {
     const { title } = this.chart;
     if (chart?.title !== title) {
-      // console.log(this.chart);
     }
   });
 };

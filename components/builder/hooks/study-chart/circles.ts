@@ -1,23 +1,28 @@
 import { useMemo } from "react";
 import { ITVStudy } from "../../../tv-components/types";
 import { PlotTypes } from "../../configs";
-import { colorerToZone } from "../../utils/builder.utils";
+import { colorerToZone, isAllSame } from "../../utils/builder.utils";
 import { ITVPlot } from "./plots";
+import * as R from "ramda";
 
 export const useStudyChartCircles = (
   study: ITVStudy,
   plots: ITVPlot[]
 ): Highcharts.SeriesSplineOptions[] => {
-  const circles = plots?.filter?.(
-    (p) =>
-      p.styles?.plottype === PlotTypes.Circles &&
-      !p?.data?.some((v) => v[1] > 1e10)
+  const circles = useMemo(
+    () =>
+      plots?.filter?.((p) => {
+        return p.styles?.plottype === PlotTypes.Circles && !isAllSame(p.data);
+      }),
+    [plots]
   );
   return useMemo(
     () =>
-      circles.map(({ data, id, styles, title }) => ({
+      circles.map(({ data, id, styles, title, name }) => ({
         data,
-        name: title,
+        name,
+        id,
+        title,
         yAxis: study.meta?.is_price_study ? "source" : "main",
         zoneAxis: "x",
         color: styles?.color,

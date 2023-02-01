@@ -25,6 +25,12 @@ export interface Result {
   metaInfo: MetaInfo;
 }
 
+export interface MetaPalette {
+  addDefaultColor: boolean;
+  colors: Record<number, { name: string }>;
+  valToIndex: Record<number, number>;
+}
+
 export interface MetaInfo {
   TVScriptMetaInfoExprs: TVScriptMetaInfoExprs;
   _metainfoVersion: number;
@@ -43,6 +49,7 @@ export interface MetaInfo {
   isTVScriptStub: boolean;
   is_hidden_study: boolean;
   is_price_study: boolean;
+  palettes: Record<string, MetaPalette>;
   pine: Pine;
   plots: Plot[];
   scriptIdPart: string;
@@ -78,6 +85,7 @@ export type Palette = {
       width: number;
     }
   >;
+  valToIndex?: Record<number, number>;
 };
 export type Palettes = Record<string, Palette>;
 export interface Defaults {
@@ -235,8 +243,8 @@ export enum PlotType {
   Colorer = "colorer",
   Line = "line",
   Shapes = "shapes",
+  BarColorer = "bar_colorer",
 }
-
 
 export interface MetaInfoStyle {
   histogramBase: number;

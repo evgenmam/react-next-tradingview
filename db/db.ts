@@ -30,7 +30,7 @@ class DB extends Dexie {
   series!: Dexie.Table<ITVSeries, string>;
   studies!: Dexie.Table<ITVStudy, string>;
   savedScripts!: Dexie.Table<ITVIndicator & { type: "private" }, string>;
-  studyConfigs!: Dexie.Table<ITVStudyConfig>;
+  studyConfigs!: Dexie.Table<ITVStudyConfig, string>;
 
   constructor() {
     super("bg-db");

@@ -10,7 +10,7 @@ import {
   timescaleToOHLC,
 } from "../utils";
 const URL = "wss://prodata.tradingview.com/socket.io/websocket";
-const BUILD_ID = "2023_01_26-12_41";
+const BUILD_ID = "2023_01_31-13_47";
 const CHART_ID = "lfNsKpYG";
 import * as R from "ramda";
 

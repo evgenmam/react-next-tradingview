@@ -1,7 +1,8 @@
 import { FormControl, FormLabel, Option, Select, SelectProps } from "@mui/joy";
-import { capitalCase } from 'change-case'
+import { capitalCase } from "change-case";
 export const ConditionSelect = (props: SelectProps<string>) => {
   const options = [
+    "true",
     "crossesUp",
     "crossesDown",
     "equals",
@@ -9,7 +10,6 @@ export const ConditionSelect = (props: SelectProps<string>) => {
     "less",
     "greaterOrEqual",
     "lessOrEqual",
-    "true"
   ];
   return (
     <FormControl size="sm">

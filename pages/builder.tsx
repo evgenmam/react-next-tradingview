@@ -15,7 +15,7 @@ const BuilderPage = () => {
         maxWidth={false}
         sx={(a) => {
           return {
-            bgcolor: a.palette.background.level2,
+            bgcolor: a.palette.background.level1,
             height: "100vh",
           };
         }}

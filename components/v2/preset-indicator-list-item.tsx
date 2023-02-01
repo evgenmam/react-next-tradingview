@@ -1,4 +1,4 @@
-import { XMarkIcon } from "@heroicons/react/24/solid";
+import { EyeSlashIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import {
   Avatar,
   IconButton,

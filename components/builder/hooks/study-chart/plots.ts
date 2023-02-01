@@ -3,6 +3,7 @@ import { Palette } from "../../../../api/types";
 import { ITVStudy, ITVStudyConfig } from "../../../tv-components/types";
 export type ITVPlot = {
   id: string;
+  name: string;
   info: ITVStudy["meta"]["styles"][string];
   title: string;
   styles: ITVStudy["meta"]["defaults"]["styles"][string];
@@ -19,28 +20,23 @@ export const useStudyChartPlots = (
   const plots = useMemo(
     () =>
       meta?.plots?.map(({ id, ...s }, idx) => ({
-        id,
+        id: `${meta?.scriptIdPart}:${id}`,
+        name: meta?.styles?.[id]?.title,
         info: meta?.styles?.[id],
-        title: meta?.styles?.[id]?.title,
+        title: `${meta?.description}`,
         styles: meta?.defaults?.styles?.[id],
         data: rows?.map?.((v) => [v?.v?.[0], v?.v?.[idx + 1]]) || [],
         plot: { id, ...s },
         palette: meta?.defaults?.palettes?.[s?.palette || ""],
       })),
-    // ?.filter((v) => !meta?.styles?.[v?.id]?.isHidden)
-    // .filter(isGoodPlot)
-    // .filter(
-    //   (v) =>
-    //     study?.config?.showFields?.includes(v.id) ||
-    //     v?.plot?.type === "colorer"
-    // )
     [
       meta?.styles,
       meta?.plots,
       meta?.defaults?.styles,
       meta?.defaults?.palettes,
+      meta?.scriptIdPart,
+      meta?.description,
       rows,
-      study?.config?.showFields,
     ]
   );
   return plots || [];

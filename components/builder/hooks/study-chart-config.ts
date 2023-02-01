@@ -1,8 +1,10 @@
 import { useTheme } from "@mui/joy";
 import { useMemo } from "react";
-import { useRows } from "../../../hooks/data.hook";
+import IDB from "../../../db/db";
+import { useRows, useSetting, useSettings } from "../../../hooks/data.hook";
 import { ITVStudy } from "../../tv-components/types";
 import { useV2Study } from "../../v2/hooks/v2-data.hook";
+import { useChartEvents } from "../context/events.context";
 import { useRangeSet } from "../context/range.context";
 import { useStudyChartAlerts } from "./study-chart/alerts";
 import { useStudyChartCircles } from "./study-chart/circles";
@@ -15,6 +17,7 @@ export const useStudyChartConfig = (s: ITVStudy) => {
   const { palette } = useTheme();
   const setRange = useRangeSet();
   const { study, config } = useV2Study(s.id);
+  const { legends } = useSettings();
   const source = useStudyChartSource(study!);
   const plots = useStudyChartPlots(study!, config);
   const filled = useStudyChartArearanges(study!, plots, config);
@@ -25,6 +28,7 @@ export const useStudyChartConfig = (s: ITVStudy) => {
     plots,
     study?.meta?.is_price_study ? source : lines
   );
+  const events = useChartEvents();
   const options: Highcharts.Options = useMemo(
     () => ({
       title: {
@@ -37,7 +41,16 @@ export const useStudyChartConfig = (s: ITVStudy) => {
         },
       },
       chart: {
-        height: 450,
+        height: legends ? 450 : 300,
+        marginLeft: 0,
+        marginRight: 0,
+        events: {
+          click: function () {
+            events.emit({
+              points: this.hoverPoints?.filter((p) => !!p?.series?.options?.id),
+            });
+          },
+        },
       },
       plotOptions: {
         spline: {
@@ -52,17 +65,36 @@ export const useStudyChartConfig = (s: ITVStudy) => {
             headerFormat: "",
           },
         },
+        series: {
+          events: {
+            legendItemClick: async function () {
+              const [studyId, plotId] = this.options.id?.split(":") || [];
+              if (plotId) {
+                IDB.studyConfigs.update(studyId, {
+                  [`hideFields.${plotId}`]: this.visible,
+                });
+              }
+              return false;
+            },
+          },
+        },
       },
       legend: {
-        enabled: true,
+        enabled: !!legends,
         alignColumns: false,
-        // floating: true,
         layout: "horizontal",
         verticalAlign: "bottom",
-        // align: "right",
-        // verticalAlign: "top",
       },
-      series: [source, lines, filled, alerts, circles].flat(),
+
+      series: [source, lines, filled, alerts, circles].flat()?.map((s) => ({
+        ...s,
+        visible: !config?.hideFields?.[s.id?.split?.(":")?.[1]!],
+        events: {
+          click: function () {
+            console.log(this.chart.hoverPoints);
+          },
+        },
+      })),
       xAxis: {
         events: {
           setExtremes: (e) => {
@@ -110,8 +142,9 @@ export const useStudyChartConfig = (s: ITVStudy) => {
       },
     }),
     [
-      study,
+      study?.meta?.is_price_study,
       config?.id,
+      // config?.hideFields,
       lines,
       filled,
       source,
@@ -120,7 +153,9 @@ export const useStudyChartConfig = (s: ITVStudy) => {
       setRange,
       alerts,
       circles,
+      legends,
     ]
   );
+
   return options;
 };
