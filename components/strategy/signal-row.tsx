@@ -40,7 +40,7 @@ export const SignalRow = ({ signal }: Props) => {
               </Typography>
               <Typography lineHeight={1}>{sentenceCase(c.operator)}</Typography>
               <Typography fontWeight={700} lineHeight={1}>
-                {c.b.field}[{c.b.offset}]
+                {c.b?.field}[{c.b?.offset}]
               </Typography>
             </Stack>
           </Stack>

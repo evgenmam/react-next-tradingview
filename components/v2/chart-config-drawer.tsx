@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Checkbox,
   Divider,
   IconButton,
   Sheet,
@@ -18,6 +19,7 @@ import { V2PeriodSelect } from "./period-select";
 import { Drawer } from "@mui/material";
 import { useSettings } from "../../hooks/data.hook";
 import { TVChartTypeSelect } from "../tv-components/helpers/chart-type-select";
+import { V2BarCountInput } from "./bar-count-input";
 type Props = {} & ButtonProps;
 
 const getLogo = (path: string) =>
@@ -43,7 +45,7 @@ export const ChartConfigButton = ({ onClick }: Props) => {
 export const ChartConfigDrawer = () => {
   const [open, setOpen] = useState(false);
   const { configs } = useV2ChartConfigs();
-  useV2MarketData(open);
+  const { polling, setPolling } = useV2MarketData(open);
   return (
     <Box>
       <Box position="absolute" right={0} top={0}>
@@ -72,9 +74,18 @@ export const ChartConfigDrawer = () => {
             >
               <Typography level="h6">Symbols</Typography>
               <Stack direction="row" spacing={1}>
-                <V2PeriodSelect />
-                <TVChartTypeSelect />{" "}
+                <TVChartTypeSelect />
               </Stack>
+            </Stack>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <V2PeriodSelect />
+              <V2BarCountInput />
+              <Checkbox
+                size="sm"
+                label="Polling"
+                checked={polling}
+                onChange={() => setPolling((v) => !v)}
+              />
             </Stack>
             {configs.map((c) => (
               <V2ChartConfig key={c.name} config={c} />

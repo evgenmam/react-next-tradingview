@@ -1,24 +1,28 @@
-import { differenceInDays } from "date-fns";
+import { differenceInDays, differenceInMinutes, isSameMinute } from "date-fns";
 import { isSameDay } from "date-fns/fp";
 import { difference } from "ramda";
 import { useEffect } from "react";
 import { useDebounce } from "use-debounce";
+import { useSettings } from "../../../hooks/settings.hook";
 import { findClosestIndexByX } from "../../../utils/data.utils";
 import { usePointerGet } from "../context/pointer.context";
 import { useRangeGet } from "../context/range.context";
+import * as R from "ramda";
+import { periodDiff } from "../../configs/period.config";
+
+const matchPoints =
+  (period: keyof typeof periodDiff) => (x1: number, x2: number) =>
+    x1 - x2 >= 0 && x1 - x2 < periodDiff[period];
 
 export const usePointSync = (key: string, chart?: Highcharts.Chart) => {
   const { event, x } = usePointerGet(key) || {};
   const [dx] = useDebounce(x, 10);
+  const { period } = useSettings();
   useEffect(() => {
     if (event && chart && dx) {
       const points = chart?.series
         ?.map(
-          (v) =>
-            v?.points?.find(
-              (v) =>
-                isSameDay(v?.x, dx) || Math.abs(differenceInDays(v?.x, dx)) < 2
-            )! || null
+          (v) => v?.points?.find((v) => matchPoints(period)(v?.x, dx))! || null
         )
         .filter((v) => v);
 

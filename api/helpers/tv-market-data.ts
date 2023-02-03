@@ -54,7 +54,8 @@ export class TVChartSession extends TVSession {
     });
   };
 
-  cleanup = () => {
+  cleanup = (symbol?: string) => {
+    if (symbol) tvc.send("remove_series", [this.session, symbol]);
     tvc.clearListeners(this.session);
   };
 

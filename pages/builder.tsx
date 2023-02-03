@@ -1,7 +1,8 @@
-import { Container, CssVarsProvider } from "@mui/joy";
+import { Box, Container, CssVarsProvider } from "@mui/joy";
 import dynamic from "next/dynamic";
 
 import { Theme, ThemeWrapper } from "../components/theme";
+import XScrollbar from "../components/utils/scrollbars";
 import { HoverWrapper } from "../hooks/hover.hook";
 
 const TVBuilder = dynamic(() => import("../components/builder"), {
@@ -17,12 +18,21 @@ const BuilderPage = () => {
           return {
             bgcolor: a.palette.background.level1,
             height: "100vh",
+
+            pl: 0,
+            pr: 0,
           };
         }}
       >
         <ThemeWrapper />
         <HoverWrapper>
-          <TVBuilder />
+          <Box overflow="hidden" height="100%" mx={-3}>
+            <XScrollbar>
+              <Box px={3}>
+                <TVBuilder />
+              </Box>
+            </XScrollbar>
+          </Box>
         </HoverWrapper>
       </Container>
     </CssVarsProvider>

@@ -4,27 +4,24 @@ import {
   Card,
   CardContent,
   Stack,
-  List,
-  Sheet,
   Typography,
-  ListItem,
-  ListItemButton,
   Alert,
-  Modal,
-  ModalDialog,
   IconButton,
+  Divider,
 } from "@mui/joy";
 import { useCallback, useState } from "react";
 import { ICondition, IConditionEntry } from "../../../types/app.types";
 import { useChartEvents } from "../context/events.context";
-import { conditionOptions, getIdFromPoint } from "../utils/builder.utils";
 import * as R from "ramda";
-import { XJson } from "../../json";
-import { capitalCase, sentenceCase } from "change-case";
-
-export const NewSignal = () => {
-  const [selecting, setSelecting] = useState(false);
-  const events = useChartEvents();
+import { NewSignalConditionSelect } from "./new-signal-condition-select";
+import { NewSignalCondition } from "./new-signal-condition";
+import noop from "lodash.noop";
+type Props = {
+  onSave?: (conditions: ICondition[]) => void;
+  onCancel?: () => void;
+};
+export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
+  const { events, selecting, setSelecting } = useChartEvents();
   const [points, setPoints] = useState<Highcharts.Point[]>([]);
   const [a, setA] = useState<IConditionEntry | null>(null);
   const [b, setB] = useState<IConditionEntry | null>(null);
@@ -36,7 +33,7 @@ export const NewSignal = () => {
     setOperator(null);
     setPoints([]);
     setSelecting(false);
-  }, []);
+  }, [setSelecting]);
   const addCondition = useCallback(
     (cond: ICondition) => {
       setConditions(R.append(cond));
@@ -44,8 +41,8 @@ export const NewSignal = () => {
     },
     [resetCondition]
   );
+  const enabled = !conditions.length || !!conditions.at(-1)?.next;
   events.useSubscription((e) => {
-    console.log(e);
     if (e?.points && selecting) {
       setPoints(e.points);
       document.addEventListener("keydown", (e) => {
@@ -55,14 +52,26 @@ export const NewSignal = () => {
       });
     }
   });
-  console.log(points);
   return (
     <Card>
       <CardContent>
         <Stack spacing={1}>
-          <Typography>New Signal</Typography>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="top"
+          >
+            <Typography>New Signal</Typography>
+            <Button
+              size="sm"
+              onClick={() => setSelecting(true)}
+              disabled={!enabled}
+            >
+              Select on chart
+            </Button>
+          </Stack>
           <Typography level="body2">Conditions:</Typography>
-          {selecting ? (
+          {selecting && (
             <Alert
               endDecorator={
                 <IconButton
@@ -76,70 +85,58 @@ export const NewSignal = () => {
             >
               Click on the study chart to select a point
             </Alert>
-          ) : (
-            <Stack direction="row" spacing={1}>
-              <Button size="sm">Add Manually</Button>
-              <Button size="sm" onClick={() => setSelecting(true)}>
-                Select on chart
-              </Button>
-            </Stack>
           )}
+          {conditions?.map((c, idx) => (
+            <NewSignalCondition
+              condition={c}
+              removeCondition={() => setConditions(R.remove(idx, 1))}
+              key={c.a + c.operator + c.b}
+              updateCondition={(v) =>
+                setConditions(R.over(R.lensIndex(idx), R.mergeLeft(v)))
+              }
+            />
+          ))}
+          <Divider />
+          <Stack direction="row" justifyContent="flex-end" spacing={1}>
+            <Button
+              size="sm"
+              onClick={() => {
+                onCancel();
+                resetCondition();
+              }}
+              color="neutral"
+              variant="plain"
+            >
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              disabled={!conditions.length}
+              onClick={() => {
+                onSave(conditions);
+                resetCondition();
+              }}
+              variant="plain"
+            >
+              Save
+            </Button>
+          </Stack>
         </Stack>
-        <XJson data={{ a, b, operator }} />
-        <XJson data={conditions} />
       </CardContent>
-      <Modal
-        open={!!points?.length}
-        onClose={() => {
-          setPoints([]);
+
+      <NewSignalConditionSelect
+        {...{
+          a,
+          b,
+          setA,
+          setB,
+          addCondition,
+          operator,
+          points,
+          setOperator,
+          setPoints,
         }}
-      >
-        <ModalDialog>
-          <List>
-            {a && !operator
-              ? conditionOptions?.map((o) => (
-                  <ListItem key={o}>
-                    <ListItemButton
-                      onClick={() => {
-                        if (o === "true" && a) {
-                          addCondition({ a, operator: o });
-                        } else {
-                          setOperator(o as ICondition["operator"]);
-                          setPoints([]);
-                        }
-                      }}
-                    >
-                      {o === "true"
-                        ? "Alert Triggered (true)"
-                        : sentenceCase(o)}
-                    </ListItemButton>
-                  </ListItem>
-                ))
-              : points?.map((p) => (
-                  <ListItem key={p.series?.options?.id!}>
-                    <ListItemButton
-                      onClick={() => {
-                        const field = getIdFromPoint(p);
-                        const f = {
-                          field,
-                          type: "field" as const,
-                          offset: 0,
-                        };
-                        if (a && operator) {
-                          setB(f);
-                          addCondition({ a, b: f, operator });
-                        } else {
-                          setA(f);
-                        }
-                      }}
-                    >
-                      {p.series?.options?.name!}
-                    </ListItemButton>
-                  </ListItem>
-                ))}
-          </List>
-        </ModalDialog>
-      </Modal>
+      />
     </Card>
   );
 };

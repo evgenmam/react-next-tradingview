@@ -5,6 +5,10 @@ import React, { ReactNode } from "react";
 import { useSettings } from "../../hooks/data.hook";
 
 const options = [
+  { value: "1", label: "1 minute", group: "Minutes" },
+  { value: "5", label: "5 minutes", group: "Minutes" },
+  { value: "15", label: "15 minutes", group: "Minutes" },
+  { value: "30", label: "30 minutes", group: "Minutes" },
   { value: "1H", label: "1 hour", group: "Hours" },
   { value: "2H", label: "2 hours", group: "Hours" },
   { value: "3H", label: "3 hours", group: "Hours" },

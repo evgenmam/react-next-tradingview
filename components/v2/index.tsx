@@ -7,31 +7,32 @@ import { Settings } from "../settings/settings";
 import { SymbolListDrawer } from "../symbol-list/symbol-list-drawer";
 import { Theme, ThemeWrapper } from "../theme";
 import { ChartConfigDrawer } from "./chart-config-drawer";
+import { SnackbarProvider } from "notistack";
 
 const V2 = () => {
   const ctx = useState<IModalContext | null>(null);
   return (
     <CssVarsProvider theme={Theme}>
-      <ModalContext.Provider value={ctx}>
-        <HoverWrapper>
-          <Container
-            maxWidth={false}
-            sx={(a) => {
-              return {
-                bgcolor: a.palette.background.level2,
-                height: "100vh",
-              };
-            }}
-          >
-            <ThemeWrapper />
-            <Grid container height="100%" columnSpacing={2}>
-
-            </Grid>
-            <PromptDialog />
-          </Container>
-          <ChartConfigDrawer />
-        </HoverWrapper>
-      </ModalContext.Provider>
+      <SnackbarProvider>
+        <ModalContext.Provider value={ctx}>
+          <HoverWrapper>
+            <Container
+              maxWidth={false}
+              sx={(a) => {
+                return {
+                  bgcolor: a.palette.background.level2,
+                  height: "100vh",
+                };
+              }}
+            >
+              <ThemeWrapper />
+              <Grid container height="100%" columnSpacing={2}></Grid>
+              <PromptDialog />
+            </Container>
+          </HoverWrapper>
+        </ModalContext.Provider>
+        <ChartConfigDrawer />
+      </SnackbarProvider>
     </CssVarsProvider>
   );
 };

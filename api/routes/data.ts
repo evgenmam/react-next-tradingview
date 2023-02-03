@@ -24,11 +24,12 @@ const getSymbol = async (
   res: Response,
   symbol: string,
   period: string = "1W",
-  indicators: ITVIndicator[] = []
+  count = 300,
+  indicators: ITVIndicator[] = [],
 ) => {
   const nSession = new TVChartSession(res);
   await nSession.init();
-  let data = await nSession.getSymbol(symbol, period);
+  let data = await nSession.getSymbol(symbol, period, +count);
   const studies = [];
   for (const indicator of indicators) {
     // const d: any[] = await nSession.getIndicator(symbol, indicator);
@@ -44,9 +45,9 @@ router.post("/market-data", async (req: Request, res: Response) => {
   if (req.body.numerator && req.body.denominator) {
     const s = `${req.body.numerator}/${req.body.denominator}`;
     const [[numerator], [denominator], [split, studies]] = await Promise.all([
-      getSymbol(res, req.body.numerator, req.body.period),
-      getSymbol(res, req.body.denominator, req.body.period),
-      getSymbol(res, s, req.body.period, req.body.indicators),
+      getSymbol(res, req.body.numerator, req.body.period, req.body.count),
+      getSymbol(res, req.body.denominator, req.body.period, req.body.count),
+      getSymbol(res, s, req.body.period, req.body.count, req.body.indicators),
     ]);
     if (!res.headersSent)
       return res.send({ numerator, denominator, split, studies });

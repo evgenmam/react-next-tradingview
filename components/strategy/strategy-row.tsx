@@ -43,7 +43,7 @@ export const StrategyRow = ({ strategy }: Props) => {
                     {sentenceCase(c.operator)}
                   </Typography>
                   <Typography fontSize={12}>
-                    {c.b.field}[{c.b.offset}]
+                    {c.b?.field}[{c.b?.offset}]
                   </Typography>
                 </Stack>
               ))}
@@ -63,7 +63,7 @@ export const StrategyRow = ({ strategy }: Props) => {
                     {sentenceCase(c.operator)}
                   </Typography>
                   <Typography fontSize={12}>
-                    {c.b.field}[{c.b.offset}]
+                    {c.b?.field}[{c.b?.offset}]
                   </Typography>
                 </Stack>
               ))}

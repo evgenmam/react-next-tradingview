@@ -1,9 +1,12 @@
 import { CircularProgress } from "@mui/joy";
 import { Box } from "@mui/system";
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { useSettings } from "../../hooks/data.hook";
 
-export const Loader = () => {
+type Props = {
+  small?: boolean;
+};
+export const Loader: FC<Props> = ({ small }) => {
   const { fetching, setFetching } = useSettings();
   useEffect(() => {
     setFetching(false);
@@ -13,8 +16,16 @@ export const Loader = () => {
     <Box
       sx={{
         position: "fixed",
-        top: 0,
-        left: 0,
+        ...(small
+          ? {
+              width: 100,
+              height: 100,
+              background: "#000",
+            }
+          : {
+              top: 0,
+              left: 0,
+            }),
         right: 0,
         bottom: 0,
         display: "flex",

@@ -48,7 +48,7 @@ export const SignalSelect = ({
                       {sentenceCase(c.operator)}
                     </Typography>
                     <Typography fontSize={12}>
-                      {c.b.field}[{c.b.offset}]
+                      {c.b?.field}[{c.b?.offset}]
                     </Typography>
                   </Stack>
                 ))}

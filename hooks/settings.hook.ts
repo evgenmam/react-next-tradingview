@@ -28,6 +28,7 @@ export const useSettings = () => {
   const [showStrategies, setShowStrategies] = useSetting("strategies", true);
   const [period, setPeriod] = useSetting("period", "1W");
   const [chartType, setChartType] = useSetting("chartType", "candlestick");
+  const [count, setCount] = useSetting("barCount", 300);
   const [theme, setTheme] = useSetting("theme", "dark") as [
     theme: "dark" | "light",
     setTheme: (theme: "dark" | "light") => void
@@ -63,5 +64,7 @@ export const useSettings = () => {
     setChartType,
     legends,
     setLegends,
+    count,
+    setCount,
   };
 };

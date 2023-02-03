@@ -53,6 +53,7 @@ export type ICondition = {
     | "greaterOrEqual"
     | "lessOrEqual"
     | "true";
+  next?: "AND" | "OR";
 };
 
 export type IConditionGroup = {

@@ -28,7 +28,7 @@ export const useStudyChartConfig = (s: ITVStudy) => {
     plots,
     study?.meta?.is_price_study ? source : lines
   );
-  const events = useChartEvents();
+  const { events } = useChartEvents();
   const options: Highcharts.Options = useMemo(
     () => ({
       title: {
@@ -91,7 +91,6 @@ export const useStudyChartConfig = (s: ITVStudy) => {
         visible: !config?.hideFields?.[s.id?.split?.(":")?.[1]!],
         events: {
           click: function () {
-            console.log(this.chart.hoverPoints);
           },
         },
       })),

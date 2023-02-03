@@ -10,7 +10,7 @@ import {
   timescaleToOHLC,
 } from "../utils";
 const URL = "wss://prodata.tradingview.com/socket.io/websocket";
-const BUILD_ID = "2023_01_31-13_47";
+const BUILD_ID = "2023_02_02-11_23";
 const CHART_ID = "lfNsKpYG";
 import * as R from "ramda";
 
@@ -62,6 +62,7 @@ export class TVClientC {
 
   sessionEvent = (e: TVWSEvent) => {
     pino({ name: "SESSION_EVENT" }).warn({ msg: e.m });
+
     const [ses, ...body] = e.p;
     if (e.m.includes("_error")) {
       const ms = { msg: e.m, body };

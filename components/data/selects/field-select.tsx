@@ -25,10 +25,10 @@ export const FieldSelect = ({
       <SelectDialog
         options={options
           .map((v) => ({
-            label: v.split("---")[0].split(":")[1] || v,
+            label: v.split("----")[0].split(":")[1] || v,
             value: v,
-            group: v.split("---")[0]?.includes(":")
-              ? v.split("---")[0].split(":")[0]
+            group: v.split("----")[0]?.includes(":")
+              ? v.split("----")[0].split(":")[0]
               : "null",
           }))}
         value={props.value}

@@ -26,7 +26,6 @@ export const useStudyChartAlerts = (
           t?.includes("exit buy");
         const isBuy = b && !s;
         const isSell = s && !b;
-        const fillColor = isBuy ? "green" : isSell ? "red" : undefined;
         const symbol = isBuy ? "triangle" : isSell ? "triangle-down" : "circle";
         return {
           id,
@@ -60,8 +59,8 @@ export const useStudyChartAlerts = (
           marker: {
             enabled: true,
             symbol,
-            radius: fillColor ? 10 : 7,
-            fillColor,
+            radius: isBuy || isSell ? 10 : 7,
+            // fillColor,
             style: {
               top: "-200px",
             },

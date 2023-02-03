@@ -12,9 +12,9 @@ export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
   const data = rows.filter((r, idx) =>
     signal.condition.every((c) => {
       const a = rows[idx - (c.a.offset || 0)]?.[c.a.field!];
-      const b = rows[idx - (c.b.offset || 0)]?.[c.b.field!];
+      const b = rows[idx - (c.b?.offset || 0)]?.[c.b?.field!];
       const prevA = rows[idx - 1 - (c.a.offset || 0)]?.[c.a.field!];
-      const prevB = rows[idx - 1 - (c.b.offset || 0)]?.[c.b.field!];
+      const prevB = rows[idx - 1 - (c.b?.offset || 0)]?.[c.b?.field!];
       if (c.operator === "true") {
         return !!a;
       }

@@ -1,17 +1,13 @@
-import { Box, Sheet, useTheme } from "@mui/joy";
+import { Box, useTheme } from "@mui/joy";
 import HighchartsReact from "highcharts-react-official";
-import throttle from "lodash.throttle";
-import { memo, useMemo, useRef } from "react";
-import { useRows, useStrategies } from "../../hooks/data.hook";
+import { memo, useRef } from "react";
 import { HStock } from "../hchart";
-import { mouseOver, yAxis } from "./configs";
 import { usePointerSet } from "./context/pointer.context";
-import { useRangeSet } from "./context/range.context";
 import { usePointSync, useRangeSync } from "./hooks/sync.hook";
 import { useStudyChartConfig } from "./hooks/study-chart-config";
-import * as R from "ramda";
 import { chartZoomScroll } from "../../utils/chart.utils";
 import { ITVStudy } from "../tv-components/types";
+import { useChartEvents } from "./context/events.context";
 
 type Props = {
   study: ITVStudy;
@@ -20,7 +16,7 @@ type Props = {
 
 export const StudyChartH = ({ study, chartRef }: Props) => {
   const boxRef = useRef<HTMLDivElement | null>(null);
-  const h = boxRef.current?.clientHeight;
+  const { selecting } = useChartEvents();
   const options = useStudyChartConfig(study);
   const setPoint = usePointerSet();
   const initSetter = (chart: Highcharts.Chart) => {
@@ -36,8 +32,16 @@ export const StudyChartH = ({ study, chartRef }: Props) => {
       chartZoomScroll(e as WheelEvent, chart)
     );
   };
+  const theme = useTheme();
   return (
-    <Box ref={boxRef} height="100%" position="relative">
+    <Box
+      ref={boxRef}
+      height="100%"
+      position="relative"
+      border={2}
+      borderColor={selecting ? theme?.palette?.success?.[200] : "transparent"}
+      boxSizing="border-box"
+    >
       <HStock
         options={options}
         callback={initSetter}
