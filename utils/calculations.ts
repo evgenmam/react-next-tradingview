@@ -7,6 +7,9 @@ import {
   ITrade,
   ITradeWithTotals,
 } from "../types/app.types";
+import * as R from "ramda";
+import currency from "currency.js";
+import { cur } from "./number.utils";
 
 export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
   const data = rows.filter((r, idx) =>
@@ -163,3 +166,26 @@ export const withRunningTotal = (rows: ITrade[]): ITradeWithTotals[] => {
     totalPnl: +(totalPnl += r.pnl || 0).toFixed(2),
   }));
 };
+
+const getTotal = (key: string) =>
+  R.pipe(
+    R.pipe<ITrade[][], number[], number>(
+      R.map<ITrade, number>(R.propOr(0, key)),
+      R.sum
+    ),
+    cur
+  );
+
+const countBy = (pred: (val: ITrade[keyof ITrade]) => boolean, key: string) =>
+  R.pipe<ITrade[][], ITrade[], number>(
+    R.filter<ITrade>(R.propSatisfies(pred, key)),
+    R.length
+  );
+
+export const strategyStats = R.applySpec<ITrade[]>({
+  totalTrades: R.length,
+  totalPnl: getTotal("pnl"),
+  winningTrades: countBy((pnl) => pnl! > 0, "pnl"),
+  losingTrades: countBy((pnl) => pnl! < 0, "pnl"),
+  openTrades: countBy((closed) => !closed, "closed"),
+});

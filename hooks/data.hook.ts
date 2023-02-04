@@ -1,4 +1,3 @@
-import Dexie from "dexie";
 import { useLiveQuery } from "dexie-react-hooks";
 import { IChartData, IIndicator, ISignal, IStrategy } from "../types/app.types";
 import * as R from "ramda";
@@ -6,6 +5,8 @@ import IDB from "../db/db";
 import { ITVSymbol } from "../components/tv-components/types";
 import { useState } from "react";
 import { toHeikinAshi } from "../utils/chart.utils";
+import { useSettings } from "./settings.hook";
+import { startOfYear } from "date-fns";
 
 export const useIndicators = () => {
   const indicators =
@@ -33,6 +34,22 @@ const getFirstRow = async (dataset: string) => {
     (await IDB.rows.where("dataset").equals(ds).limit(1).sortBy("time"))[0]
       ?.time || 0
   );
+};
+
+export const useMinMax = () => {
+  const { source, target, target2 } = useSettings();
+  const ds = useLiveQuery(async () => {
+    const s = await IDB.rows
+      .where("dataset")
+      .anyOf([source, target, target2].filter((x) => x))
+      .toArray();
+    const sorted = R.sortBy(R.prop("time"))(s);
+    return { min: sorted.at(1), max: sorted.at(-1) };
+  }, [source, target, target2]);
+  return {
+    min: ds?.min?.time,
+    max: ds?.max?.time,
+  };
 };
 
 const getMinRow = async () => {
@@ -67,7 +84,7 @@ export const useRows = (datasetName: string) => {
       setLoading(false);
       if (chartType === "heikin-ashi" && data.length > 0)
         data = toHeikinAshi(data as IChartData[]) as IChartData[];
-      return data;
+      return R.sortBy(R.prop("time"))(data);
     }) || [];
   const count = useLiveQuery(async () => {
     const dataset = (await IDB.settings.get(datasetName))?.value;

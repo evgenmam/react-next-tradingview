@@ -12,11 +12,14 @@ import {
 import { sentenceCase } from "change-case";
 import noop from "lodash.noop";
 import { FC } from "react";
+import { useDrag } from "react-dnd";
 import { ICondition, IConditionEntry, ISignal } from "../../../types/app.types";
 
 type Props = {
   signal: ISignal;
   onDelete?: (signal: number) => void;
+  full?: boolean;
+  draggable?: boolean;
 };
 const splitField = (c?: IConditionEntry) => {
   const f = c?.field?.split?.(":") || [];
@@ -25,20 +28,48 @@ const splitField = (c?: IConditionEntry) => {
   }
   return { field: f[1].replace(/\-\-\-(.+)/, ""), series: f[0] };
 };
-export const MySignalRow: FC<Props> = ({ signal, onDelete = noop }) => {
+
+export const MySignalRow: FC<Props> = ({
+  signal,
+  onDelete,
+  full,
+  draggable,
+}) => {
+  const [collected, drag] = useDrag(() => ({
+    type: "signal",
+    item: signal,
+  }));
   return (
-    <Sheet sx={{ borderRadius: 1 }}>
+    <Sheet
+      {...(draggable && { ref: drag })}
+      sx={{
+        borderRadius: 1,
+        overflow: "hidden",
+        ...(full && {
+          width: "100%",
+        }),
+        ...(draggable && {
+          cursor: "grab",
+        }),
+      }}
+      variant="outlined"
+    >
       <Stack
         p={1}
-        justifyContent="space-between"
+        justifyContent={full ? "center" : "space-between"}
         alignItems="center"
         direction="row"
         spacing={1}
+        sx={{
+          borderLeftWidth: 10,
+          borderColor: signal?.color,
+          borderLeftStyle: "solid",
+        }}
       >
         <Stack direction="row" spacing={1} alignItems="center">
           {signal?.condition?.map((c) => (
             <Stack
-              key={c.a + c.operator + c.b}
+              key={c.a?.field + c.operator + c.b?.field}
               direction="row"
               spacing={0.5}
               alignItems="center"
@@ -76,13 +107,18 @@ export const MySignalRow: FC<Props> = ({ signal, onDelete = noop }) => {
           ))}
         </Stack>
         <Box ml="auto" justifySelf="flex-end">
-          <IconButton
-            color="danger"
-            size="sm"
-            onClick={() => onDelete(signal?.id)}
-          >
-            <TrashIcon width={16} />
-          </IconButton>
+          {onDelete && (
+            <IconButton
+              color="danger"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete?.(signal?.id!);
+              }}
+            >
+              <TrashIcon width={16} />
+            </IconButton>
+          )}
         </Box>
       </Stack>
     </Sheet>

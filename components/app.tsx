@@ -14,36 +14,21 @@ import { SnackbarProvider } from "notistack";
 export default function App() {
   const ctx = useState<IModalContext | null>(null);
   return (
-    <CssVarsProvider theme={Theme}>
-      <SnackbarProvider>
-        <ModalContext.Provider value={ctx}>
-          <HoverWrapper>
-            <Container
-              maxWidth={false}
-              sx={(a) => {
-                return {
-                  bgcolor: a.palette.background.level2,
-                  height: "100vh",
-                };
-              }}
-            >
-              <ThemeWrapper />
-              <Grid container height="100%" columnSpacing={2}>
-                <Grid xs={12} md={8} height="100%">
-                  <DisplayArea />
-                </Grid>
-                <Grid xs={12} md={4} height="100%">
-                  <Strategy />
-                </Grid>
-              </Grid>
-              <Settings />
-              <PromptDialog />
-            </Container>
-            <ChartConfigDrawer />
-          </HoverWrapper>
-        </ModalContext.Provider>
-        <Loader />
-      </SnackbarProvider>
-    </CssVarsProvider>
+    <ModalContext.Provider value={ctx}>
+      <HoverWrapper>
+        <ThemeWrapper />
+        <Grid container height="100vh" columnSpacing={2}>
+          <Grid xs={12} md={8} height="100%">
+            <DisplayArea />
+          </Grid>
+          <Grid xs={12} md={4} height="100%">
+            <Strategy />
+          </Grid>
+        </Grid>
+        <Settings />
+        <PromptDialog />
+        <ChartConfigDrawer />
+      </HoverWrapper>
+    </ModalContext.Provider>
   );
 }

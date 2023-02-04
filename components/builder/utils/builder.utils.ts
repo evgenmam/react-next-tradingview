@@ -25,7 +25,7 @@ export const isAllSame = R.pipe(R.pluck(1), R.uniq, R.length, R.equals(1));
 
 export const getIdFromPoint = (point: Highcharts.Point): string => {
   const { name, id, title } = point?.series?.options as any;
-  return `${title}:${name}-${id?.split(":")[1]}`;
+  return `${title}:${name}----${id?.split(":")[1]}`;
 };
 
 export const conditionOptions = [

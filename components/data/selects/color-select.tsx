@@ -1,11 +1,12 @@
-import { FormControl, FormLabel, Input, TextField } from "@mui/joy";
+import { FormControl, FormLabel, Input, TextField, useTheme } from "@mui/joy";
 import { CompactPicker } from "react-color";
 import colors from "material-colors";
 import * as R from "ramda";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
-import { Popover } from "@mui/material";
+import { ButtonBase, Popover } from "@mui/material";
 import { Square2StackIcon, StopIcon } from "@heroicons/react/24/solid";
 import randomInteger from "random-int";
+import noop from "lodash.noop";
 
 const swatches = R.pipe(
   R.pick([
@@ -27,51 +28,65 @@ const swatches = R.pipe(
   (v) => R.range(2, 9).map((i) => v.map((v) => v[i * 100])),
   R.flatten
 )(colors);
-
-export const ColorSelect = ({
-  value,
-  onChange,
-}: {
+type Props = {
   value?: string;
   onChange: (v: string) => void;
-}) => {
+  variant?: "input" | "square";
+};
+export const ColorSelect = ({
+  value,
+  onChange = noop,
+  variant = "input",
+}: Props) => {
+  const { palette } = useTheme();
   return (
-    <FormControl size="sm">
-      <FormLabel>Color</FormLabel>
-      <PopupState variant="popover" popupId="demo-popup-popover">
-        {(popupState) => (
-          <div>
-            <TextField
-              size="sm"
-              {...bindTrigger(popupState)}
-              startDecorator={<StopIcon width={20} color={value} />}
-              value={value}
-            >
-              Open Popover
-            </TextField>
-            <Popover
-              {...bindPopover(popupState)}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "center",
+    <PopupState variant="popover" popupId="demo-popup-popover">
+      {(popupState) => (
+        <>
+          {variant === "input" ? (
+            <FormControl size="sm">
+              <FormLabel>Color</FormLabel>
+              <TextField
+                size="sm"
+                {...bindTrigger(popupState)}
+                startDecorator={<StopIcon width={20} color={value} />}
+                value={value}
+              >
+                Open Popover
+              </TextField>
+            </FormControl>
+          ) : (
+            <ButtonBase {...bindTrigger(popupState)}>
+              <StopIcon width={20} color={value} />
+            </ButtonBase>
+          )}
+          <Popover
+            {...bindPopover(popupState)}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "center",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+          >
+            <CompactPicker
+              colors={swatches}
+              styles={{
+                default: {
+                  compact: { background: palette?.background?.level1 },
+                },
               }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "center",
+              onChange={(v) => {
+                onChange(v.hex);
+                popupState.close();
               }}
-            >
-              <CompactPicker
-                colors={swatches}
-                onChange={(v) => {
-                  onChange(v.hex);
-                  popupState.close();
-                }}
-              />
-            </Popover>
-          </div>
-        )}
-      </PopupState>
-    </FormControl>
+            />
+          </Popover>
+        </>
+      )}
+    </PopupState>
   );
 };
 

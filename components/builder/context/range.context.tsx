@@ -34,9 +34,7 @@ export const useRangeGet = (key?: string) => {
 export const useRangeControls = () => {
   const set = useRangeSet();
   const get = useRangeGet();
-  // const end = useCallback(() => {
 
-  // })
   return {
     set,
     get,

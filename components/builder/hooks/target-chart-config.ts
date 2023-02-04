@@ -4,7 +4,7 @@ import { useRows } from "../../../hooks/data.hook";
 import { useRangeSet } from "../context/range.context";
 import { useBarColorers } from "./study-chart/bar-colorers";
 import * as R from "ramda";
-import { CLOSING } from "ws";
+
 export const useTargetChartConfig = (set: string, height?: number) => {
   const { palette } = useTheme();
   const setRange = useRangeSet();

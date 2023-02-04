@@ -10,7 +10,6 @@ export const useStudyChartAlerts = (
   plots: ITVPlot[],
   source?: Highcharts.SeriesLineOptions[]
 ) => {
-  console.log(source);
   const alerts = plots?.filter?.(
     (p) => p.plot?.type === "alertcondition" && !isAllSame(p.data)
   );

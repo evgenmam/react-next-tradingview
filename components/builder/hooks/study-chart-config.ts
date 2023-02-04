@@ -29,7 +29,6 @@ export const useStudyChartConfig = (s: ITVStudy) => {
     plots,
     study?.meta?.is_price_study ? source : lines
   );
-  console.log(alerts);
   const { events } = useChartEvents();
   const options: Highcharts.Options = useMemo(
     () => ({
@@ -48,6 +47,7 @@ export const useStudyChartConfig = (s: ITVStudy) => {
         marginRight: 0,
         events: {
           click: function () {
+            console.log(this)
             events.emit({
               points: this.hoverPoints?.filter((p) => !!p?.series?.options?.id),
             });
@@ -157,7 +157,6 @@ export const useStudyChartConfig = (s: ITVStudy) => {
       events,
     ]
   );
-  console.log(options);
 
   return options;
 };

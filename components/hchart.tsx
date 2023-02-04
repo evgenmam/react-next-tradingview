@@ -6,9 +6,7 @@ import HighchartsExporting from "highcharts/modules/exporting";
 import HighchartsAnnotations from "highcharts/modules/annotations";
 import HighchartsMore from "highcharts/highcharts-more";
 import HighchartsReact from "highcharts-react-official";
-import {
-  forwardRef,
-} from "react";
+import { forwardRef } from "react";
 import dragPanes from "highcharts/modules/drag-panes";
 import { useSettings } from "../hooks/data.hook";
 import DarkMLTheme from "./themes/hc-dark";
@@ -35,7 +33,7 @@ const rangeButtons: Array<Highcharts.RangeSelectorButtonsOptions> = R.range(
   type: "year",
   text: `${i + 1}Y`,
 }));
-const defaults: HighchartsReact.Props["options"] = {
+export const defaults: HighchartsReact.Props["options"] = {
   chart: {
     animation: false,
   },
@@ -58,7 +56,7 @@ export const HChart = (props: HighchartsReact.Props) => {
 export const HStock = forwardRef<
   HighchartsReact.RefObject,
   HighchartsReact.Props
->(({ children, ...props }, ref) => {
+>(({ children, ...props }: HighchartsReact.Props, ref) => {
   const options = { ...props.options };
   return (
     <HighchartsReact

@@ -53,7 +53,7 @@ export const Studies = () => {
         />
       </Stack>
       <Box flexGrow={1}>
-        <Grid container>
+        <Grid container spacing={1} padding={0}>
           {R.uniq(selected.map((i) => active.at(i)!).filter((v) => !!v)).map(
             (study) => (
               <Grid xs={12} sm={6} md={6} key={study.id}>

@@ -12,7 +12,7 @@ export const MySignals = () => {
   const { addSignal, signals, removeSignal } = useSignals();
 
   return (
-    <Grid xs={12} sm={6}>
+    <Stack>
       <Stack p={1} alignItems="center" spacing={1} direction="row">
         <Typography>My Signals</Typography>
         <IconButton onClick={() => setAdding(true)} size="sm">
@@ -21,22 +21,24 @@ export const MySignals = () => {
       </Stack>
       <Stack spacing={1}>
         <Collapse in={adding}>
-          <NewSignal
-            onCancel={() => setAdding(false)}
-            onSave={(condition) => {
-              addSignal({ condition });
-              setAdding(false);
-            }}
-          />
+          {adding && (
+            <NewSignal
+              onCancel={() => setAdding(false)}
+              onSave={(signal) => {
+                addSignal(signal);
+                setAdding(false);
+              }}
+            />
+          )}
         </Collapse>
-        <Grid container>
+        <Grid container spacing={1} p={0}>
           {signals.map((signal) => (
             <Grid key={signal.id} flexGrow={1}>
-              <MySignalRow signal={signal} onDelete={removeSignal} />
+              <MySignalRow signal={signal} onDelete={removeSignal} draggable />
             </Grid>
           ))}
         </Grid>
       </Stack>
-    </Grid>
+    </Stack>
   );
 };

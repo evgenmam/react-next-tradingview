@@ -1,7 +1,7 @@
 import { Box, Sheet, useTheme } from "@mui/joy";
 import HighchartsReact from "highcharts-react-official";
 import throttle from "lodash.throttle";
-import { memo, useMemo, useRef } from "react";
+import { memo, useEffect, useMemo, useRef } from "react";
 import { useRows, useStrategies } from "../../hooks/data.hook";
 import { HStock } from "../hchart";
 import { mouseOver, yAxis } from "./configs";
@@ -21,7 +21,7 @@ export const TargetChartH = ({ set, chartRef }: Props) => {
   const boxRef = useRef<HTMLDivElement | null>(null);
   // const h = boxRef.current?.clientHeight;
   const options = useTargetChartConfig(set, 400);
-
+  console.log(options);
   const setPoint = usePointerSet();
   const initSetter = (chart: Highcharts.Chart) => {
     chart.container.addEventListener("mousemove", (e) => {
@@ -36,6 +36,20 @@ export const TargetChartH = ({ set, chartRef }: Props) => {
       chartZoomScroll(e as WheelEvent, chart)
     );
   };
+  const ser = (options?.series?.[0] as Highcharts.SeriesCandlestickOptions)
+    ?.data;
+  const first = ser?.at?.(1) as Highcharts.PointOptionsObject;
+  const last = ser?.at?.(-1) as Highcharts.PointOptionsObject;
+  useEffect(() => {
+    if (set === "source") {
+      console.log(
+        chartRef?.current?.chart?.series?.[0]?.xAxis?.setExtremes(
+          chartRef?.current?.chart?.series?.[0]?.xAxis?.getExtremes()?.min,
+          chartRef?.current?.chart?.series?.[0]?.xAxis?.getExtremes()?.max
+        )
+      );
+    }
+  }, [first, last, set, chartRef]);
   return (
     <Box ref={boxRef} height="100%">
       <HStock options={options} callback={initSetter} id={set} ref={chartRef} />
