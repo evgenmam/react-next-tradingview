@@ -11,8 +11,9 @@ import * as R from "ramda";
 import { periodDiff } from "../../configs/period.config";
 
 const matchPoints =
-  (period: keyof typeof periodDiff) => (x1: number, x2: number) =>
-    x1 - x2 >= 0 && x1 - x2 < periodDiff[period];
+  (period: keyof typeof periodDiff) => (x1: number, x2: number) => {
+    return x1 - x2 >= 0 && x1 - x2 < periodDiff[period];
+  };
 
 export const usePointSync = (key: string, chart?: Highcharts.Chart) => {
   const { event, x } = usePointerGet(key) || {};

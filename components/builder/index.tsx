@@ -19,9 +19,12 @@ const TVBuilder = () => {
             <Grid container spacing={2}>
               <Markets />
             </Grid>
-            <Studies />
             <Grid container spacing={2}>
-              <MySignals />
+              <Grid xs={12} md={6}>
+                <Studies />
+
+                <MySignals />
+              </Grid>
             </Grid>
             <ChartConfigDrawer />
           </ChartEventWrapper>

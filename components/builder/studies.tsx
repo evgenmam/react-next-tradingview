@@ -7,16 +7,22 @@ import {
   Stack,
   Typography,
 } from "@mui/joy";
+import { Pagination } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
+import { useState } from "react";
 import { useSettings } from "../../hooks/settings.hook";
+import { PaginationDots } from "../utils/pagination-dots";
 import XScrollbar from "../utils/scrollbars";
 import { useActiveStudies } from "../v2/hooks/v2-data.hook";
 import { StudyChart } from "./study-chart";
 import { StudyToggleDropdown } from "./study-toggle-dropdown";
+import * as R from "ramda";
 
 export const Studies = () => {
-  const { studies } = useActiveStudies();
+  const { studies, active } = useActiveStudies();
   const { legends, setLegends } = useSettings();
+  const [selected, setSelected] = useState([0, 1]);
+
   return (
     <Stack>
       <Stack
@@ -25,10 +31,20 @@ export const Studies = () => {
         alignItems="center"
         justifyContent="space-between"
       >
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
+          justifyContent="space-between"
+        >
           <Typography>Indicators/Studies</Typography>
           <StudyToggleDropdown />
         </Stack>
+        <PaginationDots
+          selected={selected}
+          total={active.length}
+          onSelect={setSelected}
+        />
         <Checkbox
           variant="solid"
           label="Show Legends"
@@ -37,15 +53,15 @@ export const Studies = () => {
         />
       </Stack>
       <Box flexGrow={1}>
-        <Grid2 container spacing={2}>
-          {studies
-            ?.filter((v) => !v.config?.hidden)
-            .map((study) => (
-              <Grid2 xs={12} md={12 / studies.length} sm={6} key={study.id}>
+        <Grid container>
+          {R.uniq(selected.map((i) => active.at(i)!).filter((v) => !!v)).map(
+            (study) => (
+              <Grid xs={12} sm={6} md={6} key={study.id}>
                 <StudyChart study={study} />
-              </Grid2>
-            ))}
-        </Grid2>
+              </Grid>
+            )
+          )}
+        </Grid>
       </Box>
     </Stack>
   );

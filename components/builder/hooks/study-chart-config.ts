@@ -7,6 +7,7 @@ import { useV2Study } from "../../v2/hooks/v2-data.hook";
 import { useChartEvents } from "../context/events.context";
 import { useRangeSet } from "../context/range.context";
 import { useStudyChartAlerts } from "./study-chart/alerts";
+import { useBarColorers } from "./study-chart/bar-colorers";
 import { useStudyChartCircles } from "./study-chart/circles";
 import { useStudyChartArearanges } from "./study-chart/filled";
 import { useStudyChartLines } from "./study-chart/lines";
@@ -18,8 +19,8 @@ export const useStudyChartConfig = (s: ITVStudy) => {
   const setRange = useRangeSet();
   const { study, config } = useV2Study(s.id);
   const { legends } = useSettings();
-  const source = useStudyChartSource(study!);
   const plots = useStudyChartPlots(study!, config);
+  const source = useStudyChartSource(study!, config);
   const filled = useStudyChartArearanges(study!, plots, config);
   const lines = useStudyChartLines(study!, plots, config);
   const circles = useStudyChartCircles(study!, plots);
@@ -28,6 +29,7 @@ export const useStudyChartConfig = (s: ITVStudy) => {
     plots,
     study?.meta?.is_price_study ? source : lines
   );
+  console.log(alerts);
   const { events } = useChartEvents();
   const options: Highcharts.Options = useMemo(
     () => ({
@@ -90,8 +92,7 @@ export const useStudyChartConfig = (s: ITVStudy) => {
         ...s,
         visible: !config?.hideFields?.[s.id?.split?.(":")?.[1]!],
         events: {
-          click: function () {
-          },
+          click: function () {},
         },
       })),
       xAxis: {
@@ -153,8 +154,10 @@ export const useStudyChartConfig = (s: ITVStudy) => {
       alerts,
       circles,
       legends,
+      events,
     ]
   );
+  console.log(options);
 
   return options;
 };

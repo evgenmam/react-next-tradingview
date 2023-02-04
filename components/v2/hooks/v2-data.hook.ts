@@ -137,7 +137,7 @@ export const useActiveStudies = () => {
     });
   };
 
-  return { studies, loading, toggleStudy };
+  return { studies, loading, toggleStudy, active: studies?.filter(v => !v?.config?.hidden) };
 };
 
 export const useV2Studies = () => {

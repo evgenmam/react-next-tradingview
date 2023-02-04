@@ -1,3 +1,4 @@
+import { PointOptionsObject } from "highcharts";
 import { useMemo } from "react";
 import { IChartData } from "../../../../types/app.types";
 import { ITVStudy } from "../../../tv-components/types";
@@ -9,6 +10,7 @@ export const useStudyChartAlerts = (
   plots: ITVPlot[],
   source?: Highcharts.SeriesLineOptions[]
 ) => {
+  console.log(source);
   const alerts = plots?.filter?.(
     (p) => p.plot?.type === "alertcondition" && !isAllSame(p.data)
   );
@@ -39,9 +41,9 @@ export const useStudyChartAlerts = (
               x: c[0],
               y: (
                 source?.[0]?.data?.find(
-                  (v) => (v as number[])[0] === c[0]
-                ) as number[]
-              )?.[1],
+                  (v) => (v as PointOptionsObject)?.x === c[0]
+                ) as PointOptionsObject
+              )?.y,
               label: title,
             })),
           style: {
@@ -62,10 +64,10 @@ export const useStudyChartAlerts = (
             radius: isBuy || isSell ? 10 : 7,
             // fillColor,
             style: {
-              top: "-200px",
+              // top: "-200px",
             },
           },
-          zIndex: isBuy ? 100 : isSell ? 100 : 90,
+          zIndex: isBuy ? 1100 : isSell ? 1100 : 1090,
         };
       }),
     [alerts, source, study?.meta?.is_price_study]

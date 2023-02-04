@@ -4,6 +4,7 @@ import { useRows } from "../../../hooks/data.hook";
 import { useRangeSet } from "../context/range.context";
 import { useBarColorers } from "./study-chart/bar-colorers";
 import * as R from "ramda";
+import { CLOSING } from "ws";
 export const useTargetChartConfig = (set: string, height?: number) => {
   const { palette } = useTheme();
   const setRange = useRangeSet();
@@ -11,7 +12,13 @@ export const useTargetChartConfig = (set: string, height?: number) => {
   const colorers = useBarColorers();
   const isSource = set === "source";
   const indColorers = useMemo(
-    () => (isSource ? R.groupBy<any, string>(R.prop("value"), colorers) : {}),
+    () =>
+      isSource
+        ? R.groupBy<any, string>(
+            R.prop("value"),
+            colorers?.filter((v) => !v?.hidden)
+          )
+        : {},
     [colorers, isSource]
   );
 

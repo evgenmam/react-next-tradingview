@@ -30,3 +30,15 @@ export const useRangeGet = (key?: string) => {
   if (key === k) return null;
   return event;
 };
+
+export const useRangeControls = () => {
+  const set = useRangeSet();
+  const get = useRangeGet();
+  // const end = useCallback(() => {
+
+  // })
+  return {
+    set,
+    get,
+  };
+};
