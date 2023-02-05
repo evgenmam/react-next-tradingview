@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toHeikinAshi } from "../utils/chart.utils";
 import { useSettings } from "./settings.hook";
 import { startOfYear } from "date-fns";
+import { CLOSING } from "ws";
 
 export const useIndicators = () => {
   const indicators =
@@ -59,11 +60,12 @@ const getMinRow = async () => {
   return Math.max(source, target, target2);
 };
 
-export const useRows = (datasetName: string) => {
+export const useRows = (datasetName?: string) => {
   const [loading, setLoading] = useState(false);
   const rows =
     useLiveQuery(async () => {
       setLoading(true);
+      if (!datasetName) return [];
       const minRow = await getMinRow();
       const dataset = (await IDB.settings.get(datasetName))?.value;
       const chartType = (await IDB.settings.get("chartType"))?.value;
@@ -85,17 +87,19 @@ export const useRows = (datasetName: string) => {
       if (chartType === "heikin-ashi" && data.length > 0)
         data = toHeikinAshi(data as IChartData[]) as IChartData[];
       return R.sortBy(R.prop("time"))(data);
-    }) || [];
+    }, [datasetName]) || [];
   const count = useLiveQuery(async () => {
+    if (!datasetName) return 0;
     const dataset = (await IDB.settings.get(datasetName))?.value;
     if (!dataset) return 0;
 
     return await IDB.rows.where("dataset").equals(dataset).count();
-  });
+  }, [datasetName]);
   const dataset =
     useLiveQuery(async () => {
+      if (!datasetName) return "";
       return (await IDB.settings.get(datasetName))?.value;
-    }) || [];
+    }, [datasetName]) || [];
 
   const indexed = R.indexBy<IChartData, number>(R.prop("time"))(
     rows as IChartData[]

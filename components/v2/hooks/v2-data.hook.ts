@@ -137,7 +137,12 @@ export const useActiveStudies = () => {
     });
   };
 
-  return { studies, loading, toggleStudy, active: studies?.filter(v => !v?.config?.hidden) };
+  return {
+    studies,
+    loading,
+    toggleStudy,
+    active: studies?.filter((v) => !v?.config?.hidden),
+  };
 };
 
 export const useV2Studies = () => {
@@ -213,4 +218,11 @@ export const useV2PrivateScripts = () => {
     );
   };
   return { privateScripts, setPrivateScripts };
+};
+
+export const useStrategy = (id: number) => {
+  const strategy = useLiveQuery(async () => {
+    return await IDB.strategies.where("id").equals(id).first();
+  }, [id]);
+  return { strategy };
 };

@@ -1,6 +1,7 @@
 import axios, { AxiosError, Canceler } from "axios";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 import { CLOSING } from "ws";
 import { useRows, useSetting, useSettings } from "../../../hooks/data.hook";
 import { periodDiff } from "../../configs/period.config";
@@ -23,7 +24,7 @@ export const useV2MarketData = (active: boolean) => {
   const { sett, period, count } = useSettings();
   const snack = useSnackbar();
   const { putStudies } = useV2Studies();
-  const getData = useCallback(
+  const getData = useDebouncedCallback(
     async (lastFetched: string, cancel?: Canceler) => {
       try {
         sett("fetching")(true);
@@ -63,21 +64,11 @@ export const useV2MarketData = (active: boolean) => {
           );
       } finally {
         sett("fetching")(false);
+        return cancel;
       }
     },
-    [
-      numerator,
-      denominator,
-      selected?.indicators,
-      period,
-      count,
-      sett,
-      spl,
-      target1,
-      target2,
-      putStudies,
-      snack,
-    ]
+    200,
+    { leading: false, trailing: true }
   );
 
   useEffect(() => {
@@ -89,36 +80,8 @@ export const useV2MarketData = (active: boolean) => {
       period,
       count,
     });
-    console.log(lastFetched, window.localStorage.getItem("last-fetched"));
     if (numerator && denominator && period && count && selected) {
       if (window.localStorage.getItem("last-fetched") !== lastFetched) {
-        console.log(
-          window.localStorage.getItem("last-fetched") !== lastFetched
-        );
-
-        const a = {
-          numerator: "NASDAQ:TSLA",
-          denominator: "AMEX:SPY",
-          studies: [
-            "PUB;8bBrCmCGspE390DLRNWYlXrtDxRIoZYe",
-            "PUB;7pIlmOh7nrutyvfmHTPJQEHlK26okwvl",
-            "PUB;d2ac68ba96c2432182159828c9928764",
-            "PUB;kGJGLu77vLikIl1P4H1OuIWM7m7OA271",
-          ],
-        };
-        const b = {
-          numerator: "NASDAQ:TSLA",
-          denominator: "AMEX:SPY",
-          studies: [
-            "PUB;8bBrCmCGspE390DLRNWYlXrtDxRIoZYe",
-            "PUB;7pIlmOh7nrutyvfmHTPJQEHlK26okwvl",
-            "PUB;d2ac68ba96c2432182159828c9928764",
-            "PUB;kGJGLu77vLikIl1P4H1OuIWM7m7OA271",
-          ],
-          period: "1W",
-          count: "1000",
-        };
-
         getData(lastFetched, cancel);
       }
     }

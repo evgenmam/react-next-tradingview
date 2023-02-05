@@ -78,6 +78,8 @@ export type IStrategy = {
   color?: string;
   direction: "long" | "short";
   entry?: number;
+  openOn?: 'open' | 'close';
+  closeOn?: 'open' | 'close';
 };
 
 export type IBaseTrade = {

@@ -75,7 +75,8 @@ export const getTVLogo = (path: string) =>
 
 export const chartZoomScroll = (
   scrollEvent: WheelEvent,
-  chart: Highcharts.Chart
+  chart: Highcharts.Chart,
+  sensitivity = 0.4
 ) => {
   const ev = scrollEvent;
   ev.stopPropagation();
@@ -85,7 +86,7 @@ export const chartZoomScroll = (
   if (point) {
     const extr = chart?.xAxis[0].getExtremes();
     if (ev.deltaY) {
-      const percent = 0.4 * (ev.deltaY > 0 ? 1 : -1);
+      const percent = sensitivity * (ev.deltaY > 0 ? 1 : -1);
 
       const range = extr.max - extr.min;
       const newRange = range + range * percent;
@@ -96,7 +97,7 @@ export const chartZoomScroll = (
 
       chart?.xAxis[0].setExtremes(c(newMin), c(newMax), undefined, false);
     } else if (ev.deltaX) {
-      const percent = 0.2 * (ev.deltaX > 0 ? 1 : -1);
+      const percent = (sensitivity / 2) * (ev.deltaX > 0 ? 1 : -1);
       const range = extr.max - extr.min;
       const newMin = extr.min + range * percent;
       const newMax = extr.max + range * percent;

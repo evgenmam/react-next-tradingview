@@ -12,37 +12,56 @@ import currency from "currency.js";
 import { cur } from "./number.utils";
 
 export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
-  const data = rows.filter((r, idx) =>
-    signal.condition.every((c) => {
-      const a = rows[idx - (c.a.offset || 0)]?.[c.a.field!];
-      const b = rows[idx - (c.b?.offset || 0)]?.[c.b?.field!];
-      const prevA = rows[idx - 1 - (c.a.offset || 0)]?.[c.a.field!];
-      const prevB = rows[idx - 1 - (c.b?.offset || 0)]?.[c.b?.field!];
-      if (c.operator === "true") {
-        return !!a;
-      }
-      if (a && b && prevA && prevB)
-        switch (c.operator) {
-          case "equals":
-            return a === b;
-          case "greater":
-            return a > b;
-          case "greaterOrEqual":
-            return a >= b;
-          case "less":
-            return a < b;
-          case "lessOrEqual":
-            return a <= b;
-          case "crossesUp":
-            return prevA < prevB && a > b;
-          case "crossesDown":
-            return prevA > prevB && a < b;
+  const data = rows.filter(
+    (r, idx) =>
+      signal.condition
+        .map((c) => {
+          const a = rows[idx - (c.a.offset || 0)]?.[c.a.field!];
+          const b = rows[idx - (c.b?.offset || 0)]?.[c.b?.field!];
+          const prevA = rows[idx - 1 - (c.a.offset || 0)]?.[c.a.field!];
+          const prevB = rows[idx - 1 - (c.b?.offset || 0)]?.[c.b?.field!];
+          let result = false;
+          if (c.operator === "true") {
+            result = !!a;
+          }
+          if (a && b && prevA && prevB)
+            switch (c.operator) {
+              case "equals":
+                result = a === b;
+                break;
+              case "greater":
+                result = a > b;
+                break;
+              case "greaterOrEqual":
+                result = a >= b;
+                break;
+              case "less":
+                result = a < b;
+                break;
+              case "lessOrEqual":
+                result = a <= b;
+                break;
+              case "crossesUp":
+                result = prevA < prevB && a > b;
+                break;
+              case "crossesDown":
+                result = prevA > prevB && a < b;
+                break;
 
-          default:
-            return false;
-        }
-    })
+              default:
+                result = false;
+            }
+          return { result, next: c.next };
+        })
+        .reduce(
+          (v, { result, next }) => ({
+            result: v.next === "OR" ? v.result || result : v.result && result,
+            next,
+          }),
+          { result: true, next: "AND" }
+        ).result
   );
+
   return {
     data,
     signal,

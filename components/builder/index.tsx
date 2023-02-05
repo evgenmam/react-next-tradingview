@@ -31,7 +31,7 @@ const TVBuilder = () => {
                       <MySignals />
                     </Grid>
                     <Grid xs={12} md={6}>
-                      <MyStrategies />
+                      <MyStrategies withLink />
                     </Grid>
                   </Grid>
                   <ChartConfigDrawer />

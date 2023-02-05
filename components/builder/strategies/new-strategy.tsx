@@ -57,7 +57,7 @@ export const NewStrategy = ({ onCancel = noop, onSave }: Props) => {
               onSelect={setCloseSignal}
             />
           </Stack>
-          <Space pb={1} s={3} c>
+          <Space pb={1} gap={2} c flexWrap="wrap" >
             <RadioGroup
               defaultValue="long"
               value={direction}
@@ -70,7 +70,7 @@ export const NewStrategy = ({ onCancel = noop, onSave }: Props) => {
               </Space>
             </RadioGroup>
             <Divider orientation="vertical" />
-            <Space c s={1}>
+            <Space c s={1} >
               <Typography level="body2">Count:</Typography>
               <Input
                 sx={{ width: 60 }}
