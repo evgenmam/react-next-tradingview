@@ -21,7 +21,6 @@ export const TargetChartH = ({ set, chartRef }: Props) => {
   const boxRef = useRef<HTMLDivElement | null>(null);
   // const h = boxRef.current?.clientHeight;
   const options = useTargetChartConfig(set, 400);
-  console.log(options);
   const setPoint = usePointerSet();
   const initSetter = (chart: Highcharts.Chart) => {
     chart.container.addEventListener("mousemove", (e) => {
@@ -42,12 +41,6 @@ export const TargetChartH = ({ set, chartRef }: Props) => {
   const last = ser?.at?.(-1) as Highcharts.PointOptionsObject;
   useEffect(() => {
     if (set === "source") {
-      console.log(
-        chartRef?.current?.chart?.series?.[0]?.xAxis?.setExtremes(
-          chartRef?.current?.chart?.series?.[0]?.xAxis?.getExtremes()?.min,
-          chartRef?.current?.chart?.series?.[0]?.xAxis?.getExtremes()?.max
-        )
-      );
     }
   }, [first, last, set, chartRef]);
   return (

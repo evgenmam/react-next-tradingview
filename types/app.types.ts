@@ -116,6 +116,8 @@ export type ITrade = {
   lowestPrice?: number;
   highest?: number;
   lowest?: number;
+  totalIn?: number;
+  totalOut?: number;
 };
 
 export type ITradeWithTotals = ITrade & {

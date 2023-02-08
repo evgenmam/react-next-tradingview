@@ -7,6 +7,10 @@ import {
   Chip,
   IconButton,
   Link,
+  List,
+  ListItem,
+  ListItemContent,
+  ListItemDecorator,
   Sheet,
   Stack,
   Typography,
@@ -125,10 +129,20 @@ export const MyStrategyRow: FC<Props> = ({
                 </Grid2>
               )}
             </Grid2>
-            <JSONDetails data={stats} />
           </Box>
+          <List>
+            <ListItem>
+              <ListItemContent>PNL</ListItemContent>
+              <Typography>{stats?.totalPnl}</Typography>
+            </ListItem>
+            {/* <ListItem>
+              <ListItemContent>Winning/Losing</ListItemContent>
+              <Typography>{stats?.totalTrades}</Typography>
+            </ListItem> */}
+          </List>
         </Stack>
       </Stack>
+      <JSONDetails data={stats} />
     </Sheet>
   );
 };

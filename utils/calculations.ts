@@ -11,6 +11,13 @@ import * as R from "ramda";
 import currency from "currency.js";
 import { cur } from "./number.utils";
 
+export type ITVStats = {
+  totalTrades: number;
+  winningTrades: number;
+  losingTrades: number;
+  openTrades: number;
+  totalPnl: string;
+};
 export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
   const data = rows.filter(
     (r, idx) =>
@@ -132,6 +139,7 @@ export const calculateStrategy =
 
       .map((t) => ({
         ...t,
+        count: strategy.entry,
         short: strategy.direction === "short",
         duration: t.closed ? t.closed - t.opened : undefined,
         openPrice: target.find((r) => r.time > t.opened)?.close!,
@@ -174,6 +182,8 @@ export const calculateStrategy =
         runupRate: +(
           (v.runup && v.openPrice ? v.runup / v.openPrice : 0) * 100
         ).toFixed(2),
+        totalIn: v.openPrice * (v?.count || 1),
+        totalOut: v.closePrice ? v.closePrice * (v?.count || 1) : 0,
       }));
     return trades;
   };
@@ -186,14 +196,13 @@ export const withRunningTotal = (rows: ITrade[]): ITradeWithTotals[] => {
   }));
 };
 
-const getTotal = (key: string) =>
-  R.pipe(
-    R.pipe<ITrade[][], number[], number>(
-      R.map<ITrade, number>(R.propOr(0, key)),
-      R.sum
-    ),
-    cur
+const getTotalN = (key: string) =>
+  R.pipe<ITrade[][], number[], number>(
+    R.map<ITrade, number>(R.propOr(0, key)),
+    R.sum
   );
+
+const getTotal = (key: string) => R.pipe(getTotalN(key), cur);
 
 const countBy = (pred: (val: ITrade[keyof ITrade]) => boolean, key: string) =>
   R.pipe<ITrade[][], ITrade[], number>(
@@ -201,10 +210,12 @@ const countBy = (pred: (val: ITrade[keyof ITrade]) => boolean, key: string) =>
     R.length
   );
 
-export const strategyStats = R.applySpec<ITrade[]>({
+export const strategyStats: (t: ITrade[]) => ITVStats = R.applySpec({
   totalTrades: R.length,
-  totalPnl: getTotal("pnl"),
   winningTrades: countBy((pnl) => pnl! > 0, "pnl"),
   losingTrades: countBy((pnl) => pnl! < 0, "pnl"),
   openTrades: countBy((closed) => !closed, "closed"),
+  totalPnl: getTotal("pnl"),
+  totalIn: getTotal("totalIn"),
+  totalOut: getTotal("totalOut"),
 });

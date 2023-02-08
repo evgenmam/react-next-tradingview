@@ -54,7 +54,7 @@ export const NewCondition = ({ first, value, setCondition }: Props) => {
             <FieldSelect
               exclude={["time", "id", "dataset"]}
               hideLabel
-              value={value.b.field}
+              value={value?.b?.field}
               onChange={(_, e) => {
                 e && setC("b")({ ...value.b, field: e });
               }}
@@ -66,7 +66,7 @@ export const NewCondition = ({ first, value, setCondition }: Props) => {
               size="sm"
               fullWidth={false}
               sx={{ width: 55 }}
-              value={value.b.offset}
+              value={value?.b?.offset}
               onChange={(e) => {
                 if (+e.target.value <= 0) {
                   setC("b")({ ...value.b, offset: +e.target.value });
