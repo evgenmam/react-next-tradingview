@@ -9,6 +9,7 @@ import { usePointerGet } from "../context/pointer.context";
 import { useRangeGet } from "../context/range.context";
 import * as R from "ramda";
 import { periodDiff } from "../../configs/period.config";
+import { PlotLineOrBand, PointerEventObject } from "highcharts";
 
 const matchPoints =
   (period: keyof typeof periodDiff) => (x1: number, x2: number) => {
@@ -18,9 +19,9 @@ const matchPoints =
 export const usePointSync = (key: string, chart?: Highcharts.Chart) => {
   const { event, x } = usePointerGet(key) || {};
   const [dx] = useDebounce(x, 10);
-  const { period } = useSettings();
+  const { period, syncLine } = useSettings();
   useEffect(() => {
-    if (event && chart && dx) {
+    if (event && chart && dx && syncLine) {
       const points = chart?.series
         ?.map(
           (v) => v?.points?.find((v) => matchPoints(period)(v?.x, dx))! || null
@@ -47,16 +48,17 @@ export const usePointSync = (key: string, chart?: Highcharts.Chart) => {
         // }
       };
     }
-  }, [event, chart, dx]);
+  }, [event, chart, dx, syncLine, key, period]);
 };
 
 export const useRangeSync = (key: string, chart?: Highcharts.Chart) => {
   const range = useRangeGet(key);
+  const { syncRange } = useSettings();
   useEffect(() => {
-    if (range && chart) {
+    if (range && chart && syncRange) {
       chart?.xAxis[0]?.setExtremes?.(range.min, range.max, undefined, false, {
         trigger: "sync",
       });
     }
-  }, [range, chart]);
+  }, [range, chart, syncRange]);
 };

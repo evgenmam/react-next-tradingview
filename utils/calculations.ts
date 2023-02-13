@@ -9,7 +9,8 @@ import {
 } from "../types/app.types";
 import * as R from "ramda";
 import currency from "currency.js";
-import { cur } from "./number.utils";
+import { cur, per } from "./number.utils";
+import * as D from "date-fns";
 
 export type ITVStats = {
   totalTrades: number;
@@ -17,62 +18,89 @@ export type ITVStats = {
   losingTrades: number;
   openTrades: number;
   totalPnl: string;
+  totalIn: string;
+  totalOut: string;
+  maxIn: string;
+  roi: string;
 };
 export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
-  const data = rows.filter(
-    (r, idx) =>
-      signal.condition
-        .map((c) => {
-          const a = rows[idx - (c.a.offset || 0)]?.[c.a.field!];
-          const b = rows[idx - (c.b?.offset || 0)]?.[c.b?.field!];
-          const prevA = rows[idx - 1 - (c.a.offset || 0)]?.[c.a.field!];
-          const prevB = rows[idx - 1 - (c.b?.offset || 0)]?.[c.b?.field!];
-          let result = false;
-          if (c.operator === "true") {
-            result = !!a;
+  const matches = signal.condition
+    .map((c) => {
+      const conds = rows.map((r, i: number) => {
+        let result = false;
+        const idx = i;
+
+        const a = rows[idx]?.[c.a.field!];
+        const b = rows[idx]?.[c.b?.field!];
+        const prevA = rows[idx - 1]?.[c.a.field!];
+        const prevB = rows[idx - 1]?.[c.b?.field!];
+        if (c.operator === "true") {
+          result = !!a;
+        }
+        if (a && b)
+          switch (c.operator) {
+            case "equals":
+              result = a === b;
+              break;
+            case "greater":
+              result = a > b;
+              break;
+            case "greaterOrEqual":
+              result = a >= b;
+              break;
+            case "less":
+              result = a < b;
+              break;
+            case "lessOrEqual":
+              result = a <= b;
+              break;
+
+            default:
+              result = false;
           }
-          if (a && b && prevA && prevB)
-            switch (c.operator) {
-              case "equals":
-                result = a === b;
-                break;
-              case "greater":
-                result = a > b;
-                break;
-              case "greaterOrEqual":
-                result = a >= b;
-                break;
-              case "less":
-                result = a < b;
-                break;
-              case "lessOrEqual":
-                result = a <= b;
-                break;
-              case "crossesUp":
-                result = prevA < prevB && a > b;
-                break;
-              case "crossesDown":
-                result = prevA > prevB && a < b;
-                break;
+        if (a && b && prevA && prevB)
+          switch (c.operator) {
+            case "crossesUp":
+              result = prevA < prevB && a > b;
+              break;
+            case "crossesDown":
+              result = prevA > prevB && a < b;
+              break;
 
-              default:
-                result = false;
-            }
-          return { result, next: c.next };
-        })
-        .reduce(
-          (v, { result, next }) => ({
-            result: v.next === "OR" ? v.result || result : v.result && result,
-            next,
-          }),
-          { result: true, next: "AND" }
-        ).result
-  );
-
-  return {
-    data,
-    signal,
-  };
+            default:
+              result = false;
+          }
+        return +result;
+      });
+      return {
+        conds,
+        next: c.next,
+        offset: c.offset,
+      };
+    })
+    .reduce(
+      (cond1, { conds, offset = 0, next }) => ({
+        conds: conds.map((c, i) =>
+          next === "OR"
+            ? c ||
+              +cond1.conds
+                .filter?.((_, j) => j >= i - offset && j <= i)
+                .some((v) => !!v)
+            : c &&
+              +cond1.conds
+                .filter?.((_, j) => j >= i - offset && j <= i)
+                .some((v) => !!v)
+        ),
+        next: next as "AND" | "OR",
+        offset: offset as number,
+      }),
+      {
+        conds: Array(rows.length).fill(1),
+        next: "AND",
+        offset: 0,
+      }
+    );
+  return { data: rows.filter((v, i) => matches.conds[i]), signal };
 };
 
 export const applyStrategy =
@@ -210,6 +238,40 @@ const countBy = (pred: (val: ITrade[keyof ITrade]) => boolean, key: string) =>
     R.length
   );
 
+const toInterval = (t: ITrade) => ({
+  start: t.opened,
+  end: t.closed === Infinity || !t.closed ? new Date() : t.closed,
+});
+
+const isOverlapping = (a: ITrade, b: ITrade) =>
+  D.areIntervalsOverlapping(toInterval(a), toInterval(b));
+
+const getIntersection = (a: ITrade, b: ITrade) => ({
+  ...a,
+  opened: Math.max(a.opened, b.opened),
+  closed: Math.min(a.closed || Infinity, b.closed || Infinity),
+  openPrice: a.openPrice + b.openPrice,
+});
+
+const getMaxIn = (v: ITrade[]): number =>
+  v
+    .map((t, i) =>
+      v
+        .slice(i + 1)
+        .reduce(
+          (acc, b) => (isOverlapping(acc, b) ? getIntersection(acc, b) : acc),
+          t
+        )
+    )
+    .map((v) => v.openPrice * (v.count || 1))
+    .reduce(R.max, 0);
+
+export const getRoi = (v: ITrade[]) =>
+  R.converge<number, [(t: ITrade[]) => number, (t: ITrade[]) => number]>(
+    R.divide,
+    [getTotalN("pnl"), getMaxIn]
+  )(v);
+
 export const strategyStats: (t: ITrade[]) => ITVStats = R.applySpec({
   totalTrades: R.length,
   winningTrades: countBy((pnl) => pnl! > 0, "pnl"),
@@ -218,4 +280,6 @@ export const strategyStats: (t: ITrade[]) => ITVStats = R.applySpec({
   totalPnl: getTotal("pnl"),
   totalIn: getTotal("totalIn"),
   totalOut: getTotal("totalOut"),
+  maxIn: R.pipe(getMaxIn, cur),
+  roi: R.pipe<ITrade[][], number, string>(getRoi, per),
 });

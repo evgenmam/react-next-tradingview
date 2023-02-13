@@ -14,6 +14,7 @@ import noop from "lodash.noop";
 import { FC } from "react";
 import { useDrag } from "react-dnd";
 import { ICondition, IConditionEntry, ISignal } from "../../../types/app.types";
+import { Space } from "../../utils/row";
 
 type Props = {
   signal: ISignal;
@@ -66,7 +67,7 @@ export const MySignalRow: FC<Props> = ({
           borderLeftStyle: "solid",
         }}
       >
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
           {signal?.condition?.map((c) => (
             <Stack
               key={c.a?.field + c.operator + c.b?.field}
@@ -89,14 +90,21 @@ export const MySignalRow: FC<Props> = ({
                 <>
                   <Typography level="body2"></Typography>
                   <Stack>
-                    <Typography level="body2">
-                      {splitField(c.b)?.field}
-                    </Typography>
+                    <Space g={0.5}>
+                      <Typography level="body2">
+                        {splitField(c.b)?.field}
+                      </Typography>
+                    </Space>
                     <Typography level="body3">
                       {splitField(c.b)?.series}
                     </Typography>
                   </Stack>
                 </>
+              )}
+              {c?.offset && (
+                <Typography level="body2" color="info">
+                  [:{c?.offset}]
+                </Typography>
               )}
               {c?.next && (
                 <Chip size="sm" color={c.next === "OR" ? "info" : "primary"}>

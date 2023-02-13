@@ -95,33 +95,37 @@ export const barColorersToSeries = (data: IChartData[] = [], maxDigits = 4) =>
 export const studyToBarColorers = (
   s?: ITVStudy,
   c?: ITVStudyConfig
-): ITVBarColorer[] =>
-  s?.meta?.plots
-    ?.filter((p) => p?.type === "bar_colorer")
-    .map((p) => ({
-      id: `${s?.meta?.scriptIdPart}:${p?.id}`,
-      name: s?.meta?.styles?.[p?.id]?.title,
-      title: `${s?.meta?.description}`,
-      palette: {
-        ...s?.meta?.defaults?.palettes?.[p?.palette || ""],
-        valToIndex: s?.meta?.palettes?.[p?.palette || ""]?.valToIndex,
-      },
-      plot: p,
-      s,
-      data: s?.data?.st
-        ?.map((v) => [v?.v?.[0], v?.v?.[R.indexOf(p, s?.meta?.plots) + 1]])
-        ?.filter((v) => !!v[1]),
-      hidden: c?.hideFields?.[p?.id],
-    }))
-    ?.filter(({ data }) => data?.some?.((v) => v[1] !== 0))
-    ?.flatMap(({ data, palette, ...d }) =>
-      data?.map((v) => ({
-        color:
-          palette?.colors?.[
-            palette?.valToIndex ? palette?.valToIndex?.[v[1]] : v[1]
-          ]?.color,
-        value: v[0],
-        label: d?.title,
-        ...d,
+): ITVBarColorer[] => {
+  console.log(s);
+  return (
+    s?.meta?.plots
+      ?.filter((p) => p?.type === "bar_colorer")
+      .map((p) => ({
+        id: `${s?.meta?.scriptIdPart}:${p?.id}`,
+        name: s?.meta?.styles?.[p?.id]?.title,
+        title: `${s?.meta?.description}`,
+        palette: {
+          ...s?.meta?.defaults?.palettes?.[p?.palette || ""],
+          valToIndex: s?.meta?.palettes?.[p?.palette || ""]?.valToIndex,
+        },
+        plot: p,
+        s,
+        data: s?.data?.st
+          ?.map((v) => [v?.v?.[0], v?.v?.[R.indexOf(p, s?.meta?.plots) + 1]])
+          ?.filter((v) => !!v[1]),
+        hidden: c?.hideFields?.[p?.id],
       }))
-    ) || [];
+      ?.filter(({ data }) => data?.some?.((v) => v[1] !== 0))
+      ?.flatMap(({ data, palette, ...d }) =>
+        data?.map((v) => ({
+          color:
+            palette?.colors?.[
+              palette?.valToIndex ? palette?.valToIndex?.[v[1]] : v[1]
+            ]?.color,
+          value: v[0],
+          label: d?.title,
+          ...d,
+        }))
+      ) || []
+  );
+};

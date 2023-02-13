@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import { useDebounce } from "use-debounce";
-
+import * as R from "ramda";
 type T = {
   event: Highcharts.PointerEventObject | null;
   x?: number;
@@ -36,9 +36,7 @@ export const usePointerSet = () => {
   return useCallback(get, []);
 };
 
-export const usePointerGet = (key?: string) => {
+export const usePointerGet = (key?: string, same = false) => {
   const { event, key: k, x } = useContext(PointerGetContext);
-  // const [v] = useDebounce(event, 100);
-  if (key === k) return null;
-  return { event, x };
+  return R[same ? "not" : "identity"](key === k) ? null : { event, x };
 };

@@ -11,13 +11,14 @@ import { useChartEvents } from "./context/events.context";
 
 type Props = {
   study: ITVStudy;
+  view?: number;
   chartRef?: React.RefObject<HighchartsReact.RefObject>;
 };
 
-export const StudyChartH = ({ study, chartRef }: Props) => {
+export const StudyChartH = ({ study, chartRef, view }: Props) => {
   const boxRef = useRef<HTMLDivElement | null>(null);
   const { selecting } = useChartEvents();
-  const options = useStudyChartConfig(study);
+  const options = useStudyChartConfig(study, view);
   const setPoint = usePointerSet();
   const initSetter = (chart: Highcharts.Chart) => {
     chart.container.addEventListener("mousemove", (e) => {
@@ -28,9 +29,9 @@ export const StudyChartH = ({ study, chartRef }: Props) => {
     chart.container.addEventListener("mouseleave", () => {
       setPoint({ event: null, key: study?.id });
     });
-    chart.container.addEventListener("mousewheel", (e) =>
-      chartZoomScroll(e as WheelEvent, chart)
-    );
+    chart.container.addEventListener("mousewheel", (e) => {
+      chartZoomScroll(e as WheelEvent, chart);
+    });
   };
   const theme = useTheme();
   return (
@@ -54,9 +55,9 @@ export const StudyChartH = ({ study, chartRef }: Props) => {
 
 const Chart = memo(StudyChartH);
 
-export const StudyChart = ({ study }: Props) => {
+export const StudyChart = ({ study, view }: Props) => {
   const ref = useRef<HighchartsReact.RefObject>(null);
   usePointSync(study?.id, ref?.current?.chart);
   useRangeSync(study?.id, ref?.current?.chart);
-  return <Chart study={study} chartRef={ref} />;
+  return <Chart study={study} chartRef={ref} view={view} />;
 };

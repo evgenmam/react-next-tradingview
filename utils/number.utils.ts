@@ -4,4 +4,6 @@ export const cur = (n: number) =>
     currency: "USD",
   }).format(n);
 
+export const per = (n: number) => `${(n * 100).toFixed(2)}%`;
+
 export const val = (n: number) => Number(n.toFixed(2));

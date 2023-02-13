@@ -8,7 +8,7 @@ import HighchartsMore from "highcharts/highcharts-more";
 import HighchartsReact from "highcharts-react-official";
 import { forwardRef } from "react";
 import dragPanes from "highcharts/modules/drag-panes";
-import { useSettings } from "../hooks/data.hook";
+import boost from "highcharts/modules/boost";
 import DarkMLTheme from "./themes/hc-dark";
 import LightTheme from "highcharts/themes/brand-light";
 import { deepmerge } from "@mui/utils";
@@ -18,6 +18,7 @@ if (typeof Highcharts === "object") {
   HighchartsMore(HighchartsStock);
   HighchartsAnnotations(HighchartsStock);
   dragPanes(HighchartsStock);
+  boost(HighchartsStock);
   if (localStorage.getItem("joy-mode") === "dark") {
     DarkMLTheme.apply(HighchartsStock);
   } else {

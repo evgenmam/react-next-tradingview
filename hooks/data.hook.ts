@@ -185,6 +185,7 @@ export const useSignals = () => {
 
 export const useStrategies = () => {
   const [loading, setLoading] = useState(false);
+  const { reverseStrategies, setReverseStrategies } = useSettings();
   const strategies =
     useLiveQuery(async () => {
       setLoading(true);
@@ -206,7 +207,15 @@ export const useStrategies = () => {
       await IDB.strategies.update(strategy.id, strategy);
     }
   };
-  return { strategies, addStrategy, removeStrategy, updateStrategy, loading };
+  return {
+    strategies,
+    addStrategy,
+    removeStrategy,
+    updateStrategy,
+    loading,
+    reverse: reverseStrategies,
+    setReverse: setReverseStrategies,
+  };
 };
 
 export const useActiveList = () => {

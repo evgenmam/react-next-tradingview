@@ -5,6 +5,7 @@ import {
 import {
   Box,
   Chip,
+  Divider,
   IconButton,
   Link,
   List,
@@ -17,20 +18,26 @@ import {
 } from "@mui/joy";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import noop from "lodash.noop";
-import { FC, useMemo } from "react";
+import { FC, useDebugValue, useMemo } from "react";
 import { CLOSING } from "ws";
 import { useRows } from "../../../hooks/data.hook";
 import { useSettings } from "../../../hooks/settings.hook";
-import { IStrategy } from "../../../types/app.types";
+import { IStrategy, ITrade } from "../../../types/app.types";
 import {
   applyStrategy,
   calculateStrategy,
+  ITVStats,
   strategyStats,
 } from "../../../utils/calculations";
 import { XJson } from "../../json";
 import { JSONDetails } from "../../utils/json-details";
 import { Space } from "../../utils/row";
+import { XStats, XStatsCol } from "../../utils/stats";
+import { XTable } from "../../utils/table";
 import { MySignalRow } from "../signals/my-signal-row";
+import * as R from "ramda";
+import * as D from "date-fns";
+import { MyStrategyStats } from "./my-strategy-stats";
 
 type Props = {
   strategy: IStrategy;
@@ -39,7 +46,6 @@ type Props = {
   withLink?: boolean;
   selected?: boolean;
 };
-
 export const MyStrategyRow: FC<Props> = ({
   strategy,
   onDelete = noop,
@@ -48,14 +54,7 @@ export const MyStrategyRow: FC<Props> = ({
   onSelect,
 }) => {
   const c = useSettings();
-  const { rows: source } = useRows("source");
-  const { rows: target } = useRows(strategy?.dataset || "target");
-  const trades = useMemo(
-    () => calculateStrategy(source, target)(strategy),
-    [source, target, strategy]
-  );
 
-  const stats = useMemo(() => strategyStats(trades), [trades]);
   return (
     <Sheet
       sx={{
@@ -63,8 +62,9 @@ export const MyStrategyRow: FC<Props> = ({
         overflow: "hidden",
         ...(onSelect ? { cursor: "pointer" } : {}),
         transition: "all 0.2s ease-in-out",
+        ...(selected ? { transform: "scale(1.02)" } : {}),
       }}
-      variant={selected ? "solid" : "plain"}
+      // variant={selected ? "outlined" : "plain"}
       onClick={() => onSelect?.(strategy.id!)}
     >
       <Stack
@@ -79,70 +79,115 @@ export const MyStrategyRow: FC<Props> = ({
           borderStyle: "solid",
         }}
       >
-        <Stack spacing={1}>
-          <Space s={1} sb>
-            <Space s={1} alignItems="center">
-              {strategy?.dataset && (
-                <Typography>
-                  {c?.[strategy?.dataset as keyof typeof c]}
-                </Typography>
-              )}
-              <Chip
-                color={strategy?.direction === "long" ? "success" : "danger"}
-                size="sm"
-              >
-                {strategy?.direction?.toUpperCase()}
-              </Chip>
-              <Chip size="sm">{strategy?.entry}ct</Chip>
-              {withLink && (
-                <Link href={`/strategy?id=${strategy.id}`} target="_blank">
-                  <ArrowTopRightOnSquareIcon width={16} />
-                </Link>
-              )}
+        <Stack spacing={2}>
+          <Stack spacing={1}>
+            <Space s={1} sb>
+              <Space s={1} alignItems="center">
+                {strategy?.dataset && (
+                  <Typography>
+                    {c?.[strategy?.dataset as keyof typeof c]}
+                  </Typography>
+                )}
+                <Chip
+                  color={strategy?.direction === "long" ? "success" : "danger"}
+                  size="sm"
+                >
+                  {strategy?.direction?.toUpperCase()}
+                </Chip>
+                {strategy?.usd ? (
+                  <Chip size="sm">${strategy?.usd}</Chip>
+                ) : (
+                  <Chip size="sm">
+                    {strategy?.entry}{" "}
+                    {c[strategy?.dataset as keyof typeof c]?.split?.(":")[1]}
+                  </Chip>
+                )}{" "}
+                {withLink && (
+                  <Link href={`/strategy?id=${strategy.id}`} target="_blank">
+                    <ArrowTopRightOnSquareIcon width={16} />
+                  </Link>
+                )}
+              </Space>
+              <Box ml="auto" justifySelf="flex-end">
+                <IconButton
+                  color="danger"
+                  size="sm"
+                  onClick={() => onDelete(strategy?.id)}
+                >
+                  <TrashIcon width={16} />
+                </IconButton>
+              </Box>
             </Space>
-            <Box ml="auto" justifySelf="flex-end">
-              <IconButton
-                color="danger"
-                size="sm"
-                onClick={() => onDelete(strategy?.id)}
-              >
-                <TrashIcon width={16} />
-              </IconButton>
+            <Box>
+              <Grid2 container spacing={0.5} p={0}>
+                {strategy?.openSignal && (
+                  <Grid2 flexShrink={0} maxWidth="100%">
+                    <Typography level="body2" pl={1.5}>
+                      Open
+                    </Typography>
+                    <MySignalRow signal={strategy?.openSignal} />
+                  </Grid2>
+                )}
+                {strategy?.closeSignal && (
+                  <Grid2 flexShrink={0} maxWidth="100%">
+                    <Typography level="body2" pl={1.5}>
+                      Close
+                    </Typography>
+                    <MySignalRow signal={strategy?.closeSignal} />
+                  </Grid2>
+                )}
+              </Grid2>
             </Box>
-          </Space>
-          <Box>
-            <Grid2 container spacing={0.5} p={0}>
-              {strategy?.openSignal && (
-                <Grid2 flexShrink={0}>
-                  <Typography level="body2" pl={1.5}>
-                    Open
+            <MyStrategyStats strategy={strategy} />
+          </Stack>
+          {c.reverseStrategies && (
+            <>
+              <Divider></Divider>
+              <Space s={1} alignItems="center">
+                {strategy?.dataset && (
+                  <Typography>
+                    {
+                      c?.[
+                        (strategy?.dataset === "target"
+                          ? "target2"
+                          : "target") as keyof typeof c
+                      ]
+                    }
                   </Typography>
-                  <MySignalRow signal={strategy?.openSignal} />
-                </Grid2>
-              )}
-              {strategy?.closeSignal && (
-                <Grid2 flexShrink={0}>
-                  <Typography level="body2" pl={1.5}>
-                    Close
-                  </Typography>
-                  <MySignalRow signal={strategy?.closeSignal} />
-                </Grid2>
-              )}
-            </Grid2>
-          </Box>
-          <List>
-            <ListItem>
-              <ListItemContent>PNL</ListItemContent>
-              <Typography>{stats?.totalPnl}</Typography>
-            </ListItem>
-            {/* <ListItem>
-              <ListItemContent>Winning/Losing</ListItemContent>
-              <Typography>{stats?.totalTrades}</Typography>
-            </ListItem> */}
-          </List>
+                )}
+                <Chip
+                  color={strategy?.direction === "long" ? "danger" : "success"}
+                  size="sm"
+                >
+                  {strategy?.direction === "short" ? "LONG" : "SHORT"}
+                </Chip>
+                {strategy?.usd ? (
+                  <Chip size="sm">${strategy?.usd}</Chip>
+                ) : (
+                  <Chip size="sm">
+                    {strategy?.entry}{" "}
+                    {
+                      c[
+                        strategy?.dataset === "target" ? "target2" : "target"
+                      ]?.split?.(":")[1]
+                    }
+                  </Chip>
+                )}
+              </Space>
+              <MyStrategyStats
+                strategy={{
+                  ...strategy,
+                  dataset:
+                    strategy?.dataset === "target" ? "target2" : "target",
+                  direction: strategy?.direction === "short" ? "long" : "short",
+                  openSignal: strategy?.closeSignal,
+                  closeSignal: strategy?.openSignal,
+                }}
+              />
+            </>
+          )}
         </Stack>
       </Stack>
-      <JSONDetails data={stats} />
     </Sheet>
   );
 };

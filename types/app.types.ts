@@ -54,6 +54,8 @@ export type ICondition = {
     | "lessOrEqual"
     | "true";
   next?: "AND" | "OR";
+  offset?: number;
+  color?: string;
 };
 
 export type IConditionGroup = {
@@ -78,8 +80,9 @@ export type IStrategy = {
   color?: string;
   direction: "long" | "short";
   entry?: number;
-  openOn?: 'open' | 'close';
-  closeOn?: 'open' | 'close';
+  openOn?: "open" | "close";
+  closeOn?: "open" | "close";
+  usd?: number;
 };
 
 export type IBaseTrade = {
@@ -118,6 +121,7 @@ export type ITrade = {
   lowest?: number;
   totalIn?: number;
   totalOut?: number;
+  count?: number;
 };
 
 export type ITradeWithTotals = ITrade & {

@@ -58,7 +58,7 @@ export const useTradesChartConfig = (rows: IChartData[], trades: ISTrade[]) => {
             ],
             type: "polygon" as const,
             name: `${b.pnl?.label}<br />${b.length} bars `,
-            color: color + "66",
+            color: color + "80",
             style: {},
             // opacity: 0.4,
             lineColor: !close

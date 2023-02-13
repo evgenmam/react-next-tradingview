@@ -1,4 +1,5 @@
 import { StopIcon } from "@heroicons/react/24/solid";
+import { useWorker } from "@koale/useworker";
 import {
   Link,
   List,
@@ -14,20 +15,24 @@ import {
 } from "@mui/joy";
 import { Collapse } from "@mui/material";
 import { capitalCase, sentenceCase } from "change-case";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useRows } from "../../../hooks/data.hook";
 import { ICondition, IConditionEntry } from "../../../types/app.types";
+import { applySignal } from "../../../utils/calculations";
 import { conditionOptions, getIdFromPoint } from "../utils/builder.utils";
-
+import * as R from "ramda";
+import { ColorSelect } from "../../data/selects/color-select";
 type Props = {
   points: Highcharts.Point[];
   setPoints: (points: Highcharts.Point[]) => void;
   addCondition: (cond: ICondition) => void;
-  setOperator: (operator: ICondition["operator"]) => void;
-  setA: (a: IConditionEntry) => void;
-  setB: (b: IConditionEntry) => void;
+  setOperator: (operator: ICondition["operator"] | null) => void;
+  setA: (a: IConditionEntry | null) => void;
+  setB: (b: IConditionEntry | null) => void;
   a: IConditionEntry | null;
   b: IConditionEntry | null;
   operator: ICondition["operator"] | null;
+  conditions: ICondition[];
 };
 export const NewSignalConditionSelect = ({
   points,
@@ -39,14 +44,50 @@ export const NewSignalConditionSelect = ({
   setOperator,
   setA,
   setB,
+  conditions,
 }: Props) => {
   const [expand, setExpand] = useState(false);
+  const { rows } = useRows("source");
   const { palette } = useTheme();
+  const times = useMemo(
+    () =>
+      points
+        ?.map((p) => {
+          const f = {
+            field: getIdFromPoint(p),
+            type: "field" as const,
+          };
+          if (operator)
+            return applySignal(rows)({
+              condition: [
+                ...conditions,
+                {
+                  a: R.or(a, f),
+                  b: f,
+                  operator,
+                },
+              ],
+            });
+
+          if ((p?.options as { isSignal: boolean }).isSignal) {
+            return applySignal(rows)({
+              condition: [...conditions, { a: f, operator: "true" }],
+            });
+          }
+        })
+        .map((v) => v?.data?.length || 0),
+    [points, rows, a, operator, conditions]
+  );
+  const add = (c: ICondition) =>
+    addCondition({ ...c, color: ColorSelect.random() });
   return (
     <Modal
       open={!!points?.length}
       onClose={() => {
+        setA(null);
         setPoints([]);
+        setB(null);
+        setOperator(null);
       }}
     >
       <ModalDialog>
@@ -57,10 +98,10 @@ export const NewSignalConditionSelect = ({
                 <ListItemButton
                   onClick={() => {
                     if (o === "true" && a) {
-                      addCondition({ a, operator: o });
+                      add({ a, operator: o });
                     } else {
                       setOperator(o as ICondition["operator"]);
-                      setPoints([]);
+                      // setPoints([]);
                     }
                   }}
                 >
@@ -70,7 +111,7 @@ export const NewSignalConditionSelect = ({
             ))
           ) : (
             <>
-              {points?.map((p) => (
+              {points?.map((p, i) => (
                 <ListItem key={p.series?.options?.id!}>
                   <ListItemButton
                     onClick={() => {
@@ -80,9 +121,11 @@ export const NewSignalConditionSelect = ({
                         type: "field" as const,
                         offset: 0,
                       };
-                      if (a && operator) {
+                      if ((p?.options as { isSignal: boolean })?.isSignal) {
+                        add({ a: f, operator: "true" });
+                      } else if (a && operator) {
                         setB(f);
-                        addCondition({ a, b: f, operator });
+                        add({ a, b: f, operator });
                       } else {
                         setA(f);
                       }
@@ -109,6 +152,11 @@ export const NewSignalConditionSelect = ({
                         </Typography>
                       </Stack>
                     </Stack>
+                    {!!times[i] && (
+                      <Typography textAlign="right" level="body2" ml="auto">
+                        {times[i]}
+                      </Typography>
+                    )}
                   </ListItemButton>
                 </ListItem>
               ))}
@@ -127,7 +175,7 @@ export const NewSignalConditionSelect = ({
                           };
                           if (a && operator) {
                             setB(f);
-                            addCondition({ a, b: f, operator });
+                            add({ a, b: f, operator });
                           } else {
                             setA(f);
                           }

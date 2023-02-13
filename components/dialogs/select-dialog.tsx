@@ -8,6 +8,7 @@ import {
   ListItem,
   ListItemButton,
   ListItemContent,
+  ListItemDecorator,
   Modal,
   ModalDialog,
   Stack,
@@ -18,11 +19,13 @@ import { XJson } from "../json";
 import noop from "lodash.noop";
 import * as R from "ramda";
 import XScrollbar from "../utils/scrollbars";
+import { StopIcon } from "@heroicons/react/24/outline";
 export type SOption =
   | {
       label: string;
       value: string;
       group?: string;
+      color?: string;
     }
   | string;
 type Props = {
@@ -132,6 +135,17 @@ export const SelectDialog = ({
                                 )
                               }
                             >
+                              {R.has("color", option) && (
+                                <ListItemDecorator>
+                                  <StopIcon
+                                    width={16}
+                                    height={16}
+                                    style={{
+                                      color: option.color as string,
+                                    }}
+                                  />
+                                </ListItemDecorator>
+                              )}
                               <ListItemButton
                                 selected={option === value}
                                 onClick={() => {

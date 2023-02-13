@@ -44,6 +44,7 @@ export const useStudyChartAlerts = (
                 ) as PointOptionsObject
               )?.y,
               label: title,
+              isSignal: true,
             })),
           style: {
             fontSize: "8px",

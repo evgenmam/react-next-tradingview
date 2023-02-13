@@ -5,6 +5,8 @@ import { ITVStudy, ITVStudyConfig } from "../../../tv-components/types";
 import { PlotTypes } from "../../configs";
 import { colorerToZone, isAllSame } from "../../utils/builder.utils";
 import { ITVPlot } from "./plots";
+import * as R from "ramda";
+import { useTheme } from "@mui/joy";
 
 const isGoodLine = (p: ITVPlot) =>
   p.styles?.plottype === PlotTypes.Line && !isAllSame(p.data);
@@ -14,6 +16,7 @@ export const useStudyChartLines = (
   plots?: ITVPlot[],
   config?: ITVStudyConfig
 ): Highcharts.SeriesLineOptions[] => {
+  const { palette } = useTheme();
   return useMemo(
     () =>
       plots?.filter(isGoodLine)?.map(({ data, id, styles, title, name }) => ({
@@ -25,19 +28,17 @@ export const useStudyChartLines = (
         id,
         zoneAxis: "x",
         lineWidth: styles?.linewidth,
-        color: styles?.color,
+        color: R.pipe(
+          R.prop("color"),
+          R.when(R.equals("rgba(0,0,0,0)"), R.always(palette.info[500]))
+        )(styles),
         marker: {
           enabled: false,
         },
         zones: plots
           ?.filter(({ plot }) => plot.target === id)
           .flatMap(colorerToZone),
-        // events: {
-        //   click: function (e) {
-        //     this.
-        //   }
-        // },
       })) || [],
-    [plots, study?.meta?.is_price_study]
+    [plots, study?.meta?.is_price_study, palette.info]
   );
 };

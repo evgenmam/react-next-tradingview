@@ -11,6 +11,7 @@ import { MyStrategies } from "./my-strategies";
 import { HoverWrapper } from "../../hooks/hover.hook";
 import XScrollbar from "../utils/scrollbars";
 import { ChartRangeControls } from "./markets/chart-range-controls";
+import { IChartData, ISignal } from "../../types/app.types";
 
 const TVBuilder = () => {
   return (

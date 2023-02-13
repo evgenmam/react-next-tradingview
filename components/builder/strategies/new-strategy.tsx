@@ -9,10 +9,11 @@ import {
   Radio,
   RadioGroup,
   Stack,
+  Switch,
   Typography,
 } from "@mui/joy";
 import noop from "lodash.noop";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSettings } from "../../../hooks/settings.hook";
 import { ISignal, IStrategy } from "../../../types/app.types";
 import { ColorSelect } from "../../data/selects/color-select";
@@ -26,10 +27,21 @@ export const NewStrategy = ({ onCancel = noop, onSave }: Props) => {
   const [color, setColor] = useState<string>(ColorSelect.random());
   const [openSignal, setOpenSignal] = useState<ISignal>();
   const [closeSignal, setCloseSignal] = useState<ISignal>();
-  const [entry, setEntry] = useState(1);
+  const [entry, setEntry] = useState(0);
+  const [usd, setUSD] = useState(1000);
   const [direction, setDirection] = useState<"long" | "short">("long");
   const { target, target2 } = useSettings();
   const [dataset, setDataset] = useState<"target" | "target2">("target");
+  const [byDollar, setByDollar] = useState(true);
+  useEffect(() => {
+    if (byDollar) {
+      setEntry(0);
+      setUSD(1000);
+    } else {
+      setEntry(1);
+      setUSD(0);
+    }
+  }, [byDollar]);
   return (
     <Card>
       <CardContent>
@@ -57,7 +69,7 @@ export const NewStrategy = ({ onCancel = noop, onSave }: Props) => {
               onSelect={setCloseSignal}
             />
           </Stack>
-          <Space pb={1} gap={2} c flexWrap="wrap" >
+          <Space pb={1} gap={2} c flexWrap="wrap">
             <RadioGroup
               defaultValue="long"
               value={direction}
@@ -70,15 +82,40 @@ export const NewStrategy = ({ onCancel = noop, onSave }: Props) => {
               </Space>
             </RadioGroup>
             <Divider orientation="vertical" />
-            <Space c s={1} >
-              <Typography level="body2">Count:</Typography>
+            <Switch
+              startDecorator={<Typography>Contract</Typography>}
+              endDecorator={<Typography>USD</Typography>}
+              checked={byDollar}
+              onChange={(event) => setByDollar(event.target.checked)}
+            />
+            <Divider orientation="vertical" />
+            <Space c s={1}>
               <Input
-                sx={{ width: 60 }}
+                {...(byDollar
+                  ? {
+                      value: usd,
+                      onChange: (e) => {
+                        setUSD(+e.target.value);
+                      },
+                      startDecorator: <Typography level="body2">$</Typography>,
+                    }
+                  : {
+                      value: entry,
+                      onChange: (e) => {
+                        setEntry(+e.target.value);
+                      },
+                      endDecorator: (
+                        <Typography level="body2">
+                          {
+                            (dataset === "target" ? target : target2)?.split(
+                              ":"
+                            )[1]
+                          }
+                        </Typography>
+                      ),
+                    })}
+                sx={{ width: 150 }}
                 size="sm"
-                value={entry}
-                onChange={(e) => {
-                  setEntry(+e.target.value);
-                }}
                 inputMode="numeric"
                 type="number"
                 slotProps={{
@@ -87,6 +124,7 @@ export const NewStrategy = ({ onCancel = noop, onSave }: Props) => {
                   },
                 }}
               />
+              <Typography>per trade</Typography>
             </Space>
             <Divider orientation="vertical" />
             <RadioGroup
@@ -123,7 +161,7 @@ export const NewStrategy = ({ onCancel = noop, onSave }: Props) => {
                   openSignal,
                   color,
                   dataset,
-                  entry,
+                  ...(byDollar ? { usd } : { entry }),
                 });
               }}
               variant="plain"

@@ -9,7 +9,7 @@ import {
   IconButton,
   Divider,
 } from "@mui/joy";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ICondition, IConditionEntry, ISignal } from "../../../types/app.types";
 import { useChartEvents } from "../context/events.context";
 import * as R from "ramda";
@@ -18,17 +18,20 @@ import { NewSignalCondition } from "./new-signal-condition";
 import noop from "lodash.noop";
 import { Space } from "../../utils/row";
 import { ColorSelect } from "../../data/selects/color-select";
+import IndicatorValueSelect from "./indicator-value-select";
+import { applySignal } from "../../../utils/calculations";
+import { useRows } from "../../../hooks/data.hook";
 type Props = {
   onSave?: (conditions: Omit<ISignal, "id">) => void;
   onCancel?: () => void;
 };
 export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
-  const { events, selecting, setSelecting } = useChartEvents();
+  const { events, selecting, setSelecting, setConditions, conditions } = useChartEvents();
   const [points, setPoints] = useState<Highcharts.Point[]>([]);
   const [a, setA] = useState<IConditionEntry | null>(null);
   const [b, setB] = useState<IConditionEntry | null>(null);
   const [operator, setOperator] = useState<ICondition["operator"] | null>(null);
-  const [conditions, setConditions] = useState<ICondition[]>([]);
+  // const [conditions, setConditions] = useState<ICondition[]>([]);
   const [color, setColor] = useState<string>(ColorSelect.random());
   useEffect(() => {}, []);
   const resetCondition = useCallback(() => {
@@ -43,8 +46,9 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
       setConditions(R.append(cond));
       resetCondition();
     },
-    [resetCondition]
+    [resetCondition, setConditions]
   );
+
   const enabled = !conditions.length || !!conditions.at(-1)?.next;
   events.useSubscription((e) => {
     if (e?.points && selecting) {
@@ -56,6 +60,21 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
       });
     }
   });
+  const { rows } = useRows("source");
+  const matches = useMemo(
+    () =>
+      conditions.length ? applySignal(rows)({ condition: conditions }) : null,
+    [rows, conditions]
+  );
+
+  const tooMany = useMemo(
+    () => matches && matches.data?.length > rows?.length / 2,
+    [matches, rows]
+  );
+  const noMatches = useMemo(
+    () => matches && matches.data?.length === 0,
+    [matches]
+  );
   return (
     <Card>
       <CardContent>
@@ -69,14 +88,33 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
               <Typography>New Signal</Typography>
               <ColorSelect value={color} variant="square" onChange={setColor} />
             </Space>
-            <Button
-              size="sm"
-              onClick={() => setSelecting(true)}
-              disabled={!enabled}
-            >
-              Select on chart
-            </Button>
+            <Space s={1}>
+              {/* <Button
+                size="sm"
+                onClick={() => setListOpen(true)}
+                disabled={!enabled}
+              >
+                Select from list
+              </Button>
+              <IndicatorValueSelect
+                open={listOpen}
+                onClose={() => setListOpen(false)}
+              /> */}
+              <Button
+                size="sm"
+                onClick={() => setSelecting(true)}
+                disabled={!enabled}
+              >
+                Select on chart
+              </Button>
+            </Space>
           </Stack>
+          {tooMany && (
+            <Alert color="danger">Bad Signal: Too many matches</Alert>
+          )}
+          {noMatches && (
+            <Alert color="warning">Bad Signal: No matching events</Alert>
+          )}
           <Typography level="body2">Conditions:</Typography>
           {selecting && (
             <Alert
@@ -101,6 +139,8 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
               updateCondition={(v) =>
                 setConditions(R.over(R.lensIndex(idx), R.mergeLeft(v)))
               }
+              isFirst={idx === 0}
+              matches={matches?.data?.length || 0}
             />
           ))}
           <Divider />
@@ -109,6 +149,7 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
               size="sm"
               onClick={() => {
                 onCancel();
+
                 resetCondition();
               }}
               color="neutral"
@@ -142,6 +183,7 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
           points,
           setOperator,
           setPoints,
+          conditions,
         }}
       />
     </Card>

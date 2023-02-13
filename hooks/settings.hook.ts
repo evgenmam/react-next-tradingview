@@ -34,6 +34,12 @@ export const useSettings = () => {
     setTheme: (theme: "dark" | "light") => void
   ];
   const [legends, setLegends] = useSetting("legends", true);
+  const [syncLine, setSyncLine] = useSetting("syncLine", true);
+  const [syncRange, setSyncRange] = useSetting("syncRange", true);
+  const [reverseStrategies, setReverseStrategies] = useSetting(
+    "syncRange",
+    true
+  );
   const sett = (k: string) => async (v: any) => {
     await IDB.settings.put({ key: k, value: v });
   };
@@ -66,5 +72,11 @@ export const useSettings = () => {
     setLegends,
     count,
     setCount,
+    syncLine,
+    setSyncLine,
+    syncRange,
+    setSyncRange,
+    reverseStrategies,
+    setReverseStrategies,
   };
 };
