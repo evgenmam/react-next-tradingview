@@ -5,6 +5,7 @@ import * as R from "ramda";
 import { cur, val } from "../../../utils/number.utils";
 import { useSettings } from "../../../hooks/settings.hook";
 import * as D from "date-fns";
+import { v4 } from "uuid";
 
 type N = {
   value: number;
@@ -35,6 +36,7 @@ export interface ISTrade {
   cumulative?: DD;
   invested?: number;
   openTrades?: number;
+  id?: string;
 }
 
 const toInterval = (t: ISTrade): D.Interval => ({
@@ -88,6 +90,7 @@ export const useStrategyTrades = (
       );
 
       const trade: ISTrade = {
+        id: v4(),
         close: bars.at(-1),
         closed: !!closed,
         closePrice,

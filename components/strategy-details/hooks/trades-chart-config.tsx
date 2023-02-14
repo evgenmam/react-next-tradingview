@@ -5,10 +5,17 @@ import { ISTrade } from "./strategy-trades";
 import * as R from "ramda";
 import { CLOSING } from "ws";
 
-export const useTradesChartConfig = (rows: IChartData[], trades: ISTrade[]) => {
+export const useTradesChartConfig = (
+  rows: IChartData[],
+  trades: ISTrade[],
+  dataset: string
+) => {
   const { palette } = useTheme();
   const options: Highcharts.Options = useMemo(
     () => ({
+      title: {
+        text: dataset,
+      },
       series: [
         {
           data: rows.map(({ time, ...d }) => {
@@ -27,6 +34,14 @@ export const useTradesChartConfig = (rows: IChartData[], trades: ISTrade[]) => {
               upLineColor: color,
             };
           }),
+          states: {
+            hover: {
+              lineWidthPlus: 3,
+            },
+            inactive: {
+              opacity: 0.9,
+            },
+          },
           dataGrouping: { enabled: false },
           showInLegend: false,
           type: "candlestick" as const,
@@ -39,29 +54,27 @@ export const useTradesChartConfig = (rows: IChartData[], trades: ISTrade[]) => {
             ? palette.success?.[500]
             : palette.danger?.[500];
           const l = {
-            x: low.time,
-            y: low.low,
+            x: low?.time,
+            y: low?.low,
             dataLabels: {
               formatter: () => "asdf",
               verticalAlign: "top",
               shape: "callout",
             },
           } as Highcharts.PointOptionsObject;
-          const h = { x: high.time, y: high.high };
 
           return {
+            id: b.id,
             data: [
-              { x: open.time, y: open.close },
-              high.time <= low.time ? h : l,
-              ...(close ? [{ x: close.time, y: close.close }] : []),
-              high.time >= low.time ? h : l,
-              { x: open.time, y: open.close },
+              { x: open?.time, y: open?.close, name: "4" },
+              { x: high?.time, y: high?.high, name: "1" },
+              { x: close?.time, y: close?.close, name: "2" },
+              { x: low?.time, y: low?.low, name: "3" },
             ],
             type: "polygon" as const,
-            name: `${b.pnl?.label}<br />${b.length} bars `,
+            name: `${b.pnl?.value}<br />${b.length} bars `,
             color: color + "80",
-            style: {},
-            // opacity: 0.4,
+
             lineColor: !close
               ? palette.danger?.[500]
               : close?.close > open?.close
@@ -75,7 +88,7 @@ export const useTradesChartConfig = (rows: IChartData[], trades: ISTrade[]) => {
                 opacity: 0.9,
               },
             },
-          };
+          } as Highcharts.SeriesPolygonOptions;
         }),
       ],
       navigator: {
@@ -97,7 +110,7 @@ export const useTradesChartConfig = (rows: IChartData[], trades: ISTrade[]) => {
         enabled: true,
       },
     }),
-    [rows, trades, palette]
+    [rows, trades, palette, dataset]
   );
   return options;
 };

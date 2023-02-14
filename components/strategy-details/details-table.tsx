@@ -1,3 +1,5 @@
+import { EventEmitter } from "ahooks/lib/useEventEmitter";
+import { useState } from "react";
 import { IStrategy } from "../../types/app.types";
 import { HumanDate } from "../utils/human-date";
 import { XTable } from "../utils/table";
@@ -5,10 +7,19 @@ import { ISTrade } from "./hooks/strategy-trades";
 type Props = {
   strategy?: IStrategy;
   trades?: ISTrade[];
+  emitter: EventEmitter<string[]>;
+  clicker: EventEmitter<string>;
 };
-export const DetailsTable = ({ strategy, trades = [] }: Props) => {
+export const DetailsTable = ({ emitter, clicker, trades = [] }: Props) => {
+  const onRowClick = (row: any) => clicker.emit(row.id);
+  const [highlight, setHighlight] = useState<string[]>([]);
+  emitter.useSubscription((v) => setHighlight(v));
+  const onRowHover = (row: any) => emitter.emit(row ? [row.id] : []);
   return (
     <XTable
+      rowClick={onRowClick}
+      rowHover={onRowHover}
+      highlight={highlight}
       cols={[
         {
           key: "symbol",

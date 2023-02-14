@@ -1,5 +1,4 @@
 import { StopIcon } from "@heroicons/react/24/solid";
-import { useWorker } from "@koale/useworker";
 import {
   Input,
   Link,
@@ -7,7 +6,6 @@ import {
   ListDivider,
   ListItem,
   ListItemButton,
-  ListItemDecorator,
   Modal,
   ModalDialog,
   Stack,

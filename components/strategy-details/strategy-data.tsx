@@ -1,5 +1,7 @@
 import { Card } from "@mui/joy";
+import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import { Box, Stack } from "@mui/system";
+import { useEventEmitter } from "ahooks";
 import { FC } from "react";
 import { CLOSING } from "ws";
 import { useRows } from "../../hooks/data.hook";
@@ -16,29 +18,59 @@ type Props = {
 };
 
 export const StrategyData: FC<Props> = ({ id }) => {
+  const emitter = useEventEmitter<string[]>();
+  const clicker = useEventEmitter<string>();
   const { strategy } = useStrategyDetails({ id });
   const events = useSignalEvents(strategy);
-  const { rows } = useRows(strategy?.dataset);
+  const { rows, dataset } = useRows(strategy?.dataset);
   const trades = useStrategyTrades(events, rows, strategy);
 
   const rStrat = getReversalStrategy(strategy);
-  const { rows: rRows } = useRows(rStrat?.dataset);
+  const { rows: rRows, dataset: rDataset } = useRows(rStrat?.dataset);
   const rTrades = useStrategyTrades(events, rRows, rStrat);
 
   return (
     <Card>
-      <StrategyChart
-        rows={rows}
-        open={events?.open}
-        close={events?.close}
-        trades={trades}
-      />
+      <Grid2 container>
+        <Grid2 xs={12} sm={6}>
+          <StrategyChart
+            emitter={emitter}
+            rows={rows}
+            open={events?.open}
+            close={events?.close}
+            trades={trades}
+            clicker={clicker}
+            dataset={dataset}
+          />
+        </Grid2>
+        <Grid2 xs={12} sm={6}>
+          <StrategyChart
+            emitter={emitter}
+            rows={rRows}
+            open={events?.open}
+            close={events?.close}
+            trades={rTrades}
+            clicker={clicker}
+            dataset={rDataset}
+          />
+        </Grid2>
+      </Grid2>
       <Stack spacing={4}>
         <Box>
-          <DetailsTable strategy={strategy} trades={trades} />
+          <DetailsTable
+            strategy={strategy}
+            trades={trades}
+            emitter={emitter}
+            clicker={clicker}
+          />
         </Box>
         <Box>
-          <DetailsTable strategy={rStrat} trades={rTrades} />
+          <DetailsTable
+            strategy={rStrat}
+            trades={rTrades}
+            emitter={emitter}
+            clicker={clicker}
+          />
         </Box>
       </Stack>
     </Card>
