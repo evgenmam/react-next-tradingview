@@ -4,7 +4,7 @@ import { colorerToZone, isAllSame } from "../../utils/builder.utils";
 import { ITVPlot } from "./plots";
 import * as R from "ramda";
 import { ColorTool } from "../../../../utils/color.utils";
-
+import { GradientColorObject } from "highcharts";
 export type ITVFilled = {
   id: string;
   data1: ITVPlot;
@@ -43,39 +43,65 @@ export const useStudyChartArearanges = (
   );
   return useMemo(
     () =>
-      filled?.map(
-        ({ data1, data2, colorer, id }) =>
-          ({
-            id,
-            name: data1?.name + ":" + data2?.name,
-            zoneAxis: "x",
-            type: "arearange" as const,
-            data: data1?.data?.map((v, idx) => ({
-              x: v[0],
-              low: v[1],
-              high: data2?.data?.[idx][1],
-              color:
-                colorer?.data?.[idx][1] &&
-                (colorer?.palette?.colors?.[colorer?.data?.[idx][1]]?.color ||
-                  new ColorTool(colorer?.data?.[idx]?.[1]).rgba),
-            })),
-            yAxis: study?.meta?.is_price_study ? "source" : "main",
-            color: {
+      filled?.map(({ data1, data2, colorer, id }) => {
+        const color = colorer?.data
+          ? ({
               linearGradient: {
                 x1: 0,
                 y1: 0,
                 x2: 1,
                 y2: 0,
               },
-              stops: colorer?.data?.map((v, idx) => [
-                idx / colorer?.data?.length,
-                colorer?.palette?.colors?.[v[1]]?.color ||
-                  new ColorTool(v[1]).rgba,
-              ]),
-            } as Highcharts.GradientColorObject,
-            // zones: colorer ? colorerToZone?.(colorer)?.slice(1) : [],
-          } as Highcharts.SeriesArearangeOptions)
-      ) || [],
+              stops:
+                colorer?.data?.map((v, idx) => [
+                  idx / colorer?.data?.length,
+                  colorer?.palette?.colors?.[v[1]]?.color ||
+                    new ColorTool(v[1]).rgba,
+                ]) || [],
+            } as Highcharts.GradientColorObject)
+          : data1?.styles?.color && data2?.styles?.color
+          ? {
+              linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+              stops: [
+                [0, data1?.styles?.color],
+                [1, data2?.styles?.color],
+              ],
+            }
+          : undefined;
+        return {
+          id,
+          name: data1?.name + ":" + data2?.name,
+          zoneAxis: "x",
+          type: "arearange" as const,
+          data: data1?.data?.map((v, idx) => {
+            let color: string | GradientColorObject = "#fff";
+            if (colorer) {
+              color =
+                colorer?.palette?.colors?.[colorer?.data?.[idx][1]]?.color ||
+                new ColorTool(colorer?.data?.[idx]?.[1]).rgba ||
+                color;
+            } else if (data1?.styles?.color) {
+              color = {
+                linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+                stops: [
+                  [0, "#003399"], // start
+                  [0.5, "#ffffff"], // middle
+                  [1, "#3366AA"], // end
+                ],
+              };
+            }
+            return {
+              x: v[0],
+              low: v[1],
+              high: data2?.data?.[idx][1],
+              color,
+            };
+          }),
+          yAxis: study?.meta?.is_price_study ? "source" : "main",
+          color,
+          // zones: colorer ? colorerToZone?.(colorer)?.slice(1) : [],
+        } as Highcharts.SeriesArearangeOptions;
+      }) || [],
     [filled, study?.meta?.is_price_study]
   );
 };

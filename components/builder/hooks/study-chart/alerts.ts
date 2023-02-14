@@ -11,7 +11,8 @@ export const useStudyChartAlerts = (
   source?: (Highcharts.SeriesLineOptions | Highcharts.SeriesSplineOptions)[]
 ) => {
   const alerts = plots?.filter?.(
-    (p) => p.plot?.type === "alertcondition" && !isAllSame(p.data)
+    (p) =>
+      ["alertcondition", "shapes"].includes(p.plot?.type) && !isAllSame(p.data)
   );
   return useMemo(
     () =>

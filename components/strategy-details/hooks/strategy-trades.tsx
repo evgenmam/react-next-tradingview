@@ -59,9 +59,10 @@ export const useStrategyTrades = (
     R.keys<ISEvents>,
     R.reduce<number, ISTrade[]>((v, k) => {
       const closed = R.keys(close).find((c) => c > k);
-      const bars: IChartData[] = rows.filter(
-        (r) => r.time >= +k && (!closed || r.time <= +closed)
-      );
+      const firstBarIdx = rows.findIndex((r) => r.time >= +k);
+      if (firstBarIdx < 0) return v;
+      const lastBarIdx = rows.findIndex((r) => closed && r.time >= +closed);
+      const bars: IChartData[] = rows.slice(firstBarIdx + 1, lastBarIdx + 1);
       if (!bars.length) return v;
 
       const high = bars.reduce(R.maxBy(R.propOr(0, "high")), bars[0]);
@@ -75,7 +76,9 @@ export const useStrategyTrades = (
         strategy?.usd ? openTotal / openPrice : strategy?.entry || 1
       );
       const closeTotal = val(contracts * closePrice);
-      const pnl = val(closeTotal - openTotal);
+      const pnl =
+        val(closeTotal - openTotal) *
+        (strategy?.direction === "short" ? -1 : 1);
       const symbol = c[strategy?.dataset as keyof typeof c]?.split?.(":")?.[1];
       const openTime = new Date(bars[0].time);
       const cc = bars.at(-1)?.time;

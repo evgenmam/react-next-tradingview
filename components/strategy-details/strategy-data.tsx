@@ -31,47 +31,49 @@ export const StrategyData: FC<Props> = ({ id }) => {
 
   return (
     <Card>
-      <Grid2 container>
-        <Grid2 xs={12} sm={6}>
-          <StrategyChart
-            emitter={emitter}
-            rows={rows}
-            open={events?.open}
-            close={events?.close}
-            trades={trades}
-            clicker={clicker}
-            dataset={dataset}
-          />
+      <Stack overflow="hidden">
+        <Grid2 container>
+          <Grid2 xs={12} sm={6}>
+            <StrategyChart
+              emitter={emitter}
+              rows={rows}
+              open={events?.open}
+              close={events?.close}
+              trades={trades}
+              clicker={clicker}
+              dataset={dataset}
+            />
+          </Grid2>
+          <Grid2 xs={12} sm={6}>
+            <StrategyChart
+              emitter={emitter}
+              rows={rRows}
+              open={events?.open}
+              close={events?.close}
+              trades={rTrades}
+              clicker={clicker}
+              dataset={rDataset}
+            />
+          </Grid2>
         </Grid2>
-        <Grid2 xs={12} sm={6}>
-          <StrategyChart
-            emitter={emitter}
-            rows={rRows}
-            open={events?.open}
-            close={events?.close}
-            trades={rTrades}
-            clicker={clicker}
-            dataset={rDataset}
-          />
-        </Grid2>
-      </Grid2>
-      <Stack spacing={4}>
-        <Box>
-          <DetailsTable
-            strategy={strategy}
-            trades={trades}
-            emitter={emitter}
-            clicker={clicker}
-          />
-        </Box>
-        <Box>
-          <DetailsTable
-            strategy={rStrat}
-            trades={rTrades}
-            emitter={emitter}
-            clicker={clicker}
-          />
-        </Box>
+        <Stack spacing={4}>
+          <Box>
+            <DetailsTable
+              strategy={strategy}
+              trades={trades}
+              emitter={emitter}
+              clicker={clicker}
+            />
+          </Box>
+          <Box>
+            <DetailsTable
+              strategy={rStrat}
+              trades={rTrades}
+              emitter={emitter}
+              clicker={clicker}
+            />
+          </Box>
+        </Stack>
       </Stack>
     </Card>
   );

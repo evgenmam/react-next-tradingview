@@ -1,13 +1,12 @@
 import { useTheme } from "@mui/joy";
 import { useDebugValue, useMemo } from "react";
 import IDB from "../../../db/db";
-import { useRows, useSetting, useSettings } from "../../../hooks/data.hook";
+import { useSettings } from "../../../hooks/data.hook";
 import { ITVStudy } from "../../tv-components/types";
 import { useV2Study } from "../../v2/hooks/v2-data.hook";
 import { useChartEvents } from "../context/events.context";
 import { useRangeSet } from "../context/range.context";
 import { useStudyChartAlerts } from "./study-chart/alerts";
-import { useBarColorers } from "./study-chart/bar-colorers";
 import { useStudyChartCircles } from "./study-chart/circles";
 import { useStudyChartArearanges } from "./study-chart/filled";
 import { useStudyChartLines } from "./study-chart/lines";
@@ -63,35 +62,46 @@ export const useStudyChartConfig = (s: ITVStudy, view = 1) => {
               });
             },
             redraw: function () {
-              this.series
-                .filter((s) => s.type === "arearange")
-                .forEach((s) => {
-                  const stops = s.points?.map((p, idx) => [
-                    idx / s.points.length,
-                    p.color || "rgba(0,0,0,0)",
-                  ]);
-                  if (
-                    R.has("stops", s.color) &&
-                    // @ts-ignore
-                    !R.equals(stops, s.color?.stops)
-                  ) {
-                    s.update({
-                      color: {
-                        linearGradient: {
+              try {
+                this.series
+                  .filter((s) => s.type === "arearange")
+                  .forEach((s) => {
+                    const stops = s.points?.map((p, idx) => [
+                      idx / s.points.length,
+                      p.color || "rgba(0,0,0,0)",
+                    ]);
+                    if (
+                      R.has("stops", s.color) &&
+                      // @ts-ignore
+                      !R.equals(stops, s.color?.stops) &&
+                      R.equals(
+                        {
                           x1: 0,
                           y1: 0,
                           x2: 1,
                           y2: 0,
                         },
-                        stops: s?.points?.map((p, idx) => [
-                          idx / s?.points?.length,
-                          p.color || "rgba(0,0,0,0)",
-                        ]),
-                      },
-                      type: "arearange",
-                    } as Highcharts.SeriesArearangeOptions);
-                  }
-                });
+                        s.color?.linearGradient
+                      )
+                    ) {
+                      s.update({
+                        color: {
+                          linearGradient: {
+                            x1: 0,
+                            y1: 0,
+                            x2: 1,
+                            y2: 0,
+                          },
+                          stops: s?.points?.map((p, idx) => [
+                            idx / s?.points?.length,
+                            p.color || "rgba(0,0,0,0)",
+                          ]),
+                        },
+                        type: "arearange",
+                      } as Highcharts.SeriesArearangeOptions);
+                    }
+                  });
+              } catch (error) {}
             },
           },
         },

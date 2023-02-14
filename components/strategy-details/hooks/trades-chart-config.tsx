@@ -16,6 +16,7 @@ export const useTradesChartConfig = (
       title: {
         text: dataset,
       },
+      chart: { height: 400 },
       series: [
         {
           data: rows.map(({ time, ...d }) => {
@@ -48,11 +49,12 @@ export const useTradesChartConfig = (
         },
 
         ...trades.map(({ open, close, high, low, ...b }) => {
-          const color = !close
-            ? palette.danger?.[500]
-            : close?.close > open?.close
-            ? palette.success?.[500]
-            : palette.danger?.[500];
+          const color =
+            !b?.pnl?.value || !b?.closed
+              ? palette?.neutral?.[800]
+              : b?.pnl?.value > 0
+              ? palette?.success?.[500]
+              : palette?.danger?.[500];
           const l = {
             x: low?.time,
             y: low?.low,
@@ -75,11 +77,7 @@ export const useTradesChartConfig = (
             name: `${b.pnl?.value}<br />${b.length} bars `,
             color: color + "80",
 
-            lineColor: !close
-              ? palette.danger?.[500]
-              : close?.close > open?.close
-              ? palette.success?.[500]
-              : palette.danger?.[500],
+            lineColor: color,
             states: {
               hover: {
                 lineWidthPlus: 3,
@@ -105,9 +103,6 @@ export const useTradesChartConfig = (
       },
       xAxis: {
         range: (rows?.at?.(-1)?.time || 1) - (rows?.at?.(0)?.time || 0),
-      },
-      legend: {
-        enabled: true,
       },
     }),
     [rows, trades, palette, dataset]
