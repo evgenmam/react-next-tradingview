@@ -1,3 +1,4 @@
+import { PlotLineOptions } from "highcharts";
 import { useMemo, useState } from "react";
 import { useRows } from "../../../../hooks/data.hook";
 import { applySignal } from "../../../../utils/calculations";
@@ -19,25 +20,26 @@ export const useStudyChartPlotlines = () => {
               (c) =>
                 applySignal(rows)({
                   condition: [{ ...c, offset: 0 }],
-                }).data?.map((r) => ({
-                  width: 1,
-                  dashStyle: "Dash",
-                  color: actual?.data?.find((v) => v.time === r.time)
-                    ? c.color
-                    : c.color + "66",
-                  id: "condition" + JSON.stringify(c),
-                  value: r.time,
-                })) || []
+                }).data?.map((r) => {
+                  const isLast = actual?.data?.find((v) => v.time === r.time);
+                  return {
+                    dashStyle: "Dash",
+                    color: c.color + "cc",
+                    id:
+                      (isLast ? "last" : "") + "condition" + JSON.stringify(c),
+                    value: r.time,
+                  };
+                }) || []
             ),
             ...(applySignal(rows)({ condition: conditions }).data?.map((r) => ({
-              width: 1,
+              width: 2,
               dashStyle: "Dash",
-              color: "red",
+              color: conditions.at(-1)?.color,
               value: r.time,
             })) || []),
           ]
         : [],
-    [rows, conditions]
+    [rows, conditions, actual]
   );
 
   return plotlines;

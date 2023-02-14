@@ -21,6 +21,8 @@ type Props = {
   onDelete?: (signal: number) => void;
   full?: boolean;
   draggable?: boolean;
+  showName?: boolean;
+  light?: boolean;
 };
 const splitField = (c?: IConditionEntry) => {
   const f = c?.field?.split?.(":") || [];
@@ -35,6 +37,8 @@ export const MySignalRow: FC<Props> = ({
   onDelete,
   full,
   draggable,
+  showName,
+  light,
 }) => {
   const [collected, drag] = useDrag(() => ({
     type: "signal",
@@ -53,7 +57,7 @@ export const MySignalRow: FC<Props> = ({
           cursor: "grab",
         }),
       }}
-      variant="outlined"
+      variant={light ? "soft" : "outlined"}
     >
       <Stack
         p={1}
@@ -67,52 +71,57 @@ export const MySignalRow: FC<Props> = ({
           borderLeftStyle: "solid",
         }}
       >
-        <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-          {signal?.condition?.map((c) => (
-            <Stack
-              key={c.a?.field + c.operator + c.b?.field}
-              direction="row"
-              spacing={0.5}
-              alignItems="center"
-            >
-              {c.a && (
-                <Stack>
-                  <Typography level="body2">
-                    {splitField(c.a)?.field}{" "}
-                    {c.operator !== "true" && sentenceCase(c.operator)}
-                  </Typography>
-                  <Typography level="body3">
-                    {splitField(c.a)?.series}
-                  </Typography>
-                </Stack>
-              )}
-              {c?.operator !== "true" && (
-                <>
-                  <Typography level="body2"></Typography>
+        <Stack spacing={0.5}>
+          {showName && (
+            <Typography>{signal?.name || `Signal ${signal?.id}`}</Typography>
+          )}
+          <Stack direction="row" gap={1} alignItems="center" flexWrap="wrap">
+            {signal?.condition?.map((c) => (
+              <Stack
+                key={c.a?.field + c.operator + c.b?.field}
+                direction="row"
+                spacing={0.5}
+                alignItems="center"
+              >
+                {c.a && (
                   <Stack>
-                    <Space g={0.5}>
-                      <Typography level="body2">
-                        {splitField(c.b)?.field}
-                      </Typography>
-                    </Space>
+                    <Typography level="body2">
+                      {splitField(c.a)?.field}{" "}
+                      {c.operator !== "true" && sentenceCase(c.operator)}
+                    </Typography>
                     <Typography level="body3">
-                      {splitField(c.b)?.series}
+                      {splitField(c.a)?.series}
                     </Typography>
                   </Stack>
-                </>
-              )}
-              {c?.offset && (
-                <Typography level="body2" color="info">
-                  [:{c?.offset}]
-                </Typography>
-              )}
-              {c?.next && (
-                <Chip size="sm" color={c.next === "OR" ? "info" : "primary"}>
-                  {c.next}
-                </Chip>
-              )}
-            </Stack>
-          ))}
+                )}
+                {c?.operator !== "true" && (
+                  <>
+                    <Typography level="body2"></Typography>
+                    <Stack>
+                      <Space g={0.5}>
+                        <Typography level="body2">
+                          {splitField(c.b)?.field}
+                        </Typography>
+                      </Space>
+                      <Typography level="body3">
+                        {splitField(c.b)?.series}
+                      </Typography>
+                    </Stack>
+                  </>
+                )}
+                {!!c?.offset && (
+                  <Typography level="body2" color="info">
+                    [:{c?.offset}]
+                  </Typography>
+                )}
+                {c?.next && (
+                  <Chip size="sm" color={c.next === "OR" ? "info" : "primary"}>
+                    {c.next}
+                  </Chip>
+                )}
+              </Stack>
+            ))}
+          </Stack>
         </Stack>
         <Box ml="auto" justifySelf="flex-end">
           {onDelete && (

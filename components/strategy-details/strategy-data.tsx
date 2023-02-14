@@ -1,7 +1,9 @@
 import { Card } from "@mui/joy";
+import { Box, Stack } from "@mui/system";
 import { FC } from "react";
 import { CLOSING } from "ws";
 import { useRows } from "../../hooks/data.hook";
+import { getReversalStrategy } from "../../utils/strategy.utils";
 import { XJson } from "../json";
 import { DetailsTable } from "./details-table";
 import { useSignalEvents } from "./hooks/signal-events";
@@ -18,6 +20,11 @@ export const StrategyData: FC<Props> = ({ id }) => {
   const events = useSignalEvents(strategy);
   const { rows } = useRows(strategy?.dataset);
   const trades = useStrategyTrades(events, rows, strategy);
+
+  const rStrat = getReversalStrategy(strategy);
+  const { rows: rRows } = useRows(rStrat?.dataset);
+  const rTrades = useStrategyTrades(events, rRows, rStrat);
+
   return (
     <Card>
       <StrategyChart
@@ -26,7 +33,14 @@ export const StrategyData: FC<Props> = ({ id }) => {
         close={events?.close}
         trades={trades}
       />
-      <DetailsTable strategy={strategy} trades={trades} />
+      <Stack spacing={4}>
+        <Box>
+          <DetailsTable strategy={strategy} trades={trades} />
+        </Box>
+        <Box>
+          <DetailsTable strategy={rStrat} trades={rTrades} />
+        </Box>
+      </Stack>
     </Card>
   );
 };

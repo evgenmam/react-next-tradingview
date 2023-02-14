@@ -68,6 +68,19 @@ export const DetailsTable = ({ strategy, trades = [] }: Props) => {
           align: "right",
         },
         {
+          key: "openTrades",
+          label: "Open Trades",
+          align: "right",
+        },
+        {
+          key: "invested",
+          label: "Invested",
+          align: "right",
+          thin: true,
+          cur: true,
+        },
+
+        {
           key: "pnl.value",
           label: "PnL",
           align: "right",
@@ -81,6 +94,14 @@ export const DetailsTable = ({ strategy, trades = [] }: Props) => {
           thin: true,
           dynamic: true,
           per: true,
+        },
+        {
+          key: "pnl.cumulative",
+          label: "Cumulative",
+          align: "right",
+          thin: true,
+          dynamic: true,
+          cur: true,
         },
       ]}
       data={trades}

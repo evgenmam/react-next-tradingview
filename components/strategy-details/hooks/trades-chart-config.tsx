@@ -31,6 +31,7 @@ export const useTradesChartConfig = (rows: IChartData[], trades: ISTrade[]) => {
           showInLegend: false,
           type: "candlestick" as const,
         },
+
         ...trades.map(({ open, close, high, low, ...b }) => {
           const color = !close
             ? palette.danger?.[500]
@@ -66,9 +67,12 @@ export const useTradesChartConfig = (rows: IChartData[], trades: ISTrade[]) => {
               : close?.close > open?.close
               ? palette.success?.[500]
               : palette.danger?.[500],
-            state: {
+            states: {
               hover: {
                 lineWidthPlus: 3,
+              },
+              inactive: {
+                opacity: 0.9,
               },
             },
           };

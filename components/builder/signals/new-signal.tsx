@@ -8,6 +8,7 @@ import {
   Alert,
   IconButton,
   Divider,
+  Input,
 } from "@mui/joy";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ICondition, IConditionEntry, ISignal } from "../../../types/app.types";
@@ -25,21 +26,28 @@ type Props = {
   onSave?: (conditions: Omit<ISignal, "id">) => void;
   onCancel?: () => void;
 };
+
 export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
-  const { events, selecting, setSelecting, setConditions, conditions } = useChartEvents();
+  const { events, selecting, setSelecting, setConditions, conditions } =
+    useChartEvents();
+  useEffect(() => setSelecting(true), [setSelecting]);
   const [points, setPoints] = useState<Highcharts.Point[]>([]);
   const [a, setA] = useState<IConditionEntry | null>(null);
   const [b, setB] = useState<IConditionEntry | null>(null);
   const [operator, setOperator] = useState<ICondition["operator"] | null>(null);
-  // const [conditions, setConditions] = useState<ICondition[]>([]);
+  const [offset, setOffset] = useState<number>(0);
   const [color, setColor] = useState<string>(ColorSelect.random());
+  const [name, setName] = useState<string>("");
   useEffect(() => {}, []);
   const resetCondition = useCallback(() => {
     setA(null);
     setB(null);
     setOperator(null);
     setPoints([]);
+    setOffset(0);
     setSelecting(false);
+    setColor(ColorSelect.random());
+    setName("");
   }, [setSelecting]);
   const addCondition = useCallback(
     (cond: ICondition) => {
@@ -50,9 +58,13 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
   );
 
   const enabled = !conditions.length || !!conditions.at(-1)?.next;
+  useEffect(() => {
+    setSelecting(enabled);
+  }, [enabled, setSelecting]);
   events.useSubscription((e) => {
     if (e?.points && selecting) {
       setPoints(e.points);
+      setOffset(e.offset || 0);
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           setSelecting(false);
@@ -88,49 +100,31 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
               <Typography>New Signal</Typography>
               <ColorSelect value={color} variant="square" onChange={setColor} />
             </Space>
-            <Space s={1}>
-              {/* <Button
-                size="sm"
-                onClick={() => setListOpen(true)}
-                disabled={!enabled}
-              >
-                Select from list
-              </Button>
-              <IndicatorValueSelect
-                open={listOpen}
-                onClose={() => setListOpen(false)}
-              /> */}
-              <Button
-                size="sm"
-                onClick={() => setSelecting(true)}
-                disabled={!enabled}
-              >
-                Select on chart
-              </Button>
-            </Space>
+            <Input
+              size="sm"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Signal name"
+            />
           </Stack>
-          {tooMany && (
+          {tooMany ? (
             <Alert color="danger">Bad Signal: Too many matches</Alert>
-          )}
-          {noMatches && (
+          ) : !!matches?.data?.length ? (
+            <Alert color="success">Triggers {matches.data.length} times</Alert>
+          ) : noMatches ? (
             <Alert color="warning">Bad Signal: No matching events</Alert>
+          ) : (
+            selecting && (
+              <Alert
+                endDecorator={<Button variant="plain">Select from list</Button>}
+              >
+                Click on the study chart to select a point
+              </Alert>
+            )
           )}
+
           <Typography level="body2">Conditions:</Typography>
-          {selecting && (
-            <Alert
-              endDecorator={
-                <IconButton
-                  variant="soft"
-                  size="sm"
-                  onClick={() => setSelecting(false)}
-                >
-                  <XMarkIcon />
-                </IconButton>
-              }
-            >
-              Click on the study chart to select a point
-            </Alert>
-          )}
+
           {conditions?.map((c, idx) => (
             <NewSignalCondition
               condition={c}
@@ -149,7 +143,7 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
               size="sm"
               onClick={() => {
                 onCancel();
-
+                setConditions([]);
                 resetCondition();
               }}
               color="neutral"
@@ -161,7 +155,8 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
               size="sm"
               disabled={!conditions.length}
               onClick={() => {
-                onSave({ condition: conditions, color });
+                onSave({ condition: conditions, color, name });
+                setConditions([]);
                 resetCondition();
               }}
               variant="plain"
@@ -184,6 +179,8 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
           setOperator,
           setPoints,
           conditions,
+          offset,
+          setOffset,
         }}
       />
     </Card>

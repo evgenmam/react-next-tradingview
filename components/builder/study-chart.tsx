@@ -3,12 +3,13 @@ import HighchartsReact from "highcharts-react-official";
 import { memo, useRef } from "react";
 import { HStock } from "../hchart";
 import { usePointerSet } from "./context/pointer.context";
-import { usePointSync, useRangeSync } from "./hooks/sync.hook";
+import { usePlotlineSync, usePointSync, useRangeSync } from "./hooks/sync.hook";
 import { useStudyChartConfig } from "./hooks/study-chart-config";
 import { chartZoomScroll } from "../../utils/chart.utils";
 import { ITVStudy } from "../tv-components/types";
 import { useChartEvents } from "./context/events.context";
-
+import * as R from "ramda";
+import { PlotLineOrBand, XAxisPlotLinesOptions } from "highcharts";
 type Props = {
   study: ITVStudy;
   view?: number;
@@ -59,5 +60,6 @@ export const StudyChart = ({ study, view }: Props) => {
   const ref = useRef<HighchartsReact.RefObject>(null);
   usePointSync(study?.id, ref?.current?.chart);
   useRangeSync(study?.id, ref?.current?.chart);
+  usePlotlineSync(study?.id, ref?.current?.chart);
   return <Chart study={study} chartRef={ref} view={view} />;
 };

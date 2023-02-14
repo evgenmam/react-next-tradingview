@@ -8,35 +8,20 @@ import {
   Divider,
   IconButton,
   Link,
-  List,
-  ListItem,
-  ListItemContent,
-  ListItemDecorator,
   Sheet,
   Stack,
   Typography,
 } from "@mui/joy";
-import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import noop from "lodash.noop";
-import { FC, useDebugValue, useMemo } from "react";
-import { CLOSING } from "ws";
-import { useRows } from "../../../hooks/data.hook";
+
+import { FC } from "react";
+
 import { useSettings } from "../../../hooks/settings.hook";
-import { IStrategy, ITrade } from "../../../types/app.types";
-import {
-  applyStrategy,
-  calculateStrategy,
-  ITVStats,
-  strategyStats,
-} from "../../../utils/calculations";
-import { XJson } from "../../json";
-import { JSONDetails } from "../../utils/json-details";
+import { IStrategy } from "../../../types/app.types";
+import { getReversalStrategy } from "../../../utils/strategy.utils";
 import { Space } from "../../utils/row";
-import { XStats, XStatsCol } from "../../utils/stats";
-import { XTable } from "../../utils/table";
-import { MySignalRow } from "../signals/my-signal-row";
-import * as R from "ramda";
-import * as D from "date-fns";
+import MySignalPopper from "../signals/my-signal-popper";
+import MyStrategyRowItem from "./my-strategy-row-item";
 import { MyStrategyStats } from "./my-strategy-stats";
 
 type Props = {
@@ -70,7 +55,6 @@ export const MyStrategyRow: FC<Props> = ({
       <Stack
         p={1}
         justifyContent="space-between"
-        direction="row"
         spacing={1}
         sx={{
           borderWidth: 0,
@@ -79,111 +63,39 @@ export const MyStrategyRow: FC<Props> = ({
           borderStyle: "solid",
         }}
       >
-        <Stack spacing={2}>
-          <Stack spacing={1}>
-            <Space s={1} sb>
-              <Space s={1} alignItems="center">
-                {strategy?.dataset && (
-                  <Typography>
-                    {c?.[strategy?.dataset as keyof typeof c]}
-                  </Typography>
-                )}
-                <Chip
-                  color={strategy?.direction === "long" ? "success" : "danger"}
-                  size="sm"
-                >
-                  {strategy?.direction?.toUpperCase()}
-                </Chip>
-                {strategy?.usd ? (
-                  <Chip size="sm">${strategy?.usd}</Chip>
-                ) : (
-                  <Chip size="sm">
-                    {strategy?.entry}{" "}
-                    {c[strategy?.dataset as keyof typeof c]?.split?.(":")[1]}
-                  </Chip>
-                )}{" "}
-                {withLink && (
-                  <Link href={`/strategy?id=${strategy.id}`} target="_blank">
-                    <ArrowTopRightOnSquareIcon width={16} />
-                  </Link>
-                )}
-              </Space>
-              <Box ml="auto" justifySelf="flex-end">
-                <IconButton
-                  color="danger"
-                  size="sm"
-                  onClick={() => onDelete(strategy?.id)}
-                >
-                  <TrashIcon width={16} />
-                </IconButton>
-              </Box>
-            </Space>
+        <Stack spacing={2} pb={1}>
+          <Space spacing={2} sb>
+            <Typography>{`Strategy ${strategy?.id}`}</Typography>
             <Box>
-              <Grid2 container spacing={0.5} p={0}>
+              <Space s={2}>
                 {strategy?.openSignal && (
-                  <Grid2 flexShrink={0} maxWidth="100%">
-                    <Typography level="body2" pl={1.5}>
-                      Open
-                    </Typography>
-                    <MySignalRow signal={strategy?.openSignal} />
-                  </Grid2>
+                  <Space s={0.5} c>
+                    <Typography level="body2">Open on:</Typography>
+                    <MySignalPopper signal={strategy?.openSignal} />
+                  </Space>
                 )}
                 {strategy?.closeSignal && (
-                  <Grid2 flexShrink={0} maxWidth="100%">
-                    <Typography level="body2" pl={1.5}>
-                      Close
-                    </Typography>
-                    <MySignalRow signal={strategy?.closeSignal} />
-                  </Grid2>
-                )}
-              </Grid2>
-            </Box>
-            <MyStrategyStats strategy={strategy} />
-          </Stack>
-          {c.reverseStrategies && (
-            <>
-              <Divider></Divider>
-              <Space s={1} alignItems="center">
-                {strategy?.dataset && (
-                  <Typography>
-                    {
-                      c?.[
-                        (strategy?.dataset === "target"
-                          ? "target2"
-                          : "target") as keyof typeof c
-                      ]
-                    }
-                  </Typography>
-                )}
-                <Chip
-                  color={strategy?.direction === "long" ? "danger" : "success"}
-                  size="sm"
-                >
-                  {strategy?.direction === "short" ? "LONG" : "SHORT"}
-                </Chip>
-                {strategy?.usd ? (
-                  <Chip size="sm">${strategy?.usd}</Chip>
-                ) : (
-                  <Chip size="sm">
-                    {strategy?.entry}{" "}
-                    {
-                      c[
-                        strategy?.dataset === "target" ? "target2" : "target"
-                      ]?.split?.(":")[1]
-                    }
-                  </Chip>
+                  <Space s={0.5} c>
+                    <Typography level="body2">Close on:</Typography>
+                    <MySignalPopper signal={strategy?.closeSignal} />
+                  </Space>
                 )}
               </Space>
-              <MyStrategyStats
-                strategy={{
-                  ...strategy,
-                  dataset:
-                    strategy?.dataset === "target" ? "target2" : "target",
-                  direction: strategy?.direction === "short" ? "long" : "short",
-                  openSignal: strategy?.closeSignal,
-                  closeSignal: strategy?.openSignal,
-                }}
-              />
+            </Box>
+            <IconButton
+              color="danger"
+              size="sm"
+              onClick={() => onDelete(strategy?.id)}
+            >
+              <TrashIcon width={16} />
+            </IconButton>
+          </Space>
+          <MyStrategyRowItem strategy={strategy} withLink={withLink} />
+
+          {c.reverseStrategies && strategy && (
+            <>
+              <Divider></Divider>
+              <MyStrategyRowItem strategy={strategy} reversed />
             </>
           )}
         </Stack>

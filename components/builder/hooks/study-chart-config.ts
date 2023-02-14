@@ -52,7 +52,11 @@ export const useStudyChartConfig = (s: ITVStudy, view = 1) => {
           marginRight: 0,
           events: {
             click: function () {
+              const offset = this.xAxis[0].options?.plotBands
+                ?.find((v) => v?.id === "lastPDB")
+                ?.label?.text?.split(" ")?.[0];
               events.emit({
+                offset: +(offset || 0),
                 points: this.hoverPoints?.filter(
                   (p) => !!p?.series?.options?.id
                 ),
@@ -193,7 +197,7 @@ export const useStudyChartConfig = (s: ITVStudy, view = 1) => {
       circles,
       legends,
       events,
-      view
+      view,
     ]
   );
 

@@ -69,6 +69,7 @@ export type ISignal = {
   id?: number;
   color?: string;
   hide?: boolean;
+  name?: string;
 };
 
 export type IStrategy = {

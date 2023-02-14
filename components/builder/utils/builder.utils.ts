@@ -44,14 +44,14 @@ export const barColorersToSeries = (data: IChartData[] = [], maxDigits = 4) =>
     ITVBarColorer[][],
     Record<string, ITVBarColorer[]>,
     ITVBarColorer[][],
-    Highcharts.SeriesLineOptions[],
-    Highcharts.SeriesLineOptions[]
+    Highcharts.SeriesSplineOptions[],
+    Highcharts.SeriesSplineOptions[]
   >(
-    R.groupBy(R.prop("color")),
+    R.groupBy((v) => v?.color + "|" + v?.name),
     R.values,
-    R.addIndex<ITVBarColorer[], Highcharts.SeriesLineOptions>(R.map)(
+    R.addIndex<ITVBarColorer[], Highcharts.SeriesSplineOptions>(R.map)(
       (v, i) => ({
-        type: "line" as const,
+        type: "spline" as const,
         color: v?.[0].color,
         name: v[0].name,
         id: `${v[0].id}:${v?.[0].color}`,
@@ -96,7 +96,6 @@ export const studyToBarColorers = (
   s?: ITVStudy,
   c?: ITVStudyConfig
 ): ITVBarColorer[] => {
-  console.log(s);
   return (
     s?.meta?.plots
       ?.filter((p) => p?.type === "bar_colorer")
@@ -123,7 +122,7 @@ export const studyToBarColorers = (
               palette?.valToIndex ? palette?.valToIndex?.[v[1]] : v[1]
             ]?.color,
           value: v[0],
-          label: d?.title,
+          label: d?.name,
           ...d,
         }))
       ) || []

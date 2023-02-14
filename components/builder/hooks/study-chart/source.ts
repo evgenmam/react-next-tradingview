@@ -15,7 +15,7 @@ import {
 export const useStudyChartSource = (
   study?: ITVStudy,
   config?: ITVStudyConfig
-): Highcharts.SeriesLineOptions[] => {
+): Highcharts.SeriesSplineOptions[] => {
   const { meta } = study || {};
   const { rows } = useRows("source");
   const theme = useTheme();
@@ -24,17 +24,17 @@ export const useStudyChartSource = (
     () => studyToBarColorers(study, config),
     [study, config]
   );
-  const colorSeries = useMemo<Highcharts.SeriesLineOptions[]>(
+  const colorSeries = useMemo<Highcharts.SeriesSplineOptions[]>(
     () => barColorersToSeries(rows, maxDigits)(barColorers),
     [barColorers, rows, maxDigits]
   );
 
-  return useMemo<Highcharts.SeriesLineOptions[]>(
+  return useMemo<Highcharts.SeriesSplineOptions[]>(
     () =>
       meta?.is_price_study
         ? [
             {
-              type: "line" as const,
+              type: "spline" as const,
               yAxis: "source",
               data: rows.map((v) => {
                 return {

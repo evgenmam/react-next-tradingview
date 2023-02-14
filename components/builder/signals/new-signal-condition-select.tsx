@@ -1,6 +1,7 @@
 import { StopIcon } from "@heroicons/react/24/solid";
 import { useWorker } from "@koale/useworker";
 import {
+  Input,
   Link,
   List,
   ListDivider,
@@ -22,6 +23,7 @@ import { applySignal } from "../../../utils/calculations";
 import { conditionOptions, getIdFromPoint } from "../utils/builder.utils";
 import * as R from "ramda";
 import { ColorSelect } from "../../data/selects/color-select";
+import { Space } from "../../utils/row";
 type Props = {
   points: Highcharts.Point[];
   setPoints: (points: Highcharts.Point[]) => void;
@@ -33,18 +35,22 @@ type Props = {
   b: IConditionEntry | null;
   operator: ICondition["operator"] | null;
   conditions: ICondition[];
+  offset?: number;
+  setOffset?: (offset: number) => void;
 };
 export const NewSignalConditionSelect = ({
   points,
   setPoints,
   a,
   b,
+  offset,
   operator,
   addCondition,
   setOperator,
   setA,
   setB,
   conditions,
+  setOffset,
 }: Props) => {
   const [expand, setExpand] = useState(false);
   const { rows } = useRows("source");
@@ -79,7 +85,7 @@ export const NewSignalConditionSelect = ({
     [points, rows, a, operator, conditions]
   );
   const add = (c: ICondition) =>
-    addCondition({ ...c, color: ColorSelect.random() });
+    addCondition({ ...c, color: ColorSelect.random(), offset });
   return (
     <Modal
       open={!!points?.length}
@@ -190,9 +196,24 @@ export const NewSignalConditionSelect = ({
             </>
           )}
         </List>
-        <Link fontSize={12} onClick={() => setExpand((v) => !v)}>
-          {expand ? "Cancel" : "Use OHLA values"}
-        </Link>
+        <Space sb c>
+          <Link fontSize={12} onClick={() => setExpand((v) => !v)}>
+            {expand ? "Cancel" : "Use OHLA values"}
+          </Link>
+          {conditions?.length > 0 && (
+            <Space g={1} c>
+              <Typography level="body2">Within</Typography>
+              <Input
+                value={offset}
+                sx={{ width: 100 }}
+                endDecorator={<Typography level="body2">bars</Typography>}
+                type="number"
+                slotProps={{ input: { min: 0 } }}
+                onChange={(e) => setOffset?.(+e.target.value)}
+              />
+            </Space>
+          )}
+        </Space>
       </ModalDialog>
     </Modal>
   );

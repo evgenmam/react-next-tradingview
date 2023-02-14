@@ -28,7 +28,6 @@ export const Studies = () => {
   const [expand, setExpanded] = useState<string | null>(null);
   const [view, setView] = useState(1);
   useEffect(() => {
-    console.log(view);
     setSelected(
       Array(view)
         .fill(0)

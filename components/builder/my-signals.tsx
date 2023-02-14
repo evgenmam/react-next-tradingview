@@ -34,7 +34,12 @@ export const MySignals = () => {
         <Grid container spacing={1} p={0}>
           {signals.map((signal) => (
             <Grid key={signal.id} flexGrow={1}>
-              <MySignalRow signal={signal} onDelete={removeSignal} draggable />
+              <MySignalRow
+                signal={signal}
+                onDelete={removeSignal}
+                draggable
+                showName
+              />
             </Grid>
           ))}
         </Grid>

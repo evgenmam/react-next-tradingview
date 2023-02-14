@@ -3,12 +3,12 @@ import * as R from "ramda";
 import { Stack } from "@mui/system";
 import { XJson } from "../json";
 import { Box, Typography } from "@mui/joy";
-import { cur } from "../../utils/number.utils";
+import { cur, per } from "../../utils/number.utils";
 export type XTableCol = {
   key: string;
   label: string;
   group?: string;
-  render?: (col: any, row: any) => JSX.Element;
+  render?: (col: any, row: any) => JSX.Element | string;
   align?: "left" | "right" | "center";
   cur?: boolean;
   per?: boolean;
@@ -44,54 +44,64 @@ const XTableHead = ({ cols }: { cols: XTableCol[] }) => {
   );
 };
 
-const XTableBody = ({ cols, data }: XTableConfig) => (
-  <>
-    {data.map((row, i) =>
-      cols.map((col, j) => {
-        const value = R.pathOr("", col.key?.split("."))(row);
-        return (
-          <Box
-            key={col.key}
-            sx={{
-              gridColumnStart: j + 1,
-              gridColumnEnd: j + 2,
-              gridRowStart: i + 2,
-              gridRowEnd: i + 3,
-              textAlign: col.align || "left",
-            }}
-          >
-            {col?.render?.(value, row) || (
-              <Typography
-                fontSize={12}
-                color={
-                  !col.dynamic
-                    ? "primary"
-                    : typeof value === "number"
-                    ? value > 0
-                      ? "success"
-                      : "danger"
-                    : value[0] === "-"
-                    ? "danger"
-                    : +value.replace(/%|\$/, "") === 0
-                    ? "primary"
-                    : "success"
-                }
-              >
-                {typeof value === "number"
-                  ? col?.cur
-                    ? cur(value)
-                    : col?.per
-                    ? `${value}%`
-                    : value
-                  : value || "-"}
-              </Typography>
-            )}
-          </Box>
-        );
-      })
-    )}
-  </>
-);
+const XTableBody = ({ cols, data }: XTableConfig) => {
+  return (
+    <>
+      {data.map((row, i) =>
+        cols.map((col, j) => {
+          const value = R.pathOr("", col.key?.split("."))(row);
+          const r = col?.render?.(value, row);
+
+          return (
+            <Box
+              key={col.key}
+              sx={{
+                gridColumnStart: j + 1,
+                gridColumnEnd: j + 2,
+                gridRowStart: i + 2,
+                gridRowEnd: i + 3,
+                textAlign: col.align || "left",
+              }}
+            >
+              {r ? (
+                typeof r === "string" ? (
+                  <Typography>{r}</Typography>
+                ) : (
+                  r
+                )
+              ) : (
+                <Typography
+                  fontSize={12}
+                  color={
+                    !col.dynamic
+                      ? "primary"
+                      : typeof value === "number"
+                      ? value > 0
+                        ? "success"
+                        : "danger"
+                      : value[0] === "-"
+                      ? "danger"
+                      : +value.replace(/%|\$/, "") === 0
+                      ? "primary"
+                      : "success"
+                  }
+                >
+                  {typeof value === "number"
+                    ? col?.cur
+                      ? cur(value)
+                      : col?.per
+                      ? per(value)
+                      : value
+                    : value || "-"}
+                </Typography>
+              )}
+            </Box>
+          );
+        })
+      )}
+    </>
+  );
+};
 
 export const XTable: FC<XTableConfig> = ({
   cols,

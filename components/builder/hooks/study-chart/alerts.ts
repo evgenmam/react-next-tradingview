@@ -8,7 +8,7 @@ import { ITVPlot } from "./plots";
 export const useStudyChartAlerts = (
   study: ITVStudy,
   plots: ITVPlot[],
-  source?: Highcharts.SeriesLineOptions[]
+  source?: (Highcharts.SeriesLineOptions | Highcharts.SeriesSplineOptions)[]
 ) => {
   const alerts = plots?.filter?.(
     (p) => p.plot?.type === "alertcondition" && !isAllSame(p.data)
