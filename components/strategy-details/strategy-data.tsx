@@ -4,7 +4,7 @@ import { Box, Stack } from "@mui/system";
 import { useEventEmitter } from "ahooks";
 import { FC } from "react";
 import { CLOSING } from "ws";
-import { useRows } from "../../hooks/data.hook";
+import { useRows, useSettings } from "../../hooks/data.hook";
 import { getReversalStrategy } from "../../utils/strategy.utils";
 import { XJson } from "../json";
 import { DetailsTable } from "./details-table";
@@ -28,12 +28,12 @@ export const StrategyData: FC<Props> = ({ id }) => {
   const rStrat = getReversalStrategy(strategy);
   const { rows: rRows, dataset: rDataset } = useRows(rStrat?.dataset);
   const rTrades = useStrategyTrades(events, rRows, rStrat);
-
+  const { reverseStrategies } = useSettings();
   return (
     <Card>
       <Stack overflow="hidden">
         <Grid2 container>
-          <Grid2 xs={12} sm={6}>
+          <Grid2 xs={12} sm={reverseStrategies ? 6 : 12}>
             <StrategyChart
               emitter={emitter}
               rows={rows}
@@ -44,17 +44,19 @@ export const StrategyData: FC<Props> = ({ id }) => {
               dataset={dataset}
             />
           </Grid2>
-          <Grid2 xs={12} sm={6}>
-            <StrategyChart
-              emitter={emitter}
-              rows={rRows}
-              open={events?.open}
-              close={events?.close}
-              trades={rTrades}
-              clicker={clicker}
-              dataset={rDataset}
-            />
-          </Grid2>
+          {reverseStrategies && (
+            <Grid2 xs={12} sm={6}>
+              <StrategyChart
+                emitter={emitter}
+                rows={rRows}
+                open={events?.open}
+                close={events?.close}
+                trades={rTrades}
+                clicker={clicker}
+                dataset={rDataset}
+              />
+            </Grid2>
+          )}
         </Grid2>
         <Stack spacing={4}>
           <Box>
@@ -65,14 +67,16 @@ export const StrategyData: FC<Props> = ({ id }) => {
               clicker={clicker}
             />
           </Box>
-          <Box>
-            <DetailsTable
-              strategy={rStrat}
-              trades={rTrades}
-              emitter={emitter}
-              clicker={clicker}
-            />
-          </Box>
+          {reverseStrategies && (
+            <Box>
+              <DetailsTable
+                strategy={rStrat}
+                trades={rTrades}
+                emitter={emitter}
+                clicker={clicker}
+              />
+            </Box>
+          )}
         </Stack>
       </Stack>
     </Card>

@@ -7,7 +7,7 @@ import { ITVIndicator } from "../../components/tv-components/types";
 import TVClient, { TVClientC } from "../helpers/tv-client";
 import TVApi from "../tradingview";
 import { StudyData } from "../types";
-import { getPineInputs, randomHash } from "../utils";
+import { getPineInputs, randomHash, wrapSymbol } from "../utils";
 
 const tvc = new TVClient();
 
@@ -61,9 +61,18 @@ export class TVChartSession extends TVSession {
 
   waitFor = (...msg: string[]) => tvc.waitFor(this.session, ...msg);
 
-  getSymbol = async (symbol: string, interval = "1W", count = 300) => {
+  getSymbol = async (
+    symbol: string,
+    interval = "1W",
+    count = 300,
+    chartType = "candlestick"
+  ) => {
     const symbol_id = symbol.replace(":", "::");
-    tvc.send("resolve_symbol", [this.session, symbol_id, symbol]);
+    tvc.send("resolve_symbol", [
+      this.session,
+      symbol_id,
+      wrapSymbol(symbol, chartType),
+    ]);
     await this.waitFor(symbol_id, "symbol_resolved");
     tvc.send("create_series", [
       this.session,

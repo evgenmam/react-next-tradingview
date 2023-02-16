@@ -1,29 +1,18 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import {
-  Avatar,
+  Button,
   CircularProgress,
   Divider,
   Input,
-  inputClasses,
   List,
-  ListDivider,
-  ListItem,
-  ListItemButton,
-  ListItemContent,
-  ListItemDecorator,
-  MenuList,
   Sheet,
-  Typography,
 } from "@mui/joy";
 import { Box } from "@mui/material";
 import { Stack } from "@mui/system";
-import axios from "axios";
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
-import { useDebounce } from "use-debounce";
+import { KeyboardEvent, useEffect, useState } from "react";
 import XScrollbar from "../utils/scrollbars";
 import { ISearchType, TVSearchTypeSelect } from "./helpers/search-type-select";
 import { ITVSearchData, ITVSearchResult } from "./types";
-import * as R from "ramda";
 import { useKeyboardNav } from "./hooks/keyboard-nav.hook";
 import { CBox } from "./helpers/c-box";
 import { useSearchData, useSplitText } from "./hooks/search-data.hook";
@@ -117,6 +106,7 @@ export const TVSearch = ({
               setSkip(false);
             }}
             startDecorator={<MagnifyingGlassIcon width={24} />}
+            endDecorator={<Button variant="plain">Set</Button>}
           />
         </Box>
         <Divider />

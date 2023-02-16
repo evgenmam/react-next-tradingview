@@ -68,7 +68,6 @@ export const useRows = (datasetName?: string) => {
       if (!datasetName) return [];
       const minRow = await getMinRow();
       const dataset = (await IDB.settings.get(datasetName))?.value;
-      const chartType = (await IDB.settings.get("chartType"))?.value;
       if (!dataset) return [];
       const maxDigits = (await IDB.settings.get("maxDigits"))?.value;
       let data = (
@@ -84,8 +83,7 @@ export const useRows = (datasetName?: string) => {
         )
       );
       setLoading(false);
-      if (chartType === "heikin-ashi" && data.length > 0)
-        data = toHeikinAshi(data as IChartData[]) as IChartData[];
+
       return R.sortBy(R.prop("time"))(data);
     }, [datasetName]) || [];
   const count = useLiveQuery(async () => {

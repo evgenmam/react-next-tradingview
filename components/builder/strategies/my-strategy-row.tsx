@@ -1,15 +1,12 @@
-import {
-  ArrowTopRightOnSquareIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
+import { TrashIcon } from "@heroicons/react/24/outline";
+import { CloudArrowUpIcon } from "@heroicons/react/24/solid";
 import {
   Box,
-  Chip,
   Divider,
   IconButton,
-  Link,
   Sheet,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/joy";
 import noop from "lodash.noop";
@@ -82,6 +79,7 @@ export const MyStrategyRow: FC<Props> = ({
                 )}
               </Space>
             </Box>
+
             <IconButton
               color="danger"
               size="sm"

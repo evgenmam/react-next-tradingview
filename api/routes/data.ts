@@ -5,10 +5,12 @@ import { TVChartSession, reconnect, status } from "../helpers/tv-market-data";
 import TVApi from "../tradingview";
 import { mergeDataAndStudies } from "../utils";
 import indicatorsRoutes from "./indicators";
+import scriptsRoutes from "./scripts";
 
 const router = Router();
 
 router.use("/indicators", indicatorsRoutes);
+router.use("/scripts", scriptsRoutes);
 
 router.get("/", (req: Request, res: Response) => {
   res.send("pong");
@@ -22,14 +24,23 @@ router.get("/search", async (req: Request, res: Response) => {
 
 const getSymbol = async (
   res: Response,
-  symbol: string,
-  period: string = "1W",
-  count = 300,
-  indicators: ITVIndicator[] = [],
+  {
+    symbol,
+    period = "1W",
+    count = 300,
+    indicators = [],
+    chartType = "candlestick",
+  }: {
+    symbol: string;
+    period?: string;
+    count?: number;
+    indicators?: ITVIndicator[];
+    chartType?: "candlestick" | "heikin-ashi";
+  }
 ) => {
   const nSession = new TVChartSession(res);
   await nSession.init();
-  let data = await nSession.getSymbol(symbol, period, +count);
+  let data = await nSession.getSymbol(symbol, period, +count, chartType);
   const studies = [];
   for (const indicator of indicators) {
     // const d: any[] = await nSession.getIndicator(symbol, indicator);
@@ -44,10 +55,11 @@ const getSymbol = async (
 router.post("/market-data", async (req: Request, res: Response) => {
   if (req.body.numerator && req.body.denominator) {
     const s = `${req.body.numerator}/${req.body.denominator}`;
+    const { numerator: n, denominator: d, indicators: i, ...b } = req.body;
     const [[numerator], [denominator], [split, studies]] = await Promise.all([
-      getSymbol(res, req.body.numerator, req.body.period, req.body.count),
-      getSymbol(res, req.body.denominator, req.body.period, req.body.count),
-      getSymbol(res, s, req.body.period, req.body.count, req.body.indicators),
+      getSymbol(res, { symbol: n, ...b }),
+      getSymbol(res, { symbol: d, ...b }),
+      getSymbol(res, { symbol: s, ...b, indicators: i }),
     ]);
     if (!res.headersSent)
       return res.send({ numerator, denominator, split, studies });

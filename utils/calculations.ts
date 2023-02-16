@@ -100,7 +100,14 @@ export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
         offset: 0,
       }
     );
-  return { data: rows.filter((v, i) => matches.conds[i]), signal };
+  return {
+    data: rows.filter((v, i) => matches.conds[i]),
+    signal,
+    bars: matches.conds.reduce(
+      (a, v, i) => (v ? [...a, matches.conds.length - i - 1] : a),
+      []
+    ),
+  };
 };
 
 export const applyStrategy =

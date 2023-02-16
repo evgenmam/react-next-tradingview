@@ -5,22 +5,31 @@ import * as R from "ramda";
 
 export type ISEvents = Record<number, true>;
 
-export type ISOpenClose = { open?: ISEvents; close?: ISEvents };
+export type ISOpenClose = {
+  open?: ISEvents;
+  close?: ISEvents;
+  openBars: number[];
+  closeBars: number[];
+};
 
-const toEvents = R.reduce<IChartData, ISEvents>(
-  (acc, { time }) => ({ ...acc, [time]: true }),
-  {}
-);
+const toEvents = (v: IChartData[]) =>
+  v.reduce<ISEvents>((acc, { time }) => ({ ...acc, [time]: true }), {});
 
 export const useSignalEvents = (strategy?: IStrategy): ISOpenClose => {
   const { rows: source } = useRows("source");
   if (strategy?.openSignal && strategy?.closeSignal) {
-    const { data: open } = applySignal(source)(strategy?.openSignal);
-    const { data: close } = applySignal(source)(strategy?.closeSignal);
+    const { data: open, bars: openBars } = applySignal(source)(
+      strategy?.openSignal
+    );
+    const { data: close, bars: closeBars } = applySignal(source)(
+      strategy?.closeSignal
+    );
     return {
       open: toEvents(open),
       close: toEvents(close),
+      openBars,
+      closeBars,
     };
   }
-  return { open: {}, close: {} };
+  return { open: {}, close: {}, openBars: [], closeBars: [] };
 };

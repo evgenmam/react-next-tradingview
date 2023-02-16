@@ -85,6 +85,8 @@ export const chartZoomScroll = (
   const point = chart?.series[0]?.searchPoint(pointerEvent, true);
   if (point) {
     const extr = chart?.xAxis[0].getExtremes();
+    const range = extr.max - extr.min;
+    const margin = range * 0.03;
     if (ev.deltaY) {
       const percent = sensitivity * (ev.deltaY > 0 ? 1 : -1);
 
@@ -93,7 +95,7 @@ export const chartZoomScroll = (
       const diff = (point.x - extr.min) / range;
       const newMin = point.x - newRange * diff;
       const newMax = newMin + newRange;
-      const c = R.clamp(extr.dataMin, extr.dataMax);
+      const c = R.clamp(extr.dataMin - margin, extr.dataMax + margin);
 
       chart?.xAxis[0].setExtremes(c(newMin), c(newMax), undefined, false);
     } else if (ev.deltaX) {
@@ -101,14 +103,14 @@ export const chartZoomScroll = (
       const range = extr.max - extr.min;
       const newMin = extr.min + range * percent;
       const newMax = extr.max + range * percent;
-      if (newMin <= extr.dataMin) {
+      if (newMin <= extr.dataMin - margin) {
         chart?.xAxis[0].setExtremes(
           extr.dataMin,
           extr.dataMin + range,
           undefined,
           false
         );
-      } else if (newMax >= extr.dataMax) {
+      } else if (newMax >= extr.dataMax + margin) {
         chart?.xAxis[0].setExtremes(
           extr.dataMax - range,
           extr.dataMax,

@@ -10,8 +10,8 @@ import {
   timescaleToOHLC,
 } from "../utils";
 const URL = "wss://prodata.tradingview.com/socket.io/websocket";
-const BUILD_ID = "2023_02_02-11_23";
-const CHART_ID = "lfNsKpYG";
+const BUILD_ID = "2023_02_15-11_27";
+const CHART_ID = "2FxpEbEyXG";
 import * as R from "ramda";
 
 const handlers = {
@@ -35,7 +35,7 @@ export class TVClientC {
 
   login = async () => {
     const results = await TVApi.login();
-    // const chartprops = JSON.parse(results?.user?.settings?.chartproperties);
+    if (!results?.user?.auth_token) throw new Error("NO_AUTH_TOKEN");
     await this.init(results.user.auth_token);
     this.loggedIn = true;
   };
@@ -52,8 +52,11 @@ export class TVClientC {
 
   handle = () => {
     this.ws.on("message", this.receive);
-    this.ws.on("error", (_: WS, error: Error) => {
-      pino({ name: "TVClientC" }).error({ error, msg: "WS_ERROR" });
+    this.ws.on("error", (_: WS, error: Buffer) => {
+      pino({ name: "TVClientC" }).error({
+        error: error.toString(),
+        msg: "WS_ERROR",
+      });
     });
     this.ws.on("close", (_: WS, code: number, reason: Buffer) => {
       pino({ name: "TVClientC" }).error({ code, reason, msg: "WS_CLOSE" });
@@ -131,7 +134,7 @@ export class TVClientC {
       this.listener.once(`${prefix}:error`, cb);
       return () => this.listener.removeListener(`${prefix}:error`, cb);
     });
-
+  // ~m~125~m~{"m":"resolve_symbol","p":["cs_kUhw1x6wdYk3","sds_sym_1","={\"adjustment\":\"splits\",\"symbol\":\"NASDAQ:TSLA/AMEX:SPY\"}"]}
   send = async (
     m: string,
     data: Record<string, any> | Record<string, any>[]

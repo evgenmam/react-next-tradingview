@@ -114,6 +114,27 @@ class TVApiC {
     );
     return data;
   };
+
+  postStrategy = async (script: string, name?: string, toDelete?: string) => {
+    const cookie = await this.getAuthCookie();
+    const cfg = { headers: { cookie, origin: "https://www.tradingview.com" } };
+    const body = new FormData();
+    if (toDelete) {
+      try {
+        await axios.post(
+          ` https://pine-facade.tradingview.com/pine-facade/delete/${toDelete}`,
+          cfg
+        );
+      } catch {}
+    }
+    body.append("source", script);
+    const { data } = await axios.post(
+      `https://pine-facade.tradingview.com/pine-facade/save/new/?name=${name}`,
+      body,
+      { ...cfg, params: { name, allow_overwrite: true } }
+    );
+    return data;
+  };
 }
 
 const TVApi = new TVApiC();

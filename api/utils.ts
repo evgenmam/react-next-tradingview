@@ -31,6 +31,18 @@ export const randomHash = () => {
   return randomHashN(12);
 };
 
+export const wrapSymbol = (symbol: string, chartType?: string) =>
+  "=" +
+  JSON.stringify(
+    chartType === "heikin-ashi"
+      ? {
+          inputs: {},
+          symbol: { adjustment: "splits", symbol },
+          type: "BarSetHeikenAshi@tv-basicstudies-60!",
+        }
+      : { adjustment: "splits", symbol }
+  );
+
 export const s = "~m~";
 export const readMessages = (e: string): (string | TVWSEvent)[] => {
   let msgs = e.split(/~m~\d+~m~/);

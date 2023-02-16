@@ -21,7 +21,7 @@ export const useV2MarketData = (active: boolean) => {
   const spl = useRows("source");
   const target1 = useRows("target");
   const target2 = useRows("target2");
-  const { sett, period, count } = useSettings();
+  const { sett, period, count, chartType } = useSettings();
   const snack = useSnackbar();
   const { putStudies } = useV2Studies();
   const getData = useDebouncedCallback(
@@ -36,6 +36,7 @@ export const useV2MarketData = (active: boolean) => {
             indicators: selected?.indicators,
             period,
             count,
+            chartType,
           },
           {
             cancelToken: new axios.CancelToken((c) => {
@@ -79,8 +80,9 @@ export const useV2MarketData = (active: boolean) => {
       studies: selected?.indicators?.map((v) => v.scriptIdPart),
       period,
       count,
+      chartType,
     });
-    if (numerator && denominator && period && count && selected) {
+    if (numerator && denominator && period && count && selected?.indicators) {
       if (window.localStorage.getItem("last-fetched") !== lastFetched) {
         getData(lastFetched, cancel);
       }
@@ -88,7 +90,15 @@ export const useV2MarketData = (active: boolean) => {
     return () => {
       cancel?.();
     };
-  }, [numerator, denominator, selected?.indicators, period, count, getData]);
+  }, [
+    numerator,
+    denominator,
+    selected?.indicators,
+    period,
+    count,
+    getData,
+    chartType,
+  ]);
 
   // useEffect(() => {
   //   if (polling) {

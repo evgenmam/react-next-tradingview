@@ -9,6 +9,7 @@ import {
 import { IChartConfig, IPreset } from "../v2.types";
 import * as R from "ramda";
 import { useState } from "react";
+import { IStrategy } from "../../../types/app.types";
 export const useV2ChartConfigs = () => {
   const configs =
     useLiveQuery(async () => {
@@ -220,9 +221,16 @@ export const useV2PrivateScripts = () => {
   return { privateScripts, setPrivateScripts };
 };
 
-export const useStrategy = (id: number) => {
+export const useStrategy = (id?: number) => {
   const strategy = useLiveQuery(async () => {
+    if (!id) return undefined;
     return await IDB.strategies.where("id").equals(id).first();
   }, [id]);
-  return { strategy };
+  const updateStrategy = async (strategy: Partial<IStrategy>) => {
+    console.log(id, strategy);
+    if (!id) return;
+    console.log(strategy);
+    await IDB.strategies.update(id, strategy);
+  };
+  return { strategy, updateStrategy };
 };

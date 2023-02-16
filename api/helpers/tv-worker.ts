@@ -23,8 +23,8 @@ export class TvAPIWorker {
     const results = await TVApi.login();
     const chartprops = JSON.parse(results?.user?.settings?.chartproperties);
     await client.init(results.user.auth_token);
-    await client.send("set_locale", ["en", "US"]);
     await client.send("chart_create_session", [this.chartSession]);
+    await client.send("set_locale", ["en", "US"]);
     await client.send("switch_timezone", [
       this.chartSession,
       chartprops?.timezone,
