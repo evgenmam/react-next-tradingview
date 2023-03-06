@@ -287,7 +287,8 @@ export type TVWSEvent = {
     | "critical_error"
     | "series_loading"
     | "timescale_update"
-    | "series_completed";
+    | "series_completed"
+    | "study_completed"
 };
 
 export type Lbs = {

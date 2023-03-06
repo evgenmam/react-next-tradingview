@@ -7,14 +7,14 @@ import { ISTrade } from "./hooks/strategy-trades";
 type Props = {
   strategy?: IStrategy;
   trades?: ISTrade[];
-  emitter: EventEmitter<string[]>;
-  clicker: EventEmitter<string>;
+  emitter?: EventEmitter<string[]>;
+  clicker?: EventEmitter<string>;
 };
 export const DetailsTable = ({ emitter, clicker, trades = [] }: Props) => {
-  const onRowClick = (row: any) => clicker.emit(row.id);
+  const onRowClick = (row: any) => clicker?.emit(row.id);
   const [highlight, setHighlight] = useState<string[]>([]);
-  emitter.useSubscription((v) => setHighlight(v));
-  const onRowHover = (row: any) => emitter.emit(row ? [row.id] : []);
+  emitter?.useSubscription((v) => setHighlight(v));
+  const onRowHover = (row: any) => emitter?.emit(row ? [row.id] : []);
   return (
     <XTable
       rowClick={onRowClick}
@@ -36,9 +36,10 @@ export const DetailsTable = ({ emitter, clicker, trades = [] }: Props) => {
         {
           key: "close.time",
           label: "Closed",
-          render: (v) => (
-            <HumanDate time={v} fontSize={12} fontFamily="monospace" />
-          ),
+          render: (v, d) => {
+            if (!d?.closed) return "-";
+            return <HumanDate time={v} fontSize={12} fontFamily="monospace" />;
+          },
           thin: true,
         },
         {

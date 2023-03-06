@@ -186,3 +186,27 @@ export const mergeDataAndStudies = (
   );
   return data.map((d, idx) => ({ ...d, ...R.mergeAll(s.map((v) => v[idx])) }));
 };
+
+type SN = { time: number; [i: string]: number; dataset: number };
+
+export const mergeMixedDataAndStudies = (
+  data: { time: number; [i: string]: number; dataset: number }[],
+  studies: { data: StudyData; meta: MetaInfo; id: string }[]
+) =>
+  R.pipe(
+    R.groupBy<SN, any>(R.prop("dataset")),
+    R.toPairs,
+    R.map(([dataset, values]) =>
+      mergeDataAndStudies(
+        values as { time: number; [i: string]: number }[],
+        studies.filter((v) => v.id?.startsWith(dataset))
+      )
+    ),
+    R.flatten
+  )(data);
+
+export const getUniqueDatasets = R.pipe<
+  { dataset: string }[][],
+  string[],
+  string[]
+>(R.pluck("dataset"), R.uniq);

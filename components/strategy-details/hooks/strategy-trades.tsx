@@ -59,6 +59,7 @@ export const useStrategyTrades = (
   strategy?: IStrategy
 ): ISTrade[] => {
   const c = useSettings();
+
   const trades = openBars.reduce<ISTrade[]>((v, openBarIdx) => {
     const closeBarIdx = closeBars.find((c) => c < openBarIdx);
     const closed = !!closeBarIdx;
@@ -75,9 +76,10 @@ export const useStrategyTrades = (
     const contracts = val(
       strategy?.usd ? openTotal / openPrice : strategy?.entry || 1
     );
-    const closeTotal = val(contracts * closePrice);
     const pnl =
-      val(closeTotal - openTotal) * (strategy?.direction === "short" ? -1 : 1);
+      val(val(contracts * closePrice) - openTotal) *
+      (strategy?.direction === "short" ? -1 : 1);
+    const closeTotal = openTotal + pnl;
     const symbol = c[strategy?.dataset as keyof typeof c]?.split?.(":")?.[1];
     const openTime = new Date(bars[0].time);
     const cc = bars.at(-1)?.time;
@@ -91,6 +93,8 @@ export const useStrategyTrades = (
         action: strategy?.direction || "long",
       })
     );
+
+    if (!rows.at(-openBarIdx - 1)) return v;
 
     const trade: ISTrade = {
       id: v4(),

@@ -27,8 +27,11 @@ class TVApiC {
     return response;
   };
   login = async () => {
-    const response = await this.l();
-    return response.json();
+    // const response = await this.l();
+    // const r = await response.json();
+    // fs.writeFileSync("response.json", JSON.stringify(r, null, 2));
+    const r = JSON.parse(fs.readFileSync("response.json", "utf-8"));
+    return r;
   };
 
   getAuthToken = async () => {

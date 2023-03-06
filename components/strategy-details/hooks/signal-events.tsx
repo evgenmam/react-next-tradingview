@@ -15,13 +15,16 @@ export type ISOpenClose = {
 const toEvents = (v: IChartData[]) =>
   v.reduce<ISEvents>((acc, { time }) => ({ ...acc, [time]: true }), {});
 
-export const useSignalEvents = (strategy?: IStrategy): ISOpenClose => {
+export const useSignalEvents = (
+  strategy?: IStrategy,
+  r?: IChartData[]
+): ISOpenClose => {
   const { rows: source } = useRows("source");
   if (strategy?.openSignal && strategy?.closeSignal) {
-    const { data: open, bars: openBars } = applySignal(source)(
+    const { data: open, bars: openBars } = applySignal(r || source)(
       strategy?.openSignal
     );
-    const { data: close, bars: closeBars } = applySignal(source)(
+    const { data: close, bars: closeBars } = applySignal(r || source)(
       strategy?.closeSignal
     );
     return {

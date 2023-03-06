@@ -227,9 +227,9 @@ export const useStrategy = (id?: number) => {
     return await IDB.strategies.where("id").equals(id).first();
   }, [id]);
   const updateStrategy = async (strategy: Partial<IStrategy>) => {
-    console.log(id, strategy);
+    
     if (!id) return;
-    console.log(strategy);
+    
     await IDB.strategies.update(id, strategy);
   };
   return { strategy, updateStrategy };

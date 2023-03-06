@@ -5,27 +5,32 @@ import { Box } from "@mui/system";
 import React from "react";
 import { XJson } from "../json";
 import { cur, per, val } from "../../utils/number.utils";
+import { TableCell, TableRow } from "@mui/material";
 
 export type XStatsCol = {
   label: string;
   value: string | number;
   success?: boolean;
   failure?: boolean;
+  info?: boolean;
   dynamic?: boolean;
   split?: boolean;
   cur?: boolean;
   per?: boolean;
   val?: boolean;
+  align?: "left" | "right" | "center";
 };
 export type Props = {
   stats: XStatsCol[];
   table?: boolean;
   g?: number;
+  tableRow?: boolean;
 };
 
-const getColor = ({ success, failure, dynamic, value }: XStatsCol) => {
+const getColor = ({ success, failure, dynamic, value, info }: XStatsCol) => {
   if (success) return "success";
   if (failure) return "danger";
+  if (info) return "info";
   if (dynamic) {
     if (typeof value === "number")
       return value > 0 ? "success" : value < 0 ? "danger" : "neutral";
@@ -38,7 +43,7 @@ const getColor = ({ success, failure, dynamic, value }: XStatsCol) => {
   }
   return "neutral";
 };
-export const XStats = ({ stats, table, g = 5 }: Props) => {
+export const XStats = ({ stats, table, tableRow, g = 5 }: Props) => {
   return table ? (
     <Space columnGap={3} rowGap={0.5} wrap c>
       {R.pipe<XStatsCol[][], XStatsCol[][]>(R.groupWith((a, b) => !b.split))(
@@ -66,6 +71,20 @@ export const XStats = ({ stats, table, g = 5 }: Props) => {
         </Stack>
       ))}
     </Space>
+  ) : tableRow ? (
+    <TableRow>
+      {stats.map((v) => (
+        <TableCell key={v.label}>
+          <Typography textAlign={v.align || "right"} color={getColor(v)}>
+            {typeof v.value === "number"
+              ? [cur, per, val].at(
+                  [v.cur, v.per, v.val].findIndex((a) => !!a)!
+                )?.(v.value) || "-"
+              : v.value}
+          </Typography>
+        </TableCell>
+      ))}
+    </TableRow>
   ) : (
     <Space sa gap={2} wrap>
       {stats.map((s) => (

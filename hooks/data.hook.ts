@@ -2,7 +2,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { IChartData, IIndicator, ISignal, IStrategy } from "../types/app.types";
 import * as R from "ramda";
 import IDB from "../db/db";
-import { ITVSymbol } from "../components/tv-components/types";
+import { ITVStudy, ITVSymbol } from "../components/tv-components/types";
 import { useState } from "react";
 import { toHeikinAshi } from "../utils/chart.utils";
 import { useSettings } from "./settings.hook";
@@ -84,13 +84,12 @@ export const useRows = (datasetName?: string) => {
       );
       setLoading(false);
 
-      return R.sortBy(R.prop("time"))(data);
+      return R.pipe(R.uniqBy(R.prop("time")), R.sortBy(R.prop("time")))(data);
     }, [datasetName]) || [];
   const count = useLiveQuery(async () => {
     if (!datasetName) return 0;
     const dataset = (await IDB.settings.get(datasetName))?.value;
     if (!dataset) return 0;
-
     return await IDB.rows.where("dataset").equals(dataset).count();
   }, [datasetName]);
   const dataset =
@@ -120,6 +119,26 @@ export const useRows = (datasetName?: string) => {
     count,
     loading,
   };
+};
+
+export const useCompareRows = (num: string, den: string) => {
+  const data = useLiveQuery(async () => {
+    const nums = await IDB.rows.where("dataset").equals(num).toArray();
+    const dens = await IDB.rows.where("dataset").equals(den).toArray();
+    const divs = await IDB.rows
+      .where("dataset")
+      .equals(`${num}/${den}`)
+      .toArray();
+    return R.map(R.uniqBy(R.prop("time")), [nums, dens, divs]);
+  }, [num, den]);
+
+  const setRows = async (d: {
+    numerator: IChartData[];
+    denominator: IChartData[];
+    split: IChartData[];
+    studies: ITVStudy[];
+  }) => {};
+  return data;
 };
 
 export const useDatasets = () => {

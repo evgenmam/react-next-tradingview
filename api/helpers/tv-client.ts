@@ -73,29 +73,35 @@ export class TVClientC {
       this.listener.emit(`${ses}:error`, ms);
       return;
     }
-    switch (e.m) {
-      case "symbol_resolved":
-        const [sym, r, t, t_ms] = body;
-        this.listener.emit(`${ses}:${sym}:${e.m}`, r);
-      case "timescale_update":
-        const [b] = body;
-        Object.entries(b).forEach(([sym, v]) => {
+    if (e.m === "series_completed") {
+      const [sym] = body;
+      this.listener.emit(`${ses}:${sym}:${e.m}`);
+    } else if (e.m === "study_completed") {
+      const [sym] = body;
+      this.listener.emit(`${ses}:${sym}:${e.m}`);
+    } else if (e.m === "symbol_resolved") {
+      const [sym, r, t, t_ms] = body;
+      this.listener.emit(`${ses}:${sym}:${e.m}`, r);
+    } else if (e.m === "timescale_update") {
+      const [b] = body;
+      Object.entries(b).forEach(([sym, v]) => {
+        this.listener.emit(
+          `${ses}:${sym}:${e.m}`,
+          timescaleToOHLC(v as TimescaleUpdate)
+        );
+        this.listener.emit(`${ses}:${e.m}`, v);
+      });
+    } else if (e.m === "du") {
+      const [d] = body;
+      Object.entries(d).forEach(([sym, v]) => {
+        if (R.has("st", v))
           this.listener.emit(
             `${ses}:${sym}:${e.m}`,
-            timescaleToOHLC(v as TimescaleUpdate)
+            duFixTimestamp(v as StudyData)
           );
-        });
-      case "du":
-        const [d] = body;
-        Object.entries(d).forEach(([sym, v]) => {
-          if (R.has("st", v))
-            this.listener.emit(
-              `${ses}:${sym}:${e.m}`,
-              duFixTimestamp(v as StudyData)
-            );
-        });
-      default:
-        this.listener.emit(`${ses}:${e.m}`, e.p);
+      });
+    } else {
+      this.listener.emit(`${ses}:${e.m}`, e.p);
     }
   };
 
@@ -125,6 +131,11 @@ export class TVClientC {
       this.listener.once(args.join(":"), cb);
     });
 
+  subscribe = (func: (...d: any[]) => void, ...args: string[]) => {
+    this.listener.on(args.join(":"), func);
+
+    return () => this.listener.removeListener(args.join(":"), func);
+  };
   onError = (prefix: string) =>
     new Promise(async (resolve) => {
       const cb = (v: any) => {
@@ -134,7 +145,6 @@ export class TVClientC {
       this.listener.once(`${prefix}:error`, cb);
       return () => this.listener.removeListener(`${prefix}:error`, cb);
     });
-  // ~m~125~m~{"m":"resolve_symbol","p":["cs_kUhw1x6wdYk3","sds_sym_1","={\"adjustment\":\"splits\",\"symbol\":\"NASDAQ:TSLA/AMEX:SPY\"}"]}
   send = async (
     m: string,
     data: Record<string, any> | Record<string, any>[]

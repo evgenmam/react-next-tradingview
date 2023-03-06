@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Router, Request, Response } from "express";
 import dynamic from "next/dynamic";
 import { ITVIndicator } from "../../components/tv-components/types";
@@ -74,6 +75,13 @@ router.get("/reconnect", (req, res: Response) => {
 
 router.get("/status", (req, res: Response) => {
   res.send({ status: status() });
+});
+
+router.post("/bulk-market-data", async (req: Request, res: Response) => {
+  const nSession = new TVChartSession(res);
+  await nSession.init();
+  const data = await nSession.getBulkData(req.body);
+  res.send(data);
 });
 
 export default router;

@@ -3,7 +3,7 @@ import next from "next";
 import dotenv from "dotenv";
 import router from "./routes/data";
 const dev = process.env.NODE_ENV !== "production";
-const app = next({ dev });
+const app = next({ dev, conf: {} });
 const handle = app.getRequestHandler();
 const port = process.env.PORT || 3000;
 import bodyParser from "body-parser";

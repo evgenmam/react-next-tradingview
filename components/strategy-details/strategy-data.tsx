@@ -24,7 +24,6 @@ export const StrategyData: FC<Props> = ({ id }) => {
   const events = useSignalEvents(strategy);
   const { rows, dataset } = useRows(strategy?.dataset);
   const trades = useStrategyTrades(events, rows, strategy);
-
   const rStrat = getReversalStrategy(strategy);
   const { rows: rRows, dataset: rDataset } = useRows(rStrat?.dataset);
   const rTrades = useStrategyTrades(events, rRows, rStrat);

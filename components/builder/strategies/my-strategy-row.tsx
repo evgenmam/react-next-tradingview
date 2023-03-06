@@ -1,12 +1,10 @@
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { CloudArrowUpIcon } from "@heroicons/react/24/solid";
 import {
   Box,
   Divider,
   IconButton,
   Sheet,
   Stack,
-  Tooltip,
   Typography,
 } from "@mui/joy";
 import noop from "lodash.noop";
@@ -15,11 +13,9 @@ import { FC } from "react";
 
 import { useSettings } from "../../../hooks/settings.hook";
 import { IStrategy } from "../../../types/app.types";
-import { getReversalStrategy } from "../../../utils/strategy.utils";
 import { Space } from "../../utils/row";
 import MySignalPopper from "../signals/my-signal-popper";
 import MyStrategyRowItem from "./my-strategy-row-item";
-import { MyStrategyStats } from "./my-strategy-stats";
 
 type Props = {
   strategy: IStrategy;
