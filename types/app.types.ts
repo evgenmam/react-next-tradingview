@@ -85,6 +85,8 @@ export type IStrategy = {
   closeOn?: "open" | "close";
   usd?: number;
   scripts?: Record<string, string>;
+  takeProfit?: number;
+  stopLoss?: number;
 };
 
 export type IBaseTrade = {

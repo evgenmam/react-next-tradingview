@@ -43,6 +43,7 @@
     "highcharts": "^10.3.2",
     "highcharts-more": "0.1.7",
     "highcharts-react-official": "^3.1.0",
+    "js-file-download": "0.4.12",
     "lightweight-charts": "^3.8.0",
     "lodash.noop": "^3.0.1",
     "lodash.throttle": "4.1.1",

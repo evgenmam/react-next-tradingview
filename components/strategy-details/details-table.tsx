@@ -4,6 +4,7 @@ import { IStrategy } from "../../types/app.types";
 import { HumanDate } from "../utils/human-date";
 import { XTable } from "../utils/table";
 import { ISTrade } from "./hooks/strategy-trades";
+import { CheckIcon } from "@heroicons/react/24/outline";
 type Props = {
   strategy?: IStrategy;
   trades?: ISTrade[];
@@ -41,6 +42,16 @@ export const DetailsTable = ({ emitter, clicker, trades = [] }: Props) => {
             return <HumanDate time={v} fontSize={12} fontFamily="monospace" />;
           },
           thin: true,
+        },
+        {
+          key: "sl",
+          label: "SL",
+          render: (v, d) => d.stopLossTriggered && <CheckIcon width={10} />,
+        },
+        {
+          key: "tp",
+          label: "TP",
+          render: (v, d) => d.takeProfitTriggered && <CheckIcon width={10} />,
         },
         {
           key: "diff",

@@ -2,7 +2,7 @@ import { CLOSING } from "ws";
 import { IChartData, IStrategy } from "../../../types/app.types";
 import { ISEvents, ISOpenClose } from "./signal-events";
 import * as R from "ramda";
-import { cur, val } from "../../../utils/number.utils";
+import { addPercent, cur, subPercent, val } from "../../../utils/number.utils";
 import { useSettings } from "../../../hooks/settings.hook";
 import * as D from "date-fns";
 import { v4 } from "uuid";
@@ -42,6 +42,10 @@ export interface ISTrade {
     open: number;
     close?: number;
   };
+  stopLossTriggered?: boolean;
+  takeProfitTriggered?: boolean;
+  takeProfit?: number;
+  stopLoss?: number;
 }
 
 const toInterval = (t: ISTrade): D.Interval => ({
@@ -53,22 +57,49 @@ const isOverlapping = R.curry((a: ISTrade, b: ISTrade) =>
   D.areIntervalsOverlapping(toInterval(a), toInterval(b))
 );
 
+const applyTakeProfit = (v: IChartData[], takeProfit: number) => {
+  const tpPrice = addPercent(takeProfit)(v[0].open);
+  const index = R.findIndex<IChartData>((c) => c.high > tpPrice)(v);
+  return R.take(index + 2)(v);
+};
+
+const applyStopLoss = (v: IChartData[], stopLoss: number) => {
+  const tpPrice = addPercent(stopLoss)(v[0].open);
+  const index = R.findIndex<IChartData>((c) => c.low < tpPrice)(v);
+  return R.take(index + 2)(v);
+};
+
+const hasTp = (v: IChartData[], tp?: number) =>
+  !!tp && !!R.find<IChartData>((c) => c.high > addPercent(tp)(v[0].open))(v);
+
+const hasSl = (v: IChartData[], sl?: number) => {
+  return (
+    !!sl && !!R.find<IChartData>((c) => c.low < subPercent(sl)(v[0].open))(v)
+  );
+};
+
 export const useStrategyTrades = (
   { openBars, closeBars }: ISOpenClose,
   rows: IChartData[] = [],
-  strategy?: IStrategy
+  strategy?: IStrategy,
+  tp?: number,
+  sl?: number
 ): ISTrade[] => {
   const c = useSettings();
 
   const trades = openBars.reduce<ISTrade[]>((v, openBarIdx) => {
-    const closeBarIdx = closeBars.find((c) => c < openBarIdx);
+    if (!rows.at(-openBarIdx)) return v;
+    const openPrice = val(rows.at(-openBarIdx)!.open);
+    let closeBarIdx = closeBars.find((c) => c < openBarIdx);
     const closed = !!closeBarIdx;
-    const bars = rows.slice(-openBarIdx, closeBarIdx && -closeBarIdx + 1);
-    if (!bars.length) return v;
 
+    const allBars = rows.slice(-openBarIdx, closeBarIdx && -closeBarIdx + 1);
+    let bars = [...allBars];
+    if (!bars.length) return v;
+    if (hasSl(allBars, sl)) bars = applyStopLoss(allBars, sl!);
+    if (hasTp(allBars, tp)) bars = applyTakeProfit(allBars, tp!);
     const high = bars.reduce(R.maxBy(R.propOr(0, "high")), bars[0]);
     const low = bars.reduce(R.minBy(R.propOr(Infinity, "low")), bars[0]);
-    const openPrice = val(bars[0]?.open || 0);
     const closePrice = val(
       (!closed ? bars.at(-1)?.close : bars.at(-1)?.open) || 0
     );
@@ -123,9 +154,13 @@ export const useStrategyTrades = (
       ),
       action: strategy?.direction || "long",
       strategy: {
-        open: rows.at(-openBarIdx - 1)!.time,
-        close: closeBarIdx && rows.at(-closeBarIdx - 1)?.time,
+        open: bars.at(0)!.time,
+        close: closed ? bars.at(-1)!.time : undefined,
       },
+      takeProfitTriggered: hasTp(allBars, tp),
+      stopLossTriggered: hasSl(allBars, sl),
+      takeProfit: tp && addPercent(tp)(bars[0].open),
+      stopLoss: sl && subPercent(sl)(bars[0].open),
     };
 
     return [...v, trade];

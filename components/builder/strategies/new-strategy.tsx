@@ -19,6 +19,7 @@ import { ISignal, IStrategy } from "../../../types/app.types";
 import { ColorSelect } from "../../data/selects/color-select";
 import { Space } from "../../utils/row";
 import { SignalSelect } from "../signals/signal-select";
+import { BNumberInput } from "../../utils/number-input";
 type Props = {
   onCancel?: () => void;
   onSave?: (conditions: IStrategy) => void;
@@ -33,6 +34,8 @@ export const NewStrategy = ({ onCancel = noop, onSave }: Props) => {
   const { target, target2 } = useSettings();
   const [dataset, setDataset] = useState<"target" | "target2">("target");
   const [byDollar, setByDollar] = useState(true);
+  const [stopLoss, setStopLoss] = useState(0);
+  const [takeProfit, setTakeProfit] = useState(0);
   useEffect(() => {
     if (byDollar) {
       setEntry(0);
@@ -140,6 +143,16 @@ export const NewStrategy = ({ onCancel = noop, onSave }: Props) => {
                 <Radio value="target2" label={target2} />
               </Space>
             </RadioGroup>
+            <Divider orientation="vertical" />
+            {/* <Space c s={1}>
+              <Typography>Stop Loss:</Typography>
+              <BNumberInput value={stopLoss} onChange={setStopLoss} />
+            </Space>
+            <Divider orientation="vertical" />
+            <Space c s={1}>
+              <Typography>Take Profit:</Typography>
+              <BNumberInput value={takeProfit} onChange={setTakeProfit} />
+            </Space> */}
           </Space>
           <Divider />
           <Stack direction="row" justifyContent="flex-end" spacing={1}>
@@ -161,6 +174,8 @@ export const NewStrategy = ({ onCancel = noop, onSave }: Props) => {
                   openSignal,
                   color,
                   dataset,
+                  // stopLoss,
+                  // takeProfit,
                   ...(byDollar ? { usd } : { entry }),
                 });
               }}

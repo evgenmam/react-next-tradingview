@@ -281,8 +281,8 @@ export const getRoi = (v: ITrade[]) =>
 
 export const strategyStats: (t: ITrade[]) => ITVStats = R.applySpec({
   totalTrades: R.length,
-  winningTrades: countBy((pnl) => pnl! > 0, "pnl"),
-  losingTrades: countBy((pnl) => pnl! < 0, "pnl"),
+  winningTrades: countBy((pnl) => +pnl! > 0, "pnl"),
+  losingTrades: countBy((pnl) => +pnl! < 0, "pnl"),
   openTrades: countBy((closed) => !closed, "closed"),
   totalPnl: getTotal("pnl"),
   totalIn: getTotal("totalIn"),
@@ -290,3 +290,5 @@ export const strategyStats: (t: ITrade[]) => ITVStats = R.applySpec({
   maxIn: R.pipe(getMaxIn, cur),
   roi: R.pipe<ITrade[][], number, string>(getRoi, per),
 });
+
+export const applyTakeProfit = (takeProfit: number) => {}

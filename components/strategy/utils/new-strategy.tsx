@@ -99,7 +99,7 @@ export const NewStrategy = ({ onSave }: Props) => {
                   />
                 </FormControl>
               </Grid>
-              <Grid xs={12}>
+              <Grid xs={12} sm={6}>
                 <FormControl size="sm">
                   <FormLabel>Target Chart</FormLabel>
                   <RadioGroup
@@ -113,6 +113,9 @@ export const NewStrategy = ({ onSave }: Props) => {
                     <Radio value="target2" label="Target 2" />
                   </RadioGroup>
                 </FormControl>
+              </Grid>
+              <Grid xs={12} sm={6}>
+                asdf
               </Grid>
             </Grid>
             <Stack direction="row" justifyContent="space-between">

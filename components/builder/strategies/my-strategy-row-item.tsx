@@ -29,12 +29,14 @@ type MyStrategyRowItemProps = {
   strategy: IStrategy;
   withLink?: boolean;
   reversed?: boolean;
+  useTpLs?: boolean;
 };
 
 export const MyStrategyRowItem = ({
   strategy,
   withLink,
   reversed,
+  useTpLs,
 }: MyStrategyRowItemProps) => {
   const c = useSettings();
   const s = reversed ? getReversalStrategy(strategy) : strategy;
@@ -67,7 +69,11 @@ export const MyStrategyRowItem = ({
         </Space>
       </Space>
 
-      <MyStrategyStats strategy={strategy} reversed={reversed} />
+      <MyStrategyStats
+        strategy={strategy}
+        reversed={reversed}
+        useTpLs={useTpLs}
+      />
     </Stack>
   );
 };

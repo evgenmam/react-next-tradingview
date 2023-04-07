@@ -18,15 +18,28 @@ type Props = {
 };
 
 export const StrategyData: FC<Props> = ({ id }) => {
+  const { takeProfit, stopLoss } = useSettings();
   const emitter = useEventEmitter<string[]>();
   const clicker = useEventEmitter<string>();
   const { strategy } = useStrategyDetails({ id });
   const events = useSignalEvents(strategy);
   const { rows, dataset } = useRows(strategy?.dataset);
-  const trades = useStrategyTrades(events, rows, strategy);
+  const trades = useStrategyTrades(
+    events,
+    rows,
+    strategy,
+    takeProfit,
+    stopLoss
+  );
   const rStrat = getReversalStrategy(strategy);
   const { rows: rRows, dataset: rDataset } = useRows(rStrat?.dataset);
-  const rTrades = useStrategyTrades(events, rRows, rStrat);
+  const rTrades = useStrategyTrades(
+    events,
+    rRows,
+    rStrat,
+    takeProfit,
+    stopLoss
+  );
   const { reverseStrategies } = useSettings();
   return (
     <Card>

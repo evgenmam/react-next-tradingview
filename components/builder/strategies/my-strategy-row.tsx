@@ -1,12 +1,5 @@
 import { TrashIcon } from "@heroicons/react/24/outline";
-import {
-  Box,
-  Divider,
-  IconButton,
-  Sheet,
-  Stack,
-  Typography,
-} from "@mui/joy";
+import { Box, Divider, IconButton, Sheet, Stack, Typography } from "@mui/joy";
 import noop from "lodash.noop";
 
 import { FC } from "react";
@@ -23,6 +16,7 @@ type Props = {
   onSelect?: (id: number) => void;
   withLink?: boolean;
   selected?: boolean;
+  useTpLs?: boolean;
 };
 export const MyStrategyRow: FC<Props> = ({
   strategy,
@@ -30,6 +24,7 @@ export const MyStrategyRow: FC<Props> = ({
   withLink,
   selected,
   onSelect,
+  useTpLs,
 }) => {
   const c = useSettings();
 
@@ -73,6 +68,18 @@ export const MyStrategyRow: FC<Props> = ({
                     <MySignalPopper signal={strategy?.closeSignal} />
                   </Space>
                 )}
+                {/* {!!strategy?.stopLoss && (
+                  <Space s={0.5} c>
+                    <Typography level="body2">Stop Loss:</Typography>
+                    <Typography>{strategy.stopLoss}%</Typography>
+                  </Space>
+                )}
+                {!!strategy?.takeProfit && (
+                  <Space s={0.5} c>
+                    <Typography level="body2">Take Profit:</Typography>
+                    <Typography>{strategy.takeProfit}%</Typography>
+                  </Space>
+                )} */}
               </Space>
             </Box>
 
@@ -84,12 +91,20 @@ export const MyStrategyRow: FC<Props> = ({
               <TrashIcon width={16} />
             </IconButton>
           </Space>
-          <MyStrategyRowItem strategy={strategy} withLink={withLink} />
+          <MyStrategyRowItem
+            strategy={strategy}
+            withLink={withLink}
+            useTpLs={useTpLs}
+          />
 
           {c.reverseStrategies && strategy && (
             <>
               <Divider></Divider>
-              <MyStrategyRowItem strategy={strategy} reversed />
+              <MyStrategyRowItem
+                strategy={strategy}
+                reversed
+                useTpLs={useTpLs}
+              />
             </>
           )}
         </Stack>

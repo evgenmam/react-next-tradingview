@@ -7,3 +7,9 @@ export const cur = (n: number) =>
 export const per = (n: number) => `${(n * 100).toFixed(2)}%`;
 
 export const val = (n: number) => Number(n.toFixed(2));
+
+export const addPercent = (p: number) => (n: number) =>
+  p > 1 ? n + (n * p) / 100 : n + n * p;
+
+export const subPercent = (p: number) => (n: number) =>
+  p > 1 ? n - (n * p) / 100 : n - n * p;

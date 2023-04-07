@@ -36,6 +36,8 @@ export const useSettings = () => {
   const [legends, setLegends] = useSetting("legends", true);
   const [syncLine, setSyncLine] = useSetting("syncLine", true);
   const [syncRange, setSyncRange] = useSetting("syncRange", true);
+  const [takeProfit, setTakeProfit] = useSetting("takeProfit", 0);
+  const [stopLoss, setStopLoss] = useSetting("stopLoss", 0);
   const [reverseStrategies, setReverseStrategies] = useSetting(
     "syncRange",
     true
@@ -78,5 +80,9 @@ export const useSettings = () => {
     setSyncRange,
     reverseStrategies,
     setReverseStrategies,
+    takeProfit,
+    setTakeProfit,
+    stopLoss,
+    setStopLoss,
   };
 };

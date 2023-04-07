@@ -18,11 +18,12 @@ import { useStrategy } from "../../v2/hooks/v2-data.hook";
 type Props = {
   strategy: IStrategy;
   reversed?: boolean;
+  useTpLs?: boolean;
 };
 
-export const MyStrategyStats = ({ strategy, reversed }: Props) => {
+export const MyStrategyStats = ({ strategy, reversed, useTpLs }: Props) => {
   const { updateStrategy } = useStrategy(strategy.id);
-  const { source } = useSettings();
+  const { source, takeProfit, stopLoss } = useSettings();
   const ds = reversed
     ? strategy?.dataset === "target"
       ? "target2"
@@ -34,7 +35,9 @@ export const MyStrategyStats = ({ strategy, reversed }: Props) => {
   const trades = useStrategyTrades(
     events,
     rows,
-    reversed ? getReversalStrategy(strategy) : strategy
+    reversed ? getReversalStrategy(strategy) : strategy,
+    useTpLs ? takeProfit : undefined,
+    useTpLs ? stopLoss : undefined
   );
   const stats = useStrategyStats(trades);
   const [uploading, setUploading] = useState(false);

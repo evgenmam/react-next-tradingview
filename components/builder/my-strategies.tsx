@@ -11,8 +11,14 @@ type Props = {
   withLink?: boolean;
   selected?: number;
   onSelect?: (id: number) => void;
+  useTpLs?: boolean;
 };
-export const MyStrategies = ({ withLink, selected, onSelect }: Props) => {
+export const MyStrategies = ({
+  withLink,
+  useTpLs,
+  selected,
+  onSelect,
+}: Props) => {
   const [adding, setAdding] = useState(false);
   const { strategies, removeStrategy, addStrategy, reverse, setReverse } =
     useStrategies();
@@ -47,6 +53,7 @@ export const MyStrategies = ({ withLink, selected, onSelect }: Props) => {
         </Collapse>
         {strategies.map((strategy) => (
           <MyStrategyRow
+            useTpLs={useTpLs}
             selected={!!selected && strategy.id === +selected}
             withLink={withLink}
             key={strategy.id}
