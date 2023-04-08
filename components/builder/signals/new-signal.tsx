@@ -58,6 +58,9 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
     [resetCondition, setConditions]
   );
 
+useEffect(() => {
+  console.log(1);
+},[])
   const enabled = !conditions.length || !!conditions.at(-1)?.next;
   useEffect(() => {
     setSelecting(enabled);
@@ -160,7 +163,7 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
             </Button>
             <Button
               size="sm"
-              disabled={!conditions.length}
+              disabled={!conditions.length || !!tooMany || !!noMatches}
               onClick={() => {
                 onSave({ condition: conditions, color, name });
                 setConditions([]);
@@ -199,7 +202,7 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
             addCondition({
               a,
               operator: v.isSignal ? "true" : 'greater',
-              color: v.color,
+              color: v.color || ColorSelect.random(),
               offset: 0,
             });
           setSelectFromList(false);

@@ -3,8 +3,8 @@ import {
   FolderPlusIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import { Checkbox, IconButton, Stack, Typography } from "@mui/joy";
-import { Collapse, Tooltip } from "@mui/material";
+import { Checkbox, IconButton, Stack, Divider, Tooltip } from "@mui/joy";
+import { Collapse } from "@mui/material";
 import { useState } from "react";
 import { useStrategies } from "../../hooks/data.hook";
 import { Space } from "../utils/row";
@@ -45,16 +45,31 @@ export const MyStrategies = ({
             collapsed={collapsed}
             setCollapsed={setCollapsed}
           />
-          <IconButton onClick={() => setAdding(true)} size="sm">
-            <PlusIcon width={20} />
-          </IconButton>
+          <Tooltip title="New Strategy">
+            <IconButton
+              onClick={() => setAdding(true)}
+              size="sm"
+              variant="plain"
+            >
+              <PlusIcon width={20} />
+            </IconButton>
+          </Tooltip>
+          <Divider orientation="vertical" />
           <Tooltip title="Import data">
-            <IconButton onClick={() => setOpenImport(true)} size="sm">
+            <IconButton
+              onClick={() => setOpenImport(true)}
+              size="sm"
+              variant="plain"
+            >
               <FolderPlusIcon width={20} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Export strategies">
-            <IconButton onClick={() => setOpenExport(true)} size="sm">
+          <Tooltip title="Export signals">
+            <IconButton
+              onClick={() => setOpenExport(true)}
+              size="sm"
+              variant="plain"
+            >
               <ArrowDownTrayIcon width={20} />
             </IconButton>
           </Tooltip>

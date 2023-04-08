@@ -1,6 +1,6 @@
 import { PlusIcon, ArrowDownTrayIcon } from "@heroicons/react/24/solid";
 import { FolderPlusIcon } from "@heroicons/react/24/outline";
-import { Grid, IconButton, Stack, Tooltip } from "@mui/joy";
+import { Divider, Grid, IconButton, Stack, Tooltip } from "@mui/joy";
 import { Collapse } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useSignals } from "../../hooks/data.hook";
@@ -10,6 +10,7 @@ import { NewSignal } from "./signals/new-signal";
 import ExportDialog from "../dialogs/export-dialog";
 import ImportDialog from "../dialogs/import-dialog";
 import SectionHeader from "./secton-header";
+import { ISignal } from "../../types/app.types";
 
 export const MySignals = () => {
   const [adding, setAdding] = useState(false);
@@ -25,6 +26,9 @@ export const MySignals = () => {
       setCollapsed(false);
     }
   }, [adding]);
+  const [linking, setLinking] = useState<ISignal | null>(null);
+  const [viewing, setViewing] = useState<Set<ISignal>>(new Set());
+  console.log(viewing);
   return (
     <Stack>
       <Stack py={1} alignItems="center" spacing={1} direction="row">
@@ -33,16 +37,27 @@ export const MySignals = () => {
           collapsed={collapsed}
           setCollapsed={setCollapsed}
         />
-        <IconButton onClick={() => setAdding(true)} size="sm">
-          <PlusIcon width={20} />
-        </IconButton>
+        <Tooltip title="New Signal">
+          <IconButton onClick={() => setAdding(true)} size="sm" variant="plain">
+            <PlusIcon width={20} />
+          </IconButton>
+        </Tooltip>
+        <Divider orientation="vertical" />
         <Tooltip title="Import data">
-          <IconButton onClick={() => setOpenImport(true)} size="sm">
+          <IconButton
+            onClick={() => setOpenImport(true)}
+            size="sm"
+            variant="plain"
+          >
             <FolderPlusIcon width={20} />
           </IconButton>
         </Tooltip>
         <Tooltip title="Export signals">
-          <IconButton onClick={() => setOpenExport(true)} size="sm">
+          <IconButton
+            onClick={() => setOpenExport(true)}
+            size="sm"
+            variant="plain"
+          >
             <ArrowDownTrayIcon width={20} />
           </IconButton>
         </Tooltip>
@@ -68,6 +83,17 @@ export const MySignals = () => {
                   onDelete={removeSignal}
                   draggable
                   showName
+                  onLink={setLinking}
+                  onView={(v) =>
+                    setViewing((vw) => {
+                      const s = new Set(vw);
+                      vw.has(v) ? s.delete(v) : s.add(v);
+                      return s;
+                    })
+                  }
+                  viewing={Array.from(viewing)
+                    .map((v) => v.id)
+                    .includes(signal.id)}
                 />
               </Grid>
             ))}

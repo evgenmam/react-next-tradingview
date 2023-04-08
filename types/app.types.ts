@@ -64,6 +64,12 @@ export type IConditionGroup = {
   operator?: "and" | "or";
 };
 
+export type ISignalLink = {
+  signal: ISignal;
+  range?: number;
+  operator?: "AND" | "OR";
+};
+
 export type ISignal = {
   condition: ICondition[];
   preview?: boolean;
@@ -71,6 +77,7 @@ export type ISignal = {
   color?: string;
   hide?: boolean;
   name?: string;
+  link?: ISignalLink;
 };
 
 export type IStrategy = {

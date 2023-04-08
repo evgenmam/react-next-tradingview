@@ -31,7 +31,6 @@ export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
         const idx = i;
 
         const secondIdx = idx - (c?.a.field === c?.b?.field ? 1 : 0);
-        console.log(idx);
         const a = rows[idx]?.[c.a.field!];
         const b = rows[secondIdx]?.[c.b?.field!];
         const prevA = rows[idx - 1]?.[c.a.field!];
@@ -58,7 +57,7 @@ export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
               break;
             case "notEqual":
               result = a !== b;
-
+              break;
             case "crossesUp":
               result = !!prevA && !!prevB && prevA < prevB && a > b;
               break;

@@ -1,4 +1,4 @@
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { TrashIcon, LinkIcon, EyeIcon } from "@heroicons/react/24/outline";
 import {
   Badge,
   Box,
@@ -7,14 +7,17 @@ import {
   ListItem,
   Sheet,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/joy";
 import { sentenceCase } from "change-case";
 import noop from "lodash.noop";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useDrag } from "react-dnd";
 import { ICondition, IConditionEntry, ISignal } from "../../../types/app.types";
 import { Space } from "../../utils/row";
+import LinkSignalModal from "./link-signal-modal";
+import MySignalPopper from "./my-signal-popper";
 
 type Props = {
   signal: ISignal;
@@ -23,13 +26,16 @@ type Props = {
   draggable?: boolean;
   showName?: boolean;
   light?: boolean;
+  onLink?: (signal: ISignal) => void;
+  onView?: (signal: ISignal) => void;
+  viewing?: boolean;
 };
 const splitField = (c?: IConditionEntry) => {
   const f = c?.field?.split?.(":") || [];
   if (f.length === 1) {
     return { field: f[0], series: null };
   }
-  return { field: f[1].replace(/\-\-\-(.+)/, ""), series: f[0] };
+  return { field: f[1]?.replace(/\-\-\-(.+)/, ""), series: f[0] };
 };
 
 export const MySignalRow: FC<Props> = ({
@@ -39,11 +45,15 @@ export const MySignalRow: FC<Props> = ({
   draggable,
   showName,
   light,
+  onLink,
+  onView,
+  viewing,
 }) => {
   const [collected, drag] = useDrag(() => ({
     type: "signal",
     item: signal,
   }));
+  const [linking, setLinking] = useState(false);
   return (
     <Sheet
       {...(draggable && { ref: drag })}
@@ -72,9 +82,22 @@ export const MySignalRow: FC<Props> = ({
         }}
       >
         <Stack spacing={0.5}>
-          {showName && (
-            <Typography>{signal?.name || `Signal ${signal?.id}`}</Typography>
-          )}
+          <Space s={1}>
+            {showName && (
+              <Typography>{signal?.name || `Signal ${signal?.id}`}</Typography>
+            )}
+            {signal?.link && (
+              <>
+                <MySignalPopper signal={signal.link.signal} link />
+                <Typography variant="plain" level="body3">
+                  {signal?.link?.range
+                    ? `${signal?.link?.range} bars`
+                    : "Same bar"}{" "}
+                  ({signal?.link?.operator})
+                </Typography>
+              </>
+            )}
+          </Space>
           <Stack direction="row" gap={1} alignItems="center" flexWrap="wrap">
             {signal?.condition?.map((c) => (
               <Stack
@@ -123,20 +146,57 @@ export const MySignalRow: FC<Props> = ({
             ))}
           </Stack>
         </Stack>
-        <Box ml="auto" justifySelf="flex-end">
-          {onDelete && (
-            <IconButton
-              color="danger"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete?.(signal?.id!);
-              }}
-            >
-              <TrashIcon width={16} />
-            </IconButton>
+        <Space ml="auto" justifySelf="flex-end" s={0.5}>
+          {onView && (
+            <Tooltip title="View on chart">
+              <IconButton
+                color="primary"
+                size="sm"
+                variant={viewing ? "solid" : "plain"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onView(signal);
+                }}
+              >
+                <EyeIcon width={16} />
+              </IconButton>
+            </Tooltip>
           )}
-        </Box>
+          {onLink && (
+            <Tooltip title="Link Signals">
+              <IconButton
+                color="primary"
+                size="sm"
+                variant={signal?.link ? "solid" : "plain"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLinking(true);
+                }}
+              >
+                <LinkIcon width={16} />
+              </IconButton>
+            </Tooltip>
+          )}
+          {onDelete && (
+            <Tooltip title="Delete signal">
+              <IconButton
+                color="danger"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete?.(signal?.id!);
+                }}
+              >
+                <TrashIcon width={16} />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Space>
+        <LinkSignalModal
+          open={!!linking}
+          onClose={() => setLinking(false)}
+          signal={signal}
+        />
       </Stack>
     </Sheet>
   );

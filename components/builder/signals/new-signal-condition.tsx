@@ -148,8 +148,8 @@ export const NewSignalCondition: FC<Props> = ({
           matches={matches}
         />
       </Box>
-      <BN k="AND" />
-      <BN k="OR" />
+      {/* <BN k="AND" />
+      <BN k="OR" /> */}
       <IconButton
         size="sm"
         color="danger"

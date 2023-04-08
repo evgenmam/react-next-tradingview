@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, Input, TextField, useTheme } from "@mui/joy";
+import { FormControl, FormLabel, Input, TextField, useTheme ,} from "@mui/joy";
 import { CompactPicker } from "react-color";
 import colors from "material-colors";
 import * as R from "ramda";
@@ -43,24 +43,24 @@ export const ColorSelect = ({
     <PopupState variant="popover" popupId="demo-popup-popover">
       {(popupState) => (
         <>
-          {variant === "input" ? (
+          {/* {variant === "input" ? (
             <FormControl size="sm">
               <FormLabel>Color</FormLabel>
-              <TextField
+              <Input
                 size="sm"
                 {...bindTrigger(popupState)}
                 startDecorator={<StopIcon width={20} color={value} />}
                 value={value}
               >
                 Open Popover
-              </TextField>
+              </Input>
             </FormControl>
-          ) : (
+          ) : ( */}
             <ButtonBase {...bindTrigger(popupState)}>
               <StopIcon width={20} color={value} />
             </ButtonBase>
-          )}
-          <Popover
+          {/* )} */}
+          {/* <Popover
             {...bindPopover(popupState)}
             anchorOrigin={{
               vertical: "bottom",
@@ -83,7 +83,7 @@ export const ColorSelect = ({
                 popupState.close();
               }}
             />
-          </Popover>
+          </Popover> */}
         </>
       )}
     </PopupState>
