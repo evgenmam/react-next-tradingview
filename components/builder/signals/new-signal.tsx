@@ -22,6 +22,7 @@ import { ColorSelect } from "../../data/selects/color-select";
 import IndicatorValueSelect from "./indicator-value-select";
 import { applySignal } from "../../../utils/calculations";
 import { useRows } from "../../../hooks/data.hook";
+import SignalListSelectDialog from "./signal-list-select-dialog";
 type Props = {
   onSave?: (conditions: Omit<ISignal, "id">) => void;
   onCancel?: () => void;
@@ -87,6 +88,7 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
     () => matches && matches.data?.length === 0,
     [matches]
   );
+  const [selectFromList, setSelectFromList] = useState(false);
   return (
     <Card>
       <CardContent>
@@ -111,16 +113,21 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
             <Alert color="danger">Bad Signal: Too many matches</Alert>
           ) : !!matches?.data?.length ? (
             <Alert color="success">Triggers {matches.data.length} times</Alert>
-          ) : noMatches ? (
-            <Alert color="warning">Bad Signal: No matching events</Alert>
           ) : (
-            selecting && (
-              <Alert
-                endDecorator={<Button variant="plain">Select from list</Button>}
-              >
-                Click on the study chart to select a point
-              </Alert>
+            noMatches && (
+              <Alert color="warning">Bad Signal: No matching events</Alert>
             )
+          )}
+          {selecting && (
+            <Alert
+              endDecorator={
+                <Button variant="plain" onClick={() => setSelectFromList(true)} size="sm">
+                  Select from list
+                </Button>
+              }
+            >
+              Click on the study chart to select a point
+            </Alert>
           )}
 
           <Typography level="body2">Conditions:</Typography>
@@ -181,6 +188,21 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
           conditions,
           offset,
           setOffset,
+          opened: !!points.length,
+        }}
+      />
+      <SignalListSelectDialog
+        open={selectFromList}
+        onClose={() => setSelectFromList(false)}
+        onChange={(v, a) => {
+          a &&
+            addCondition({
+              a,
+              operator: v.isSignal ? "true" : 'greater',
+              color: v.color,
+              offset: 0,
+            });
+          setSelectFromList(false);
         }}
       />
     </Card>

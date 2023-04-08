@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   ButtonProps,
+  Chip,
   IconButton,
   List,
   ListItem,
@@ -18,12 +19,23 @@ import { ICondition } from "../../../types/app.types";
 import { ColorSelect } from "../../data/selects/color-select";
 import { XJson } from "../../json";
 import SignalRowDistanceSelect from "./signal-row-distance-select";
+import { SelectDialog } from "../../dialogs/select-dialog";
+import OperatorSelectDialog from "./operator-select-dialog";
+import SignalListSelectDialog from "./signal-list-select-dialog";
+import { Space } from "../../utils/row";
 
-const CondTitle = ({ cond }: { cond?: string }) => {
+const CondTitle = ({ cond, offset }: { cond?: string; offset?: number }) => {
   const v = cond?.split("----")[0]?.split(":");
   return cond ? (
     <Stack>
-      <Typography level="body2">{v?.[1]}</Typography>
+      <Space c s={0.5} justifyContent="center">
+        <Typography level="body2">{v?.[1]}</Typography>
+        {offset && (
+          <Box py={0.25} px={1} bgcolor="primary.solidBg" borderRadius={1.5}>
+            -{offset}
+          </Box>
+        )}
+      </Space>
       <Typography level="body3">{v?.[0]}</Typography>
     </Stack>
   ) : (
@@ -80,6 +92,8 @@ export const NewSignalCondition: FC<Props> = ({
     </Button>
   );
   const [listOpen, setListOpen] = useState(false);
+  const [opOpen, setOpOpen] = useState(false);
+  const [signalListOpen, setSignalListOpen] = useState<string | null>(null);
   return (
     <Stack
       direction="row"
@@ -94,7 +108,7 @@ export const NewSignalCondition: FC<Props> = ({
         value={condition?.color}
         onChange={(v) => updateCondition({ ...condition, color: v })}
       />
-      <BB sx={{ justifyContent: "flex-start" }}>
+      <BB onClick={() => setSignalListOpen("a")}>
         <CondTitle cond={condition?.a?.field} />
       </BB>
       {!isFirst && (
@@ -110,14 +124,17 @@ export const NewSignalCondition: FC<Props> = ({
           </BB>
         </>
       )}
-      <BB fg={false}>
+      <BB fg={false} onClick={() => setOpOpen(true)}>
         {condition?.operator === "true"
           ? "Triggered"
           : sentenceCase(condition?.operator)}
       </BB>
       {condition?.operator !== "true" && (
-        <BB>
-          <CondTitle cond={condition?.b?.field} />
+        <BB onClick={() => setSignalListOpen("b")}>
+          <CondTitle
+            cond={condition?.b?.field}
+            offset={condition?.a?.field === condition?.b?.field ? 1 : 0}
+          />
         </BB>
       )}
       <Box>
@@ -141,6 +158,22 @@ export const NewSignalCondition: FC<Props> = ({
       >
         <TrashIcon width={16} />
       </IconButton>
+      <OperatorSelectDialog
+        open={opOpen}
+        onClose={() => setOpOpen(false)}
+        onSelect={(operator) => {
+          updateCondition({ ...condition, operator });
+          setOpOpen(false);
+        }}
+      />
+      <SignalListSelectDialog
+        open={!!signalListOpen}
+        onClose={() => setSignalListOpen(null)}
+        onChange={(f, c) =>
+          signalListOpen &&
+          updateCondition({ ...condition, [signalListOpen]: c })
+        }
+      />
     </Stack>
   );
 };

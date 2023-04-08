@@ -147,18 +147,17 @@ export const useActiveStudies = () => {
 };
 
 export const useV2Studies = () => {
-  const studies =
-    useLiveQuery(async () => {
-      const studies = await IDB.studies.toArray();
-      const configs = await IDB.studyConfigs
-        .where("id")
-        .anyOf(studies?.map((v) => v.id))
-        .toArray();
-      return studies.map((s) => ({
-        ...s,
-        config: configs.find((c) => c.id === s.meta?.scriptIdPart) || {},
-      }));
-    }) || [];
+  const studies = (useLiveQuery(async () => {
+    const studies = await IDB.studies.toArray();
+    const configs = await IDB.studyConfigs
+      .where("id")
+      .anyOf(studies?.map((v) => v.id))
+      .toArray();
+    return studies.map((s) => ({
+      ...s,
+      config: configs.find((c) => c.id === s.meta?.scriptIdPart) || {},
+    }));
+  }) || []) as ITVStudy[];
 
   const putStudy = async (study: ITVStudy) => {
     await IDB.studies.put(study, study.id);
@@ -175,7 +174,8 @@ export const useV2Studies = () => {
         });
     }
   };
-  return { studies, putStudy, putStudies };
+  const fields = studies?.map((v) => v.meta.plots).flat();
+  return { studies, putStudy, putStudies, fields };
 };
 
 export const useV2Study = (id: string) => {
@@ -227,9 +227,8 @@ export const useStrategy = (id?: number) => {
     return await IDB.strategies.where("id").equals(id).first();
   }, [id]);
   const updateStrategy = async (strategy: Partial<IStrategy>) => {
-    
     if (!id) return;
-    
+
     await IDB.strategies.update(id, strategy);
   };
   return { strategy, updateStrategy };

@@ -30,10 +30,12 @@ export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
         let result = false;
         const idx = i;
 
+        const secondIdx = idx - (c?.a.field === c?.b?.field ? 1 : 0);
+        console.log(idx);
         const a = rows[idx]?.[c.a.field!];
-        const b = rows[idx]?.[c.b?.field!];
+        const b = rows[secondIdx]?.[c.b?.field!];
         const prevA = rows[idx - 1]?.[c.a.field!];
-        const prevB = rows[idx - 1]?.[c.b?.field!];
+        const prevB = rows[secondIdx - 1]?.[c.b?.field!];
         if (c.operator === "true") {
           result = !!a;
         }
@@ -54,17 +56,14 @@ export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
             case "lessOrEqual":
               result = a <= b;
               break;
+            case "notEqual":
+              result = a !== b;
 
-            default:
-              result = false;
-          }
-        if (a && b && prevA && prevB)
-          switch (c.operator) {
             case "crossesUp":
-              result = prevA < prevB && a > b;
+              result = !!prevA && !!prevB && prevA < prevB && a > b;
               break;
             case "crossesDown":
-              result = prevA > prevB && a < b;
+              result = !!prevA && !!prevB && prevA > prevB && a < b;
               break;
 
             default:
@@ -80,17 +79,17 @@ export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
     })
     .reduce(
       (cond1, { conds, offset = 0, next }) => ({
-        conds: conds.map((c, i) =>
-          next === "OR"
+        conds: conds.map((c, i) => {
+          return cond1.next === "OR"
             ? c ||
-              +cond1.conds
-                .filter?.((_, j) => j >= i - offset && j <= i)
-                .some((v) => !!v)
+                +cond1.conds
+                  .filter?.((_, j) => j >= i - offset && j <= i)
+                  .some((v) => !!v)
             : c &&
-              +cond1.conds
-                .filter?.((_, j) => j >= i - offset && j <= i)
-                .some((v) => !!v)
-        ),
+                +cond1.conds
+                  .filter?.((_, j) => j >= i - offset && j <= i)
+                  .some((v) => !!v);
+        }),
         next: next as "AND" | "OR",
         offset: offset as number,
       }),
@@ -291,4 +290,4 @@ export const strategyStats: (t: ITrade[]) => ITVStats = R.applySpec({
   roi: R.pipe<ITrade[][], number, string>(getRoi, per),
 });
 
-export const applyTakeProfit = (takeProfit: number) => {}
+export const applyTakeProfit = (takeProfit: number) => {};

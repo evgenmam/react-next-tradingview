@@ -240,10 +240,16 @@ export const studyToChart = (
 };
 
 export const getStudyFields = (study: ITVStudy) =>
-  study?.meta?.plots?.map(({ id }) => ({
+  study?.meta?.plots?.map(({ id, type }) => ({
     title: study?.meta?.styles?.[id]?.title,
     key: id,
+    styles: study?.meta?.styles?.[id],
+    color: study?.meta?.defaults?.styles?.[id]?.color,
+    study: study?.meta?.description,
+    isSignal: ["alertcondition", "shapes"].includes(type),
   }));
+
+export type SFT = ReturnType<typeof getStudyFields>[0];
 
 export const getKeyedStudyData = (
   study: ITVStudy

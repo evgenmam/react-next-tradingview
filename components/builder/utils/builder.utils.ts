@@ -37,6 +37,7 @@ export const conditionOptions = [
   "less",
   "greaterOrEqual",
   "lessOrEqual",
+  "notEqual",
 ] as const;
 
 export const barColorersToSeries = (data: IChartData[] = [], maxDigits = 4) =>

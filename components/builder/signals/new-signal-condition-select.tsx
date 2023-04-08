@@ -35,6 +35,7 @@ type Props = {
   conditions: ICondition[];
   offset?: number;
   setOffset?: (offset: number) => void;
+  opened?: boolean;
 };
 export const NewSignalConditionSelect = ({
   points,
@@ -49,6 +50,7 @@ export const NewSignalConditionSelect = ({
   setB,
   conditions,
   setOffset,
+  opened,
 }: Props) => {
   const [expand, setExpand] = useState(false);
   const { rows } = useRows("source");
@@ -86,7 +88,7 @@ export const NewSignalConditionSelect = ({
     addCondition({ ...c, color: ColorSelect.random(), offset });
   return (
     <Modal
-      open={!!points?.length}
+      open={opened}
       onClose={() => {
         setA(null);
         setPoints([]);

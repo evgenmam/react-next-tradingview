@@ -52,7 +52,8 @@ export type ICondition = {
     | "less"
     | "greaterOrEqual"
     | "lessOrEqual"
-    | "true";
+    | "true"
+    | "notEqual";
   next?: "AND" | "OR";
   offset?: number;
   color?: string;

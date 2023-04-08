@@ -17,6 +17,7 @@ type Props = {
   withLink?: boolean;
   selected?: boolean;
   useTpLs?: boolean;
+  small?: boolean;
 };
 export const MyStrategyRow: FC<Props> = ({
   strategy,
@@ -25,6 +26,7 @@ export const MyStrategyRow: FC<Props> = ({
   selected,
   onSelect,
   useTpLs,
+  small,
 }) => {
   const c = useSettings();
 
@@ -82,29 +84,34 @@ export const MyStrategyRow: FC<Props> = ({
                 )} */}
               </Space>
             </Box>
-
-            <IconButton
-              color="danger"
-              size="sm"
-              onClick={() => onDelete(strategy?.id)}
-            >
-              <TrashIcon width={16} />
-            </IconButton>
+            {!small && (
+              <IconButton
+                color="danger"
+                size="sm"
+                onClick={() => onDelete(strategy?.id)}
+              >
+                <TrashIcon width={16} />
+              </IconButton>
+            )}
           </Space>
-          <MyStrategyRowItem
-            strategy={strategy}
-            withLink={withLink}
-            useTpLs={useTpLs}
-          />
-
-          {c.reverseStrategies && strategy && (
+          {!small && (
             <>
-              <Divider></Divider>
+              {" "}
               <MyStrategyRowItem
                 strategy={strategy}
-                reversed
+                withLink={withLink}
                 useTpLs={useTpLs}
               />
+              {c.reverseStrategies && strategy && (
+                <>
+                  <Divider></Divider>
+                  <MyStrategyRowItem
+                    strategy={strategy}
+                    reversed
+                    useTpLs={useTpLs}
+                  />
+                </>
+              )}
             </>
           )}
         </Stack>

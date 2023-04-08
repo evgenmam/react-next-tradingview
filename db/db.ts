@@ -227,3 +227,5 @@ const migrations = async () => {
 };
 migrations();
 export default IDB;
+
+IDB.signals.schema;
