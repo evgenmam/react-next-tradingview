@@ -39,44 +39,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = __importDefault(require("express"));
-var next_1 = __importDefault(require("next"));
-var dotenv_1 = __importDefault(require("dotenv"));
-var data_1 = __importDefault(require("./routes/data"));
-var dev = process.env.NODE_ENV !== "production";
-var app = (0, next_1.default)({ dev: dev, conf: {} });
-var handle = app.getRequestHandler();
-var port = process.env.PORT || 3000;
-var body_parser_1 = __importDefault(require("body-parser"));
-var pino_1 = __importDefault(require("pino"));
-dotenv_1.default.config();
-(function () { return __awaiter(void 0, void 0, void 0, function () {
-    var server, e_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+var express_1 = require("express");
+var tv_script_parser_1 = require("../helpers/tv-script-parser");
+var tradingview_1 = __importDefault(require("../tradingview"));
+var scriptsRoutes = (0, express_1.Router)();
+scriptsRoutes.post("/strategy", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, trades, strategy, dataset, source, parser, script, data;
+    var _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, app.prepare()];
+                _a = req.body, trades = _a.trades, strategy = _a.strategy, dataset = _a.dataset, source = _a.source;
+                parser = new tv_script_parser_1.TVScriptParser(req.body);
+                return [4 /*yield*/, parser.scriptFromTrades()];
             case 1:
-                _a.sent();
-                server = (0, express_1.default)();
-                server.use(body_parser_1.default.json());
-                server.use("/api", data_1.default);
-                server.all("*", function (req, res) {
-                    return handle(req, res);
-                });
-                server.listen(port, function (err) {
-                    if (err)
-                        throw err;
-                    (0, pino_1.default)({ name: "SYSTEM" }).info("Ready on localhost:".concat(port, " - env ").concat(process.env.NODE_ENV));
-                });
-                return [3 /*break*/, 3];
+                script = _c.sent();
+                return [4 /*yield*/, tradingview_1.default.postStrategy(script, "BG:".concat(strategy === null || strategy === void 0 ? void 0 : strategy.id, ":").concat(dataset, " [").concat(source, "][").concat(strategy === null || strategy === void 0 ? void 0 : strategy.direction, "]"), dataset && ((_b = strategy === null || strategy === void 0 ? void 0 : strategy.scripts) === null || _b === void 0 ? void 0 : _b[dataset]))];
             case 2:
-                e_1 = _a.sent();
-                console.error(e_1);
-                process.exit(1);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                data = _c.sent();
+                res.send({ script: script, data: data });
+                return [2 /*return*/];
         }
     });
-}); })();
+}); });
+exports.default = scriptsRoutes;

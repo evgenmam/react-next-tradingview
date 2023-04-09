@@ -69,8 +69,8 @@ var ws_1 = __importDefault(require("ws"));
 var tradingview_1 = __importDefault(require("../tradingview"));
 var utils_1 = require("../utils");
 var URL = "wss://prodata.tradingview.com/socket.io/websocket";
-var BUILD_ID = "2023_02_02-11_23";
-var CHART_ID = "lfNsKpYG";
+var BUILD_ID = "2023_02_15-11_27";
+var CHART_ID = "2FxpEbEyXG";
 var R = __importStar(require("ramda"));
 var handlers = {
     quote_add_symbols: function (data) { },
@@ -82,16 +82,17 @@ var TVClientC = /** @class */ (function () {
         this.loggedIn = false;
         this.login = function () { return __awaiter(_this, void 0, void 0, function () {
             var results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0: return [4 /*yield*/, tradingview_1.default.login()];
                     case 1:
-                        results = _a.sent();
-                        // const chartprops = JSON.parse(results?.user?.settings?.chartproperties);
+                        results = _b.sent();
+                        if (!((_a = results === null || results === void 0 ? void 0 : results.user) === null || _a === void 0 ? void 0 : _a.auth_token))
+                            throw new Error("NO_AUTH_TOKEN");
                         return [4 /*yield*/, this.init(results.user.auth_token)];
                     case 2:
-                        // const chartprops = JSON.parse(results?.user?.settings?.chartproperties);
-                        _a.sent();
+                        _b.sent();
                         this.loggedIn = true;
                         return [2 /*return*/];
                 }
@@ -109,7 +110,10 @@ var TVClientC = /** @class */ (function () {
         this.handle = function () {
             _this.ws.on("message", _this.receive);
             _this.ws.on("error", function (_, error) {
-                (0, pino_1.default)({ name: "TVClientC" }).error({ error: error, msg: "WS_ERROR" });
+                (0, pino_1.default)({ name: "TVClientC" }).error({
+                    error: error.toString(),
+                    msg: "WS_ERROR",
+                });
             });
             _this.ws.on("close", function (_, code, reason) {
                 (0, pino_1.default)({ name: "TVClientC" }).error({ code: code, reason: reason, msg: "WS_CLOSE" });
@@ -124,25 +128,36 @@ var TVClientC = /** @class */ (function () {
                 _this.listener.emit("".concat(ses, ":error"), ms);
                 return;
             }
-            switch (e.m) {
-                case "symbol_resolved":
-                    var sym = body[0], r = body[1], t = body[2], t_ms = body[3];
-                    _this.listener.emit("".concat(ses, ":").concat(sym, ":").concat(e.m), r);
-                case "timescale_update":
-                    var b = body[0];
-                    Object.entries(b).forEach(function (_a) {
-                        var sym = _a[0], v = _a[1];
-                        _this.listener.emit("".concat(ses, ":").concat(sym, ":").concat(e.m), (0, utils_1.timescaleToOHLC)(v));
-                    });
-                case "du":
-                    var d = body[0];
-                    Object.entries(d).forEach(function (_a) {
-                        var sym = _a[0], v = _a[1];
-                        if (R.has("st", v))
-                            _this.listener.emit("".concat(ses, ":").concat(sym, ":").concat(e.m), (0, utils_1.duFixTimestamp)(v));
-                    });
-                default:
-                    _this.listener.emit("".concat(ses, ":").concat(e.m), e.p);
+            if (e.m === "series_completed") {
+                var sym = body[0];
+                _this.listener.emit("".concat(ses, ":").concat(sym, ":").concat(e.m));
+            }
+            else if (e.m === "study_completed") {
+                var sym = body[0];
+                _this.listener.emit("".concat(ses, ":").concat(sym, ":").concat(e.m));
+            }
+            else if (e.m === "symbol_resolved") {
+                var sym = body[0], r = body[1], t = body[2], t_ms = body[3];
+                _this.listener.emit("".concat(ses, ":").concat(sym, ":").concat(e.m), r);
+            }
+            else if (e.m === "timescale_update") {
+                var b = body[0];
+                Object.entries(b).forEach(function (_a) {
+                    var sym = _a[0], v = _a[1];
+                    _this.listener.emit("".concat(ses, ":").concat(sym, ":").concat(e.m), (0, utils_1.timescaleToOHLC)(v));
+                    _this.listener.emit("".concat(ses, ":").concat(e.m), v);
+                });
+            }
+            else if (e.m === "du") {
+                var d = body[0];
+                Object.entries(d).forEach(function (_a) {
+                    var sym = _a[0], v = _a[1];
+                    if (R.has("st", v))
+                        _this.listener.emit("".concat(ses, ":").concat(sym, ":").concat(e.m), (0, utils_1.duFixTimestamp)(v));
+                });
+            }
+            else {
+                _this.listener.emit("".concat(ses, ":").concat(e.m), e.p);
             }
         };
         this.receive = function (data) { return __awaiter(_this, void 0, void 0, function () {
@@ -180,6 +195,14 @@ var TVClientC = /** @class */ (function () {
                 };
                 _this.listener.once(args.join(":"), cb);
             });
+        };
+        this.subscribe = function (func) {
+            var args = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args[_i - 1] = arguments[_i];
+            }
+            _this.listener.on(args.join(":"), func);
+            return function () { return _this.listener.removeListener(args.join(":"), func); };
         };
         this.onError = function (prefix) {
             return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {

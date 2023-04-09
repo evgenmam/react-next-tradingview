@@ -5,7 +5,7 @@ import {
   FormControl,
   FormLabel,
   Checkbox,
-  TextField,
+  Input,
 } from "@mui/joy";
 import { Collapse } from "@mui/material";
 import { Stack } from "@mui/system";
@@ -26,7 +26,7 @@ export const NewIndicator = () => {
         <Stack spacing={1}>
           <FormControl size="sm">
             <FormLabel>Name</FormLabel>
-            <TextField
+            <Input
               size="sm"
               value={name}
               onChange={(e) => {

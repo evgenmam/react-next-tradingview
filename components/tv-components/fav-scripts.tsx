@@ -31,7 +31,7 @@ export const TVFavScripts = ({ onSelect = noop }: Props) => {
       }
     };
     getS();
-  }, []);
+  }, [getScripts, privateScripts]);
   return loading ? (
     <CircularProgress />
   ) : (

@@ -77,10 +77,10 @@ var TvAPIWorker = /** @class */ (function () {
                         return [4 /*yield*/, client.init(results.user.auth_token)];
                     case 2:
                         _c.sent();
-                        return [4 /*yield*/, client.send("set_locale", ["en", "US"])];
+                        return [4 /*yield*/, client.send("chart_create_session", [this.chartSession])];
                     case 3:
                         _c.sent();
-                        return [4 /*yield*/, client.send("chart_create_session", [this.chartSession])];
+                        return [4 /*yield*/, client.send("set_locale", ["en", "US"])];
                     case 4:
                         _c.sent();
                         return [4 /*yield*/, client.send("switch_timezone", [

@@ -6,7 +6,7 @@ import {
   ModalProps,
   FormLabel,
   FormControl,
-  TextField,
+  Input,
   Button,
 } from "@mui/joy";
 import { Stack } from "@mui/system";
@@ -36,7 +36,7 @@ export const PromptDialog = ({}: Props) => {
         <ModalClose />
         <FormControl>
           <FormLabel>{modal?.label}</FormLabel>
-          <TextField
+          <Input
             autoFocus
             value={value}
             onChange={(e) => {

@@ -9,7 +9,7 @@ import {
 } from "@mui/joy";
 import { Box } from "@mui/material";
 import { Stack } from "@mui/system";
-import { KeyboardEvent, useEffect, useState } from "react";
+import { KeyboardEvent, useCallback, useEffect, useState } from "react";
 import XScrollbar from "../utils/scrollbars";
 import { ISearchType, TVSearchTypeSelect } from "./helpers/search-type-select";
 import { ITVSearchData, ITVSearchResult } from "./types";
@@ -60,13 +60,16 @@ export const TVSearch = ({
     skip: skip || (!autoSearch && !text),
   });
 
-  const commit = (r?: ITVSearchResult) => () => {
-    if (!r) return;
-    const symbol = r.contracts ? r.contracts[0].symbol : r.symbol;
-    const d = r.prefix || r.exchange + ":" + symbol;
-    setSplitText(d);
-    return d;
-  };
+  const commit = useCallback(
+    (r?: ITVSearchResult) => () => {
+      if (!r) return;
+      const symbol = r.contracts ? r.contracts[0].symbol : r.symbol;
+      const d = r.prefix || r.exchange + ":" + symbol;
+      setSplitText(d);
+      return d;
+    },
+    [setSplitText]
+  );
 
   const onEnter = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter") {
@@ -77,7 +80,7 @@ export const TVSearch = ({
   useEffect(() => {
     setSkip(true);
     commit(results.symbols[hl] || results.symbols[0])();
-  }, [hl]);
+  }, [commit, hl, results.symbols]);
 
   return (
     <Sheet variant="outlined" onKeyDown={onKeyDown}>

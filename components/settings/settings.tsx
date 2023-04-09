@@ -7,7 +7,7 @@ import {
   IconButton,
   Sheet,
   Stack,
-  TextField,
+  Input,
 } from "@mui/joy";
 import { Collapse } from "@mui/material";
 import { useCallback, useState } from "react";
@@ -59,7 +59,7 @@ export const Settings = () => {
           >
             <FormControl>
               <FormLabel>Max Digits</FormLabel>
-              <TextField
+              <Input
                 sx={{ maxWidth: 70 }}
                 type="number"
                 value={maxDigits || ""}

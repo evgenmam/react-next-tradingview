@@ -33,7 +33,7 @@ export const PointerWrapper = ({ children }: { children: React.ReactNode }) => {
 
 export const usePointerSet = () => {
   const get = useContext(PointerSetContext);
-  return useCallback(get, []);
+  return useCallback(get, [get]);
 };
 
 export const usePointerGet = (key?: string, same = false) => {

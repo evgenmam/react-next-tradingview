@@ -34,7 +34,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mergeDataAndStudies = exports.duFixTimestamp = exports.timescaleToOHLC = exports.getPineInputs = exports.getT = exports.isPing = exports.readMessages = exports.s = exports.randomHash = exports.randomHashN = exports.hashh = void 0;
+exports.getUniqueDatasets = exports.mergeMixedDataAndStudies = exports.mergeDataAndStudies = exports.duFixTimestamp = exports.timescaleToOHLC = exports.getPineInputs = exports.getT = exports.isPing = exports.readMessages = exports.s = exports.wrapSymbol = exports.randomHash = exports.randomHashN = exports.hashh = void 0;
 var R = __importStar(require("ramda"));
 var color_utils_1 = require("../utils/color.utils");
 var n = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -58,6 +58,17 @@ var randomHash = function () {
     return (0, exports.randomHashN)(12);
 };
 exports.randomHash = randomHash;
+var wrapSymbol = function (symbol, chartType) {
+    return "=" +
+        JSON.stringify(chartType === "heikin-ashi"
+            ? {
+                inputs: {},
+                symbol: { adjustment: "splits", symbol: symbol },
+                type: "BarSetHeikenAshi@tv-basicstudies-60!",
+            }
+            : { adjustment: "splits", symbol: symbol });
+};
+exports.wrapSymbol = wrapSymbol;
 exports.s = "~m~";
 var readMessages = function (e) {
     var msgs = e.split(/~m~\d+~m~/);
@@ -202,3 +213,11 @@ var mergeDataAndStudies = function (data, studies) {
     return data.map(function (d, idx) { return (__assign(__assign({}, d), R.mergeAll(s.map(function (v) { return v[idx]; })))); });
 };
 exports.mergeDataAndStudies = mergeDataAndStudies;
+var mergeMixedDataAndStudies = function (data, studies) {
+    return R.pipe(R.groupBy(R.prop("dataset")), R.toPairs, R.map(function (_a) {
+        var dataset = _a[0], values = _a[1];
+        return (0, exports.mergeDataAndStudies)(values, studies.filter(function (v) { var _a; return (_a = v.id) === null || _a === void 0 ? void 0 : _a.startsWith(dataset); }));
+    }), R.flatten)(data);
+};
+exports.mergeMixedDataAndStudies = mergeMixedDataAndStudies;
+exports.getUniqueDatasets = R.pipe(R.pluck("dataset"), R.uniq);

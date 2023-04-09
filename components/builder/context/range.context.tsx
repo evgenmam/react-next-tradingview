@@ -21,7 +21,7 @@ export const RangeWrapper = ({ children }: { children: React.ReactNode }) => {
 
 export const useRangeSet = () => {
   const get = useContext(RangeSetContext);
-  return useCallback(get, []);
+  return useCallback(get, [get]);
 };
 
 export const useRangeGet = (key?: string) => {

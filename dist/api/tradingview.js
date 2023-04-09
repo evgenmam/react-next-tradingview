@@ -52,6 +52,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var axios_1 = __importDefault(require("axios"));
 var form_data_1 = __importDefault(require("form-data"));
+var fs_1 = __importDefault(require("fs"));
 var TVApiC = /** @class */ (function () {
     function TVApiC() {
         var _this = this;
@@ -78,14 +79,10 @@ var TVApiC = /** @class */ (function () {
             });
         }); };
         this.login = function () { return __awaiter(_this, void 0, void 0, function () {
-            var response;
+            var r;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.l()];
-                    case 1:
-                        response = _a.sent();
-                        return [2 /*return*/, response.json()];
-                }
+                r = JSON.parse(fs_1.default.readFileSync("response.json", "utf-8"));
+                return [2 /*return*/, r];
             });
         }); };
         this.getAuthToken = function () { return __awaiter(_this, void 0, void 0, function () {
@@ -180,6 +177,35 @@ var TVApiC = /** @class */ (function () {
                         return [4 /*yield*/, axios_1.default.post("https://www.tradingview.com/pubscripts-get/", fd, cfg)];
                     case 3:
                         data = (_a.sent()).data;
+                        return [2 /*return*/, data];
+                }
+            });
+        }); };
+        this.postStrategy = function (script, name, toDelete) { return __awaiter(_this, void 0, void 0, function () {
+            var cookie, cfg, body, _a, data;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.getAuthCookie()];
+                    case 1:
+                        cookie = _b.sent();
+                        cfg = { headers: { cookie: cookie, origin: "https://www.tradingview.com" } };
+                        body = new form_data_1.default();
+                        if (!toDelete) return [3 /*break*/, 5];
+                        _b.label = 2;
+                    case 2:
+                        _b.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, axios_1.default.post(" https://pine-facade.tradingview.com/pine-facade/delete/".concat(toDelete), cfg)];
+                    case 3:
+                        _b.sent();
+                        return [3 /*break*/, 5];
+                    case 4:
+                        _a = _b.sent();
+                        return [3 /*break*/, 5];
+                    case 5:
+                        body.append("source", script);
+                        return [4 /*yield*/, axios_1.default.post("https://pine-facade.tradingview.com/pine-facade/save/new/?name=".concat(name), body, __assign(__assign({}, cfg), { params: { name: name, allow_overwrite: true } }))];
+                    case 6:
+                        data = (_b.sent()).data;
                         return [2 /*return*/, data];
                 }
             });

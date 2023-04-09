@@ -8,7 +8,7 @@ export const DataWatcher = ({ chart }: { chart: Highcharts.Chart }) => {
     if (rows.length > 0) {
       chart?.xAxis[0]?.setExtremes(last - 365 * 24 * 60 * 60 * 1000, last);
     }
-  }, [rows.length]);
+  }, [chart?.xAxis, rows, rows.length]);
   const { indicators } = useIndicators();
 
   return null;

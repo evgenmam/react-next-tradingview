@@ -80,6 +80,8 @@ export const useSignalHover = (chart: Highcharts.Chart, active: number) => {
         });
       };
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hoverPoint?.x]);
 };
 
@@ -116,6 +118,7 @@ export const useStrategyHover = (chart: Highcharts.Chart, active: number) => {
         });
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 };
 
@@ -172,6 +175,7 @@ export const useAlertConditionHover = (
         });
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 };
 

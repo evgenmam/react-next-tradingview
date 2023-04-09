@@ -10,7 +10,7 @@ export const Loader: FC<Props> = ({ small }) => {
   const { fetching, setFetching } = useSettings();
   useEffect(() => {
     setFetching(false);
-  }, []);
+  }, [setFetching]);
   if (!fetching) return null;
   return (
     <Box

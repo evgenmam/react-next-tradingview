@@ -103,7 +103,7 @@ export const NewStrategy = ({ onSave }: Props) => {
                 <FormControl size="sm">
                   <FormLabel>Target Chart</FormLabel>
                   <RadioGroup
-                    row={true}
+                    orientation="horizontal"
                     value={strategy.dataset}
                     onChange={(v) =>
                       setStrategy(R.assoc("dataset", v.target.value))

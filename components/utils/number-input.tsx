@@ -24,13 +24,13 @@ export const BNumberInput = ({
   const [v, setV] = useState(value);
   useEffect(() => {
     if (v !== value) setV(value);
-  }, [value]);
+  }, [v, value]);
 
   const [debV] = useDebounce(v, 500);
 
   useEffect(() => {
     if (debV !== value) onChange(debV);
-  }, [debV]);
+  }, [debV, onChange, value]);
 
   return (
     <Space c>

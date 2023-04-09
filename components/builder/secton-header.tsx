@@ -22,7 +22,7 @@ export const SectionHeader = ({
   useEffect(() => {
     const o = window.localStorage.getItem(title) || "false";
     setCollapsed?.(o === "true");
-  }, []);
+  }, [setCollapsed, title]);
   return (
     <Space s={1} c>
       <IconButton

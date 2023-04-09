@@ -65,6 +65,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.status = exports.reconnect = exports.TVQuoteSession = exports.TVChartSession = exports.TVMarketData = void 0;
 var pino_1 = __importDefault(require("pino"));
+var uuid_1 = require("uuid");
 var tv_client_1 = __importDefault(require("../helpers/tv-client"));
 var tradingview_1 = __importDefault(require("../tradingview"));
 var utils_1 = require("../utils");
@@ -98,6 +99,7 @@ var TVSession = /** @class */ (function () {
     };
     return TVSession;
 }());
+var wait = function (ms) { return new Promise(function (resolve) { return setTimeout(resolve, ms); }); };
 var TVChartSession = /** @class */ (function (_super) {
     __extends(TVChartSession, _super);
     function TVChartSession(res) {
@@ -139,16 +141,46 @@ var TVChartSession = /** @class */ (function (_super) {
             }
             return tvc.waitFor.apply(tvc, __spreadArray([_this.session], msg, false));
         };
-        _this.getSymbol = function (symbol, interval, count) {
+        _this.waitForMax = function (ms, fallback) {
+            if (fallback === void 0) { fallback = []; }
+            var msg = [];
+            for (var _i = 2; _i < arguments.length; _i++) {
+                msg[_i - 2] = arguments[_i];
+            }
+            return new Promise(function (resolve) {
+                tvc.waitFor.apply(tvc, __spreadArray([_this.session], msg, false)).then(resolve);
+                setTimeout(function () { return resolve(fallback); }, ms);
+            });
+        };
+        _this.subscribe = function (cb) {
+            var msg = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                msg[_i - 1] = arguments[_i];
+            }
+            return tvc.subscribe.apply(tvc, __spreadArray([cb, _this.session], msg, false));
+        };
+        _this.ssend = function (msg) {
+            var args = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args[_i - 1] = arguments[_i];
+            }
+            return tvc.send(msg, __spreadArray([_this.session], args, true));
+        };
+        _this.getSymbol = function (symbol, interval, count, chartType) {
             if (interval === void 0) { interval = "1W"; }
             if (count === void 0) { count = 300; }
+            if (chartType === void 0) { chartType = "candlestick"; }
             return __awaiter(_this, void 0, void 0, function () {
                 var symbol_id, data;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             symbol_id = symbol.replace(":", "::");
-                            tvc.send("resolve_symbol", [this.session, symbol_id, symbol]);
+                            tvc.send("resolve_symbol", [
+                                this.session,
+                                symbol_id,
+                                (0, utils_1.wrapSymbol)(symbol, chartType),
+                            ]);
                             return [4 /*yield*/, this.waitFor(symbol_id, "symbol_resolved")];
                         case 1:
                             _a.sent();
@@ -202,6 +234,130 @@ var TVChartSession = /** @class */ (function (_super) {
                 }
             });
         }); };
+        _this.getBulkData = function (_a) {
+            var _b = _a.nums, nums = _b === void 0 ? [] : _b, _c = _a.dens, dens = _c === void 0 ? [] : _c, _d = _a.indicators, indicators = _d === void 0 ? [] : _d, _e = _a.period, period = _e === void 0 ? "1W" : _e, _f = _a.count, count = _f === void 0 ? 300 : _f, _g = _a.chartType, chartType = _g === void 0 ? "candlestick" : _g;
+            return __awaiter(_this, void 0, void 0, function () {
+                var series_id, rows, uns, _i, _h, s, symbol_id, studies, studyMeta, _j, indicators_1, i, res, data, _k, nums_1, s, _l, dens_1, d, symbol, symbol_id, _m, _o, _p;
+                var _this = this;
+                return __generator(this, function (_q) {
+                    switch (_q.label) {
+                        case 0:
+                            rows = [];
+                            uns = [];
+                            _i = 0, _h = __spreadArray(__spreadArray([], nums, true), dens, true);
+                            _q.label = 1;
+                        case 1:
+                            if (!(_i < _h.length)) return [3 /*break*/, 5];
+                            s = _h[_i];
+                            symbol_id = s.replace(":", "::");
+                            this.ssend("resolve_symbol", symbol_id, (0, utils_1.wrapSymbol)(s, chartType));
+                            return [4 /*yield*/, this.waitFor(symbol_id, "symbol_resolved")];
+                        case 2:
+                            _q.sent();
+                            if (!series_id) {
+                                series_id = (0, uuid_1.v4)();
+                                this.ssend("create_series", series_id, s, symbol_id, period, +count, "");
+                                uns.push(this.subscribe(function (d) { return rows.push.apply(rows, d); }, series_id, "timescale_update"));
+                            }
+                            else {
+                                this.ssend("modify_series", series_id, s, symbol_id, period, "");
+                            }
+                            return [4 /*yield*/, this.waitFor(series_id, "series_completed")];
+                        case 3:
+                            _q.sent();
+                            _q.label = 4;
+                        case 4:
+                            _i++;
+                            return [3 /*break*/, 1];
+                        case 5:
+                            studies = [];
+                            studyMeta = {};
+                            _j = 0, indicators_1 = indicators;
+                            _q.label = 6;
+                        case 6:
+                            if (!(_j < indicators_1.length)) return [3 /*break*/, 10];
+                            i = indicators_1[_j];
+                            return [4 /*yield*/, tradingview_1.default.translateIndicator(i)];
+                        case 7:
+                            res = _q.sent();
+                            data = (0, utils_1.getPineInputs)(res.result.metaInfo, i);
+                            studyMeta[i.scriptName] = res.result.metaInfo;
+                            return [4 /*yield*/, tvc.send("create_study", [
+                                    this.session,
+                                    i.scriptName,
+                                    i.scriptName,
+                                    series_id,
+                                    "Script@tv-scripting-101!",
+                                    data,
+                                ])];
+                        case 8:
+                            _q.sent();
+                            _q.label = 9;
+                        case 9:
+                            _j++;
+                            return [3 /*break*/, 6];
+                        case 10:
+                            if (!series_id) return [3 /*break*/, 17];
+                            _k = 0, nums_1 = nums;
+                            _q.label = 11;
+                        case 11:
+                            if (!(_k < nums_1.length)) return [3 /*break*/, 17];
+                            s = nums_1[_k];
+                            _l = 0, dens_1 = dens;
+                            _q.label = 12;
+                        case 12:
+                            if (!(_l < dens_1.length)) return [3 /*break*/, 16];
+                            d = dens_1[_l];
+                            symbol = "".concat(s, "/").concat(d);
+                            symbol_id = symbol.replace(":", "::");
+                            this.ssend("resolve_symbol", symbol_id, (0, utils_1.wrapSymbol)(symbol, chartType));
+                            return [4 /*yield*/, this.waitFor(symbol_id, "symbol_resolved")];
+                        case 13:
+                            _q.sent();
+                            this.ssend("modify_series", series_id, symbol, symbol_id, period, "");
+                            _o = (_m = studies.push).apply;
+                            _p = [studies];
+                            return [4 /*yield*/, Promise.all(indicators.map(function (i) {
+                                    return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
+                                        var du;
+                                        return __generator(this, function (_a) {
+                                            switch (_a.label) {
+                                                case 0: return [4 /*yield*/, this.waitFor(i.scriptName, "du")];
+                                                case 1:
+                                                    du = _a.sent();
+                                                    //@ts-ignore
+                                                    resolve({
+                                                        data: du,
+                                                        meta: studyMeta[i.scriptName],
+                                                        id: du === null || du === void 0 ? void 0 : du.t,
+                                                    });
+                                                    return [2 /*return*/];
+                                            }
+                                        });
+                                    }); });
+                                }))];
+                        case 14:
+                            _o.apply(_m, _p.concat([(_q.sent())]));
+                            _q.label = 15;
+                        case 15:
+                            _l++;
+                            return [3 /*break*/, 12];
+                        case 16:
+                            _k++;
+                            return [3 /*break*/, 11];
+                        case 17: return [4 /*yield*/, wait(3000)];
+                        case 18:
+                            _q.sent();
+                            uns === null || uns === void 0 ? void 0 : uns.forEach(function (u) { return u === null || u === void 0 ? void 0 : u(); });
+                            return [2 /*return*/, {
+                                    data: (0, utils_1.mergeMixedDataAndStudies)(rows, studies),
+                                    datasets: (0, utils_1.getUniqueDatasets)(rows),
+                                    studies: studies,
+                                }];
+                    }
+                });
+            });
+        };
         _this.res = res;
         _this.session = "cs_".concat((0, utils_1.randomHash)());
         (0, pino_1.default)({ name: "TVChartSession" }).info({ session: _this.session });

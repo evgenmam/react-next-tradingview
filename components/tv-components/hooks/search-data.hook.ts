@@ -44,7 +44,7 @@ export function useSearchData<T>({
       }
     };
     getR();
-  }, [q, url, skip]);
+  }, [q, url, skip, onResult]);
 
   return { loading, setLoading };
 }
