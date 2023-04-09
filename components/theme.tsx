@@ -1,12 +1,10 @@
 import { deepmerge } from "@mui/utils";
-import {
-  experimental_extendTheme as extendMuiTheme,
-  useColorScheme,
-} from "@mui/material/styles";
+import { experimental_extendTheme as extendMuiTheme } from "@mui/material/styles";
 import colors from "@mui/joy/colors";
 import {
   extendTheme as extendJoyTheme,
   CssVarsProvider,
+  useColorScheme,
 } from "@mui/joy/styles";
 import { useSettings } from "../hooks/settings.hook";
 import { useEffect } from "react";
@@ -109,11 +107,11 @@ mergedTheme.unstable_sxConfig = {
 export const Theme = mergedTheme;
 
 export const ThemeWrapper = () => {
-  // const { theme } = useSettings();
-  // const { setMode } = useColorScheme();
+  const { theme } = useSettings();
+  const { setMode } = useColorScheme();
 
-  // useEffect(() => {
-  //   setMode(theme);
-  // }, [theme, setMode]);
+  useEffect(() => {
+    setMode(theme);
+  }, [theme, setMode]);
   return <></>;
 };

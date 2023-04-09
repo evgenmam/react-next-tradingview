@@ -16,7 +16,7 @@ export default function App() {
   return (
     <ModalContext.Provider value={ctx}>
       <HoverWrapper>
-        <ThemeWrapper />
+        {/* <ThemeWrapper /> */}
         <Grid container height="100vh" columnSpacing={2}>
           <Grid xs={12} md={8} height="100%">
             <DisplayArea />

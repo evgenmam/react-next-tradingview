@@ -25,7 +25,7 @@ const V2 = () => {
                 };
               }}
             >
-              <ThemeWrapper />
+              {/* <ThemeWrapper /> */}
               <Grid container height="100%" columnSpacing={2}></Grid>
               <PromptDialog />
             </Container>

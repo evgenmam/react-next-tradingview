@@ -1,4 +1,4 @@
-import { Box, CssVarsProvider, Grid } from "@mui/joy";
+import { Box, Grid } from "@mui/joy";
 import { ChartConfigDrawer } from "../v2/chart-config-drawer";
 import { PointerWrapper } from "./context/pointer.context";
 import { RangeWrapper } from "./context/range.context";
@@ -12,8 +12,6 @@ import { HoverWrapper } from "../../hooks/hover.hook";
 import XScrollbar from "../utils/scrollbars";
 import { ChartRangeControls } from "./markets/chart-range-controls";
 import { SignalsWrapper } from "./context/signals.context";
-import { SignalsContext } from "./context/signals.context";
-import { ClickAwayListener } from "@mui/material";
 
 const TVBuilder = () => {
   return (

@@ -24,7 +24,7 @@ const TVComponents = () => {
   const [indicators, setIndicators] = useState<ITVIndicator[]>([]);
   return (
     <CssVarsProvider theme={Theme}>
-      <ThemeWrapper />
+      {/* <ThemeWrapper /> */}
       <Sheet>
         <Container>
           <Grid container spacing={2} pt={2}>

@@ -70,7 +70,7 @@ export const LinkSignalModal = ({
       setRange(signal?.link?.range || 0);
       setOperator(signal?.link?.operator || "AND");
     }
-  }, [open]);
+  }, [open, signal?.link?.operator, signal?.link?.range, signal?.link?.signal]);
 
   return (
     <Modal open={!!open} onClose={onClose}>

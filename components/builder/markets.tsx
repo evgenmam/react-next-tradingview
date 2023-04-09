@@ -1,11 +1,11 @@
-import { Grid, GridProps, IconButton, Typography } from "@mui/joy";
+import { Grid, GridProps } from "@mui/joy";
 import { Space } from "../utils/row";
 import { SyncControls } from "./markets/sync-controls";
 import { TargetChart } from "./target-chart";
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { Collapse } from "@mui/material";
 import { useState } from "react";
 import SectionHeader from "./secton-header";
+import ThemeToggle from "../utils/theme-toggle";
 
 const G = (props: GridProps) => <Grid xs={12} md={4} sm={6} {...props} />;
 
@@ -23,7 +23,10 @@ export const Markets = () => {
             collapsed={collapsed}
             setCollapsed={setCollapsed}
           />
-          <SyncControls />
+          <Space s={1} c>
+            <ThemeToggle />
+            <SyncControls />
+          </Space>
         </Space>
       </Grid>
       <G>
