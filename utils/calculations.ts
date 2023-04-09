@@ -23,8 +23,55 @@ export type ITVStats = {
   maxIn: string;
   roi: string;
 };
-export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
-  const matches = signal.condition
+
+type M = 1 | 0;
+const is = <T = any>(v: T): number => (!!v ? 1 : 0);
+
+const anyIs = <T = any>(v: T[]) => (v.some(is) ? 1 : 0);
+const allAre = <T = any>(v: T[]) => (v.every(is) ? 1 : 0);
+
+const addRangeGap = (range: number) => (l: M[]) =>
+  R.concat<M[]>(R.repeat(0 as M, range))(l);
+
+const listToRanges = (range: number) => (l: M[]) => R.aperture(range + 1)(l);
+
+const arrayToRanges = (range: number) =>
+  R.pipe(addRangeGap(range), listToRanges(range));
+
+const arraysToRanges = (range: number) =>
+  R.pipe(R.map(arrayToRanges(range)), R.transpose);
+
+const checkRanges = (ranges: M[][][]) => {
+  const a = ranges.map((r) => r.every((l) => anyIs(l)));
+
+  return a;
+};
+
+const cleanConcurrent = (range: number) => (keys: boolean[]) =>
+  keys.map(
+    (k, i, arr) =>
+      +(R.none((v) => !!v, arr.slice(R.clamp(0, Infinity, i - range), i)) && k)
+  );
+export const mergeMatches = (
+  matches: M[][],
+  range = 0,
+  operator: "OR" | "AND" = "AND"
+) => {
+  if (operator === "OR") {
+    const a = R.transpose(matches).map((p) => +p.some(is));
+    return a;
+  }
+  const b = R.pipe(
+    arraysToRanges(range),
+    checkRanges,
+    cleanConcurrent(range)
+  )(matches);
+
+  return b;
+};
+
+const findMatches = (rows: IChartData[], signal: ISignal): number[] => {
+  const m = signal.condition
     .map((c) => {
       const conds = rows.map((r, i: number) => {
         let result = false;
@@ -32,9 +79,13 @@ export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
 
         const secondIdx = idx - (c?.a.field === c?.b?.field ? 1 : 0);
         const a = rows[idx]?.[c.a.field!];
-        const b = rows[secondIdx]?.[c.b?.field!];
+        const b =
+          c.b?.type === "number" ? c?.b.value : rows[secondIdx]?.[c.b?.field!];
         const prevA = rows[idx - 1]?.[c.a.field!];
-        const prevB = rows[secondIdx - 1]?.[c.b?.field!];
+        const prevB =
+          c.b?.type === "number"
+            ? c?.b.value
+            : rows[secondIdx - 1]?.[c.b?.field!];
         if (c.operator === "true") {
           result = !!a;
         }
@@ -97,14 +148,28 @@ export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
         next: "AND",
         offset: 0,
       }
-    );
+    ).conds;
+
+  if (signal.link?.signal) {
+    const link = findMatches(rows, signal.link.signal);
+
+    const ma = mergeMatches([m, link], signal.link.range, signal.link.operator);
+
+    return ma;
+  }
+  return m;
+};
+export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
+  const matches = findMatches(rows, signal);
+  const bars: number[] = matches.reduce(
+    (a: number[], v, i) => (v ? [...a, matches.length - i - 1] : a),
+    []
+  );
+  const data = rows.filter((v, i) => matches[i]);
   return {
-    data: rows.filter((v, i) => matches.conds[i]),
+    data,
     signal,
-    bars: matches.conds.reduce(
-      (a, v, i) => (v ? [...a, matches.conds.length - i - 1] : a),
-      []
-    ),
+    bars,
   };
 };
 

@@ -47,8 +47,8 @@ export const TVSearchTypeSelect = ({ value, onChange = noop }: Props) => {
   return (
     <RadioGroup
       name="best-movie"
+      orientation="horizontal"
       aria-labelledby="best-movie"
-      row
       sx={{ flexWrap: "wrap", gap: 1 }}
     >
       {format.map((v) => {

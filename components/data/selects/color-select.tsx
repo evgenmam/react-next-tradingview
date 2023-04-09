@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, Input, TextField, useTheme ,} from "@mui/joy";
+import { FormControl, FormLabel, Input, TextField, useTheme } from "@mui/joy";
 import { CompactPicker } from "react-color";
 import colors from "material-colors";
 import * as R from "ramda";
@@ -32,18 +32,22 @@ type Props = {
   value?: string;
   onChange: (v: string) => void;
   variant?: "input" | "square";
+  children?: React.ReactNode;
 };
 export const ColorSelect = ({
   value,
   onChange = noop,
   variant = "input",
+  children,
 }: Props) => {
   const { palette } = useTheme();
   return (
     <PopupState variant="popover" popupId="demo-popup-popover">
       {(popupState) => (
         <>
-          {/* {variant === "input" ? (
+          {!!children ? (
+            <ButtonBase {...bindTrigger(popupState)}>{children}</ButtonBase>
+          ) : variant === "input" ? (
             <FormControl size="sm">
               <FormLabel>Color</FormLabel>
               <Input
@@ -55,12 +59,12 @@ export const ColorSelect = ({
                 Open Popover
               </Input>
             </FormControl>
-          ) : ( */}
+          ) : (
             <ButtonBase {...bindTrigger(popupState)}>
               <StopIcon width={20} color={value} />
             </ButtonBase>
-          {/* )} */}
-          {/* <Popover
+          )}
+          <Popover
             {...bindPopover(popupState)}
             anchorOrigin={{
               vertical: "bottom",
@@ -83,7 +87,7 @@ export const ColorSelect = ({
                 popupState.close();
               }}
             />
-          </Popover> */}
+          </Popover>
         </>
       )}
     </PopupState>

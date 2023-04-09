@@ -15,11 +15,13 @@ import {
   Divider,
   Input,
   Button,
+  Stack,
+  Checkbox,
 } from "@mui/joy";
 import MySignalPopper from "./my-signal-popper";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { LinkIcon, StopIcon } from "@heroicons/react/24/solid";
-import { Stack, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { Space } from "../../utils/row";
 
 type LinkSignalModalProps = {
@@ -38,7 +40,8 @@ export const LinkSignalModal = ({
   const [selected, setSelected] = useState<ISignal | null>(null);
   const [range, setRange] = useState(0);
   const [operator, setOperator] = useState<"AND" | "OR">("AND");
-  const { signals, updateSignal } = useSignals();
+  const [create, setCreate] = useState(false);
+  const { signals, updateSignal, addSignal } = useSignals();
   const list = R.without(flattenLinks(signal), signals);
   const close = () => {
     onClose?.();
@@ -49,7 +52,11 @@ export const LinkSignalModal = ({
   const save = () => {
     if (!selected) return;
     const link = { signal: selected, operator, range };
-    updateSignal({ ...signal, link });
+    if (create) {
+      addSignal({ ...R.dissoc("id", signal), link });
+    } else {
+      updateSignal({ ...signal, link });
+    }
     onSubmit?.(link);
     close();
   };
@@ -59,13 +66,12 @@ export const LinkSignalModal = ({
   };
   useEffect(() => {
     if (open) {
-      console.log(signal);
       setSelected(signal?.link?.signal || null);
       setRange(signal?.link?.range || 0);
       setOperator(signal?.link?.operator || "AND");
     }
   }, [open]);
-  console.log(selected);
+
   return (
     <Modal open={!!open} onClose={onClose}>
       <ModalDialog>
@@ -102,30 +108,38 @@ export const LinkSignalModal = ({
               </>
             )}
           </Stack>
-          <Stack spacing={0.5}>
-            <Typography variant="overline">Operator:</Typography>
-            <Tabs
-              defaultValue={operator === "AND" ? 0 : 1}
-              value={operator === "AND" ? 0 : 1}
-              onChange={(v, e) => setOperator(e === 1 ? "OR" : "AND")}
-            >
-              <TabList>
-                <Tab key="AND">AND</Tab>
-                <Tab key="OR">OR</Tab>
-              </TabList>
-            </Tabs>
-          </Stack>
-          <Stack>
-            <Typography variant="overline">Range:</Typography>
-            <Input
-              type="number"
-              endDecorator={<Typography>bars</Typography>}
-              value={range}
-              onChange={(e) => setRange(+e.target?.value)}
+          <Stack spacing={2}>
+            <Stack spacing={0.5}>
+              <Typography variant="overline">Operator:</Typography>
+              <Tabs
+                defaultValue={operator === "AND" ? 0 : 1}
+                value={operator === "AND" ? 0 : 1}
+                onChange={(v, e) => setOperator(e === 1 ? "OR" : "AND")}
+              >
+                <TabList>
+                  <Tab key="AND">AND</Tab>
+                  <Tab key="OR">OR</Tab>
+                </TabList>
+              </Tabs>
+            </Stack>
+            <Stack>
+              <Typography variant="overline">Range:</Typography>
+              <Input
+                type="number"
+                endDecorator={<Typography>bars</Typography>}
+                value={range}
+                onChange={(e) => setRange(+e.target?.value)}
+              />
+              <Typography variant="caption" pl={1}>
+                Max distance between triggers
+              </Typography>
+            </Stack>
+            <Checkbox
+              checked={create}
+              label="Create a copy"
+              variant="soft"
+              onChange={(e) => setCreate(e.target.checked)}
             />
-            <Typography variant="caption" pl={1}>
-              Max distance between triggers
-            </Typography>
           </Stack>
           <Space sb>
             {signal.link && (

@@ -5,6 +5,9 @@ import {
   ListItem,
   Sheet,
   Typography,
+  IconButton,
+  ListItemButton,
+  ListItemContent,
 } from "@mui/joy";
 import { Container, Stack } from "@mui/system";
 import { useState } from "react";
@@ -14,7 +17,6 @@ import { TVMarket } from "./market";
 import { TVSearch } from "./search";
 import { ITVIndicator } from "./types";
 import * as R from "ramda";
-import { IconButton, ListItemButton, ListItemText } from "@mui/material";
 import { TrashIcon } from "@heroicons/react/24/outline";
 
 const TVComponents = () => {
@@ -60,7 +62,7 @@ const TVComponents = () => {
                           </IconButton>
                         }
                       >
-                        <ListItemText>{i.scriptName}</ListItemText>
+                        <ListItemContent>{i.scriptName}</ListItemContent>
                       </ListItem>
                     ))}
                   </List>

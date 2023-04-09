@@ -2,7 +2,10 @@ import { useLiveQuery } from "dexie-react-hooks";
 import * as R from "ramda";
 import IDB from "../db/db";
 
-export const useSetting = (k: string, defaultValue?: any) => {
+export const useSetting = <T = any>(
+  k: string,
+  defaultValue?: any
+): [T, (v: T) => void] => {
   const value = useLiveQuery(async () => {
     const value = (await IDB.settings.get(k))?.value;
     if (R.isNil(value)) {

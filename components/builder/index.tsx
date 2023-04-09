@@ -1,4 +1,4 @@
-import { Box, Container, CssVarsProvider, Grid } from "@mui/joy";
+import { Box, CssVarsProvider, Grid } from "@mui/joy";
 import { ChartConfigDrawer } from "../v2/chart-config-drawer";
 import { PointerWrapper } from "./context/pointer.context";
 import { RangeWrapper } from "./context/range.context";
@@ -11,39 +11,45 @@ import { MyStrategies } from "./my-strategies";
 import { HoverWrapper } from "../../hooks/hover.hook";
 import XScrollbar from "../utils/scrollbars";
 import { ChartRangeControls } from "./markets/chart-range-controls";
-import { IChartData, ISignal } from "../../types/app.types";
+import { SignalsWrapper } from "./context/signals.context";
+import { SignalsContext } from "./context/signals.context";
+import { ClickAwayListener } from "@mui/material";
 
 const TVBuilder = () => {
   return (
-    <PointerWrapper>
-      <RangeWrapper>
-        <HoverWrapper>
-          <Box overflow="hidden" height="100%" mx={-3}>
-            <XScrollbar>
-              <Box px={3} pb="100px">
-                <ChartEventWrapper>
-                  <Loader small />
-                  <Grid container spacing={2}>
-                    <Markets />
-                  </Grid>
-                  <Grid container spacing={2}>
-                    <Grid xs={12} md={6}>
-                      <Studies />
-                      <MySignals />
+    <SignalsWrapper>
+      <PointerWrapper>
+        <RangeWrapper>
+          <HoverWrapper>
+            <Box overflow="hidden" height="100%" mx={-3}>
+              <XScrollbar>
+                <Box px={3} pb="100px">
+                  <ChartEventWrapper>
+                    <Loader small />
+                    <Grid container spacing={2}>
+                      <Markets />
                     </Grid>
-                    <Grid xs={12} md={6}>
-                      <MyStrategies withLink />
+                    <Grid container spacing={2}>
+                      <Grid xs={12} md={6}>
+                        <Box>
+                          <Studies />
+                          <MySignals />
+                        </Box>
+                      </Grid>
+                      <Grid xs={12} md={6}>
+                        <MyStrategies withLink />
+                      </Grid>
                     </Grid>
-                  </Grid>
-                  <ChartConfigDrawer />
-                </ChartEventWrapper>
-              </Box>
-            </XScrollbar>
-          </Box>
-        </HoverWrapper>
-        <ChartRangeControls />
-      </RangeWrapper>
-    </PointerWrapper>
+                    <ChartConfigDrawer />
+                  </ChartEventWrapper>
+                </Box>
+              </XScrollbar>
+            </Box>
+          </HoverWrapper>
+          <ChartRangeControls />
+        </RangeWrapper>
+      </PointerWrapper>
+    </SignalsWrapper>
   );
 };
 

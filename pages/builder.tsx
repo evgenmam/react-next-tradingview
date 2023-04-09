@@ -1,4 +1,3 @@
-import { Box, Container, CssVarsProvider } from "@mui/joy";
 import dynamic from "next/dynamic";
 
 import { Theme, ThemeWrapper } from "../components/theme";

@@ -12,9 +12,9 @@ import {
   Typography,
   useTheme,
 } from "@mui/joy";
-import { Collapse } from "@mui/material";
+import { Collapse, ListItemSecondaryAction } from "@mui/material";
 import { capitalCase, sentenceCase } from "change-case";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRows } from "../../../hooks/data.hook";
 import { ICondition, IConditionEntry } from "../../../types/app.types";
 import { applySignal } from "../../../utils/calculations";
@@ -55,6 +55,7 @@ export const NewSignalConditionSelect = ({
   const [expand, setExpand] = useState(false);
   const { rows } = useRows("source");
   const { palette } = useTheme();
+  const [value, setValue] = useState<number>(0);
   const times = useMemo(
     () =>
       points
@@ -86,14 +87,19 @@ export const NewSignalConditionSelect = ({
   );
   const add = (c: ICondition) =>
     addCondition({ ...c, color: ColorSelect.random(), offset });
+  useEffect(() => {
+    const val = points.find((v) => getIdFromPoint(v) === a?.field)?.y;
+    if (val) setValue(Math.round(val));
+  }, [a, points]);
   return (
     <Modal
-      open={opened}
+      open={!!opened}
       onClose={() => {
         setA(null);
         setPoints([]);
         setB(null);
         setOperator(null);
+        setValue(0);
       }}
     >
       <ModalDialog>
@@ -166,6 +172,32 @@ export const NewSignalConditionSelect = ({
                   </ListItemButton>
                 </ListItem>
               ))}
+              {a && operator && !b && (
+                <ListItem>
+                  <ListItemButton
+                    onClick={() => {
+                      const b = {
+                        value,
+                        type: "number" as const,
+                        offset: 0,
+                      };
+                      add({ a, b, operator });
+                    }}
+                  >
+                    Static Value
+                  </ListItemButton>
+                  <ListItemSecondaryAction>
+                    <Input
+                      variant="soft"
+                      size="sm"
+                      type="number"
+                      value={value}
+                      onChange={(e) => setValue(Number(e.target.value))}
+                      sx={{ width: 100 }}
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+              )}
 
               <ListDivider />
               {

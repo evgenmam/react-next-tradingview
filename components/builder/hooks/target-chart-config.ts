@@ -4,12 +4,14 @@ import { useRows } from "../../../hooks/data.hook";
 import { useRangeSet } from "../context/range.context";
 import { useBarColorers } from "./study-chart/bar-colorers";
 import * as R from "ramda";
+import { useStudyChartSignals } from "./signals.hook";
 
 export const useTargetChartConfig = (set: string, height?: number) => {
   const { palette } = useTheme();
   const setRange = useRangeSet();
   const { rows, dataset } = useRows(set);
   const colorers = useBarColorers();
+  const plotLines = useStudyChartSignals();
   const isSource = set === "source";
   const indColorers = useMemo(
     () =>
@@ -76,7 +78,7 @@ export const useTargetChartConfig = (set: string, height?: number) => {
             if (e.trigger !== "sync") setRange({ event: e, key: set });
           },
         },
-
+        plotLines,
         crosshair: {
           dashStyle: "Dash",
           label: {
@@ -139,6 +141,7 @@ export const useTargetChartConfig = (set: string, height?: number) => {
       palette.success,
       set,
       setRange,
+      plotLines
     ]
   );
   return options;

@@ -13,3 +13,5 @@ export const periodDiff = {
   "3M": 3 * 30 * 24 * 60 * 60 * 1000,
   "6M": 6 * 30 * 24 * 60 * 60 * 1000,
 } as const;
+
+export type IPeriod = keyof typeof periodDiff;

@@ -59,7 +59,7 @@ export const NewSignal = ({ onSave = noop, onCancel = noop }: Props) => {
   );
 
 useEffect(() => {
-  console.log(1);
+  
 },[])
   const enabled = !conditions.length || !!conditions.at(-1)?.next;
   useEffect(() => {
@@ -201,8 +201,8 @@ useEffect(() => {
           a &&
             addCondition({
               a,
-              operator: v.isSignal ? "true" : 'greater',
-              color: v.color || ColorSelect.random(),
+              operator: v?.isSignal ? "true" : 'greater',
+              color: v?.color || ColorSelect.random(),
               offset: 0,
             });
           setSelectFromList(false);

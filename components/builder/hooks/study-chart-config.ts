@@ -14,6 +14,7 @@ import { useStudyChartPlots } from "./study-chart/plots";
 import { useStudyChartSource } from "./study-chart/source";
 import * as R from "ramda";
 import { useStudyChartPlotlines } from "./study-chart/plotlines";
+import { useStudyChartSignals } from "./signals.hook";
 
 export const useStudyChartConfig = (s: ITVStudy, view = 1) => {
   const { palette } = useTheme();
@@ -31,7 +32,9 @@ export const useStudyChartConfig = (s: ITVStudy, view = 1) => {
     study?.meta?.is_price_study ? source : lines
   );
   const { events } = useChartEvents();
-  const plotLines = useStudyChartPlotlines();
+  const signalPreview = useStudyChartPlotlines();
+  const signalViews = useStudyChartSignals();
+  const plotLines = [...signalPreview, ...signalViews];
   const h = view === 4 ? 300 : 400;
   const options: Highcharts.Options = useMemo(
     () =>

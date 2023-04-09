@@ -3,14 +3,12 @@ import {
   Box,
   Button,
   ButtonProps,
-  Chip,
   IconButton,
-  List,
-  ListItem,
-  ListItemButton,
+  Input,
   Typography,
+  Tooltip,
 } from "@mui/joy";
-import { ButtonBase, ButtonBaseProps } from "@mui/material";
+import { ButtonBase, ButtonBaseProps, Collapse } from "@mui/material";
 import { Stack } from "@mui/system";
 import { sentenceCase } from "change-case";
 import noop from "lodash.noop";
@@ -23,21 +21,33 @@ import { SelectDialog } from "../../dialogs/select-dialog";
 import OperatorSelectDialog from "./operator-select-dialog";
 import SignalListSelectDialog from "./signal-list-select-dialog";
 import { Space } from "../../utils/row";
+import { VariableIcon } from "@heroicons/react/24/outline";
+import { IConditionEntry } from "../../../types/app.types";
 
-const CondTitle = ({ cond, offset }: { cond?: string; offset?: number }) => {
-  const v = cond?.split("----")[0]?.split(":");
+const CondTitle = ({
+  cond,
+  offset,
+}: {
+  cond?: IConditionEntry;
+  offset?: number;
+}) => {
+  const v = cond?.field?.split("----")[0]?.split(":");
   return cond ? (
-    <Stack>
-      <Space c s={0.5} justifyContent="center">
-        <Typography level="body2">{v?.[1]}</Typography>
-        {offset && (
-          <Box py={0.25} px={1} bgcolor="primary.solidBg" borderRadius={1.5}>
-            -{offset}
-          </Box>
-        )}
-      </Space>
-      <Typography level="body3">{v?.[0]}</Typography>
-    </Stack>
+    cond.type === "field" ? (
+      <Stack>
+        <Space c s={0.5} justifyContent="center">
+          <Typography level="body2">{v?.[1]}</Typography>
+          {!!offset && (
+            <Box py={0.25} px={1} bgcolor="primary.solidBg" borderRadius={1.5}>
+              -{offset}
+            </Box>
+          )}
+        </Space>
+        <Typography level="body3">{v?.[0]}</Typography>
+      </Stack>
+    ) : (
+      <Typography>{cond?.value}</Typography>
+    )
   ) : (
     <Typography>Select</Typography>
   );
@@ -109,7 +119,7 @@ export const NewSignalCondition: FC<Props> = ({
         onChange={(v) => updateCondition({ ...condition, color: v })}
       />
       <BB onClick={() => setSignalListOpen("a")}>
-        <CondTitle cond={condition?.a?.field} />
+        <CondTitle cond={condition?.a} />
       </BB>
       {!isFirst && (
         <>
@@ -132,7 +142,7 @@ export const NewSignalCondition: FC<Props> = ({
       {condition?.operator !== "true" && (
         <BB onClick={() => setSignalListOpen("b")}>
           <CondTitle
-            cond={condition?.b?.field}
+            cond={condition?.b}
             offset={condition?.a?.field === condition?.b?.field ? 1 : 0}
           />
         </BB>
@@ -148,8 +158,9 @@ export const NewSignalCondition: FC<Props> = ({
           matches={matches}
         />
       </Box>
-      {/* <BN k="AND" />
-      <BN k="OR" /> */}
+
+      <BN k="AND" />
+      {/* <BN k="OR" /> */}
       <IconButton
         size="sm"
         color="danger"
@@ -168,8 +179,9 @@ export const NewSignalCondition: FC<Props> = ({
       />
       <SignalListSelectDialog
         open={!!signalListOpen}
+        withNumber={signalListOpen === "b"}
         onClose={() => setSignalListOpen(null)}
-        onChange={(f, c) =>
+        onChange={(_, c) =>
           signalListOpen &&
           updateCondition({ ...condition, [signalListOpen]: c })
         }

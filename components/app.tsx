@@ -6,7 +6,7 @@ import { ModalContext, IModalContext } from "../hooks/modal.hook";
 import { PromptDialog } from "./dialogs/prompt-dialog";
 import { DisplayArea } from "./display-area/display-area";
 import { Strategy } from "./strategy/strategy";
-import { Theme, ThemeWrapper } from "./theme";
+import { ThemeWrapper } from "./theme";
 import { Loader } from "./utils/loader";
 import { ChartConfigDrawer } from "./v2/chart-config-drawer";
 import { SnackbarProvider } from "notistack";

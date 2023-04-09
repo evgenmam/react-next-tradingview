@@ -1,17 +1,18 @@
-import { PlusIcon, ArrowDownTrayIcon } from "@heroicons/react/24/solid";
 import { FolderPlusIcon } from "@heroicons/react/24/outline";
+import { ArrowDownTrayIcon, PlusIcon } from "@heroicons/react/24/solid";
 import { Divider, Grid, IconButton, Stack, Tooltip } from "@mui/joy";
 import { Collapse } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSignals } from "../../hooks/data.hook";
-import { XJson } from "../json";
-import { MySignalRow } from "./signals/my-signal-row";
-import { NewSignal } from "./signals/new-signal";
+import { ISignal } from "../../types/app.types";
 import ExportDialog from "../dialogs/export-dialog";
 import ImportDialog from "../dialogs/import-dialog";
 import SectionHeader from "./secton-header";
-import { ISignal } from "../../types/app.types";
-
+import { MySignalRow } from "./signals/my-signal-row";
+import { NewSignal } from "./signals/new-signal";
+import { useSignalsContext } from "./context/signals.context";
+import noop from "lodash.noop";
+import * as R from "ramda";
 export const MySignals = () => {
   const [adding, setAdding] = useState(false);
   const { addSignal, signals, removeSignal } = useSignals();
@@ -26,9 +27,8 @@ export const MySignals = () => {
       setCollapsed(false);
     }
   }, [adding]);
-  const [linking, setLinking] = useState<ISignal | null>(null);
-  const [viewing, setViewing] = useState<Set<ISignal>>(new Set());
-  console.log(viewing);
+  const { setSelected } = useSignalsContext();
+
   return (
     <Stack>
       <Stack py={1} alignItems="center" spacing={1} direction="row">
@@ -79,21 +79,13 @@ export const MySignals = () => {
             {signals.map((signal) => (
               <Grid key={signal.id} flexGrow={1}>
                 <MySignalRow
+                  editable
                   signal={signal}
                   onDelete={removeSignal}
                   draggable
                   showName
-                  onLink={setLinking}
-                  onView={(v) =>
-                    setViewing((vw) => {
-                      const s = new Set(vw);
-                      vw.has(v) ? s.delete(v) : s.add(v);
-                      return s;
-                    })
-                  }
-                  viewing={Array.from(viewing)
-                    .map((v) => v.id)
-                    .includes(signal.id)}
+                  onLink={noop}
+                  withView
                 />
               </Grid>
             ))}

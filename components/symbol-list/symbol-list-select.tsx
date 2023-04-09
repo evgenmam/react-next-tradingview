@@ -1,12 +1,15 @@
-import { ArrowDownIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
-import { Box, Button, FormControl, FormLabel, Input } from "@mui/joy";
-import { ITVSymbolList } from "../tv-components/types";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  IconButton,
+} from "@mui/joy";
 import { SelectDialog } from "../dialogs/select-dialog";
-import { useModalAsync } from "../../hooks/modal.hook";
 import { Stack } from "@mui/system";
 import { useState } from "react";
 import { useActiveList, useLists } from "../../hooks/data.hook";
-import { IconButton } from "@mui/material";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { TVSymbolSearchDialog } from "../tv-components/dialogs/symbol-search-dialog";
 import * as R from "ramda";

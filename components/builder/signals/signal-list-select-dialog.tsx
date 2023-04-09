@@ -10,6 +10,7 @@ import {
   Input,
   ListSubheader,
   Sheet,
+  IconButton,
 } from "@mui/joy";
 import { useV2Studies } from "../../v2/hooks/v2-data.hook";
 import {
@@ -24,10 +25,13 @@ import { TransitionGroup } from "react-transition-group";
 import { ITVStudy } from "../../tv-components/types";
 import * as R from "ramda";
 import { ICondition, IConditionEntry } from "../../../types/app.types";
+import { CheckIcon } from "@heroicons/react/24/solid";
+import { ColorSelect } from "../../data/selects/color-select";
 
 type SignalListSelectDialogProps = {
   onChange?: (a: SFT, condition?: IConditionEntry) => void;
   open?: boolean;
+  withNumber?: boolean;
   onClose?: () => void;
 };
 
@@ -35,9 +39,11 @@ export const SignalListSelectDialog = ({
   open,
   onChange,
   onClose,
+  withNumber,
 }: SignalListSelectDialogProps) => {
   const { studies } = useV2Studies();
   const [search, setSearch] = useState("");
+  const [value, setValue] = useState(0);
 
   const matchSearch = useCallback(
     (s: string) => s.match(new RegExp(`${search}`, "i")),
@@ -69,14 +75,17 @@ export const SignalListSelectDialog = ({
       <ModalOverflow>
         <ModalDialog>
           <Stack spacing={2} divider={<Divider />}>
-            <Box
+            <Space
+              s={2}
               position="sticky"
               top="0"
               zIndex="10"
               sx={{ backdropFilter: "blur(10px)" }}
+              divider={<Divider orientation="vertical" />}
             >
               <Input
                 autoFocus
+                sx={{ flexGrow: 1 }}
                 variant="soft"
                 value={search}
                 onChange={(e) => {
@@ -84,7 +93,34 @@ export const SignalListSelectDialog = ({
                 }}
                 placeholder="Search..."
               />
-            </Box>
+              {withNumber && (
+                <Input
+                  variant="soft"
+                  value={value || ""}
+                  onChange={(e) => {
+                    setValue(Number(e.target.value));
+                  }}
+                  placeholder="Static value"
+                  endDecorator={
+                    <IconButton
+                      disabled={!value}
+                      size="sm"
+                      variant="plain"
+                      onClick={() => {
+                        onChange?.({} as SFT, {
+                          value,
+                          type: "number",
+                          offset: 0,
+                        });
+                        onClose?.();
+                      }}
+                    >
+                      <CheckIcon width={24} />
+                    </IconButton>
+                  }
+                />
+              )}
+            </Space>
             <Space gap={2} flexWrap="wrap">
               {studies?.map((s) => (
                 <List key={s.id} size="sm">
@@ -92,11 +128,13 @@ export const SignalListSelectDialog = ({
                   {fff(s).map((f) => (
                     <ListItem key={f.key}>
                       <ListItemButton
-                        onClick={() => onChange?.(f, {
-                          field: `${f.study}:${f.title}----${f.key}`,
-                          type: "field",
-                          offset: 0,
-                        })}
+                        onClick={() =>
+                          onChange?.(f, {
+                            field: `${f.study}:${f.title}----${f.key}`,
+                            type: "field",
+                            offset: 0,
+                          })
+                        }
                         disabled={!matchSearch(f.title)?.length}
                         dangerouslySetInnerHTML={{
                           __html: search
