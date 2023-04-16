@@ -6,6 +6,7 @@ import { addPercent, cur, subPercent, val } from "../../../utils/number.utils";
 import { useSettings } from "../../../hooks/settings.hook";
 import * as D from "date-fns";
 import { v4 } from "uuid";
+import { useDebugValue } from "react";
 
 type N = {
   value: number;
@@ -39,13 +40,15 @@ export interface ISTrade {
   action: string;
   id?: string;
   strategy?: {
-    open: number;
+    open?: number;
     close?: number;
   };
   stopLossTriggered?: boolean;
   takeProfitTriggered?: boolean;
   takeProfit?: number;
   stopLoss?: number;
+  openSignalTime?: number;
+  closeSignalTime?: number;
 }
 
 const toInterval = (t: ISTrade): D.Interval => ({
@@ -87,84 +90,96 @@ export const useStrategyTrades = (
 ): ISTrade[] => {
   const c = useSettings();
 
-  const trades = openBars.reduce<ISTrade[]>((v, openBarIdx) => {
-    if (!rows.at(-openBarIdx)) return v;
-    const openPrice = val(rows.at(-openBarIdx)!.open);
-    let closeBarIdx = closeBars.find((c) => c < openBarIdx);
-    const closed = !!closeBarIdx;
+  const trades = openBars
+    .map((k) => rows.length - k)
+    .reduce<ISTrade[]>((v, openBarIdx) => {
+      if (!rows.at(openBarIdx)) return v;
+      const openPrice = val(rows.at(openBarIdx)!.open);
+      let closeBarIdx = closeBars
+        .map((k) => rows.length - k)
+        .find((c) => c > openBarIdx && c < rows.length);
+      const closed = !!closeBarIdx;
 
-    const allBars = rows.slice(-openBarIdx, closeBarIdx && -closeBarIdx + 1);
-    let bars = [...allBars];
-    if (!bars.length) return v;
-    if (hasSl(allBars, sl)) bars = applyStopLoss(allBars, sl!);
-    if (hasTp(allBars, tp)) bars = applyTakeProfit(allBars, tp!);
-    const high = bars.reduce(R.maxBy(R.propOr(0, "high")), bars[0]);
-    const low = bars.reduce(R.minBy(R.propOr(Infinity, "low")), bars[0]);
-    const closePrice = val(
-      (!closed ? bars.at(-1)?.close : bars.at(-1)?.open) || 0
-    );
-    const openTotal = val(strategy?.usd || (strategy?.entry || 1) * openPrice);
-    const contracts = val(
-      strategy?.usd ? openTotal / openPrice : strategy?.entry || 1
-    );
-    const pnl =
-      val(val(contracts * closePrice) - openTotal) *
-      (strategy?.direction === "short" ? -1 : 1);
-    const closeTotal = openTotal + pnl;
-    const symbol = c[strategy?.dataset as keyof typeof c]?.split?.(":")?.[1];
-    const openTime = new Date(bars[0].time);
-    const cc = bars.at(-1)?.time;
-    const closeTime = cc ? new Date(cc) : new Date();
-    const overlapping = v.filter(
-      isOverlapping({
-        open: bars[0],
+      const allBars = rows.slice(
+        openBarIdx,
+        closeBarIdx ? closeBarIdx + 1 : rows.length
+      );
+      let bars = [...allBars];
+      if (!bars.length) return v;
+      if (hasSl(allBars, sl)) bars = applyStopLoss(allBars, sl!);
+      if (hasTp(allBars, tp)) bars = applyTakeProfit(allBars, tp!);
+      const high = bars.reduce(R.maxBy(R.propOr(0, "high")), bars[0]);
+      const low = bars.reduce(R.minBy(R.propOr(Infinity, "low")), bars[0]);
+      const closePrice = val(
+        (!closed ? bars.at(-1)?.close : bars.at(-1)?.open) || 0
+      );
+
+      const openTotal = val(
+        strategy?.usd || (strategy?.entry || 1) * openPrice
+      );
+      const contracts = val(
+        Math.round(strategy?.usd ? openTotal / openPrice : strategy?.entry || 1)
+      );
+      const pnl =
+        val(val(contracts * closePrice) - openTotal) *
+        (strategy?.direction === "short" ? -1 : 1);
+      const closeTotal = openTotal + pnl;
+      const symbol = c[strategy?.dataset as keyof typeof c]?.split?.(":")?.[1];
+      const openTime = new Date(bars[0].time);
+      const cc = bars.at(-1)?.time;
+      const closeTime = cc ? new Date(cc) : new Date();
+      const overlapping = v.filter(
+        isOverlapping({
+          open: bars[0],
+          close: bars.at(-1),
+          openTotal,
+          openPrice,
+          action: strategy?.direction || "long",
+        })
+      );
+
+      if (!rows.at(-openBarIdx - 1)) return v;
+
+      const trade: ISTrade = {
+        id: v4(),
         close: bars.at(-1),
-        openTotal,
+        closed: !!closed,
+        closePrice,
+        closeTotal,
+        contracts,
+        diff: D.formatDistanceStrict(openTime, closeTime),
+        high,
+        length: bars.length,
+        low,
+        open: bars[0],
         openPrice,
+        openTotal,
+        pnl: {
+          value: pnl,
+          percent: +(pnl / openTotal).toFixed(4),
+          cumulative: v.reduce((a, b) => a + (b.pnl?.value || 0), pnl),
+        },
+        volume: `${contracts} ${symbol}`,
+        symbol,
+        openTrades: overlapping.length + 1,
+        invested: val(
+          overlapping.map((t) => t.openTotal).reduce((a, b) => a + b, openTotal)
+        ),
         action: strategy?.direction || "long",
-      })
-    );
+        strategy: {
+          open: openBarIdx && rows?.at(openBarIdx - 1)?.time,
+          close: closeBarIdx && rows?.at(closeBarIdx - 1)?.time,
+        },
+        takeProfitTriggered: hasTp(allBars, tp),
+        stopLossTriggered: hasSl(allBars, sl),
+        takeProfit: tp && addPercent(tp)(bars[0].open),
+        stopLoss: sl && subPercent(sl)(bars[0].open),
+        openSignalTime: openBarIdx && rows?.at(openBarIdx - 1)?.time,
+        closeSignalTime: closeBarIdx && rows?.at(closeBarIdx - 1)?.time,
+      };
 
-    if (!rows.at(-openBarIdx - 1)) return v;
-
-    const trade: ISTrade = {
-      id: v4(),
-      close: bars.at(-1),
-      closed: !!closed,
-      closePrice,
-      closeTotal,
-      contracts,
-      diff: D.formatDistanceStrict(openTime, closeTime),
-      high,
-      length: bars.length,
-      low,
-      open: bars[0],
-      openPrice,
-      openTotal,
-      pnl: {
-        value: pnl,
-        percent: +(pnl / openTotal).toFixed(4),
-        cumulative: v.reduce((a, b) => a + (b.pnl?.value || 0), pnl),
-      },
-      volume: `${contracts} ${symbol}`,
-      symbol,
-      openTrades: overlapping.length + 1,
-      invested: val(
-        overlapping.map((t) => t.openTotal).reduce((a, b) => a + b, openTotal)
-      ),
-      action: strategy?.direction || "long",
-      strategy: {
-        open: bars.at(0)!.time,
-        close: closed ? bars.at(-1)!.time : undefined,
-      },
-      takeProfitTriggered: hasTp(allBars, tp),
-      stopLossTriggered: hasSl(allBars, sl),
-      takeProfit: tp && addPercent(tp)(bars[0].open),
-      stopLoss: sl && subPercent(sl)(bars[0].open),
-    };
-
-    return [...v, trade];
-  }, []);
+      return [...v, trade];
+    }, []);
 
   return trades;
 };

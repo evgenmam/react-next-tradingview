@@ -13,6 +13,7 @@ import CompareDrawer from "./compare-drawer";
 import { StrategyData } from "./strategy-data";
 import { BNumberInput } from "../utils/number-input";
 import { useSettings } from "../../hooks/settings.hook";
+import { PeriodSelect } from "./period-select";
 
 const StrategyDetails = () => {
   const [id, setId] = useQueryState("id", queryTypes.integer.withDefault(0));
@@ -58,6 +59,7 @@ const StrategyDetails = () => {
                     onChange={setStopLoss}
                     label="Stop Loss"
                   />
+                  <PeriodSelect />
                 </Space>
                 <StrategyData id={id} />
               </Stack>

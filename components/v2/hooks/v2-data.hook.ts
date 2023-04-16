@@ -213,8 +213,7 @@ export const useV2PrivateScripts = () => {
     }) || [];
 
   const setPrivateScripts = async (scripts: ITVIndicator[]) => {
-    await IDB.savedScripts.clear();
-    await IDB.savedScripts.bulkAdd(
+    await IDB.savedScripts.bulkPut(
       scripts.map((v) => ({ ...v, type: "private" }))
     );
   };

@@ -47,6 +47,7 @@ export type ITVScriptParserInput = {
   strategy?: IStrategy;
   dataset?: string;
   source?: string;
+  upload?: boolean;
 };
 export class TVScriptParser {
   trades?: ISTrade[];
@@ -61,6 +62,7 @@ export class TVScriptParser {
   }
 
   scriptFromTrades(): string {
+    
     return script(getTrades(this.trades), this);
   }
 }

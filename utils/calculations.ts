@@ -175,24 +175,26 @@ export const applySignal = (rows: IChartData[]) => (signal: ISignal) => {
 
 export const applyStrategy =
   (rows: IChartData[]) =>
-  (strategy: IStrategy): IBaseTradePack => ({
-    open: applySignal(rows)(strategy.openSignal!).data.map((r) => ({
-      strategy,
-      open: true,
-      long: strategy.direction === "long",
-      short: strategy.direction === "short",
-      time: r.time,
-      action: "open",
-    })),
-    close: applySignal(rows)(strategy.closeSignal!).data.map((r) => ({
-      strategy,
-      close: true,
-      long: strategy.direction === "long",
-      short: strategy.direction === "short",
-      time: r.time,
-      action: "close",
-    })),
-  });
+  (strategy: IStrategy): IBaseTradePack => {
+    return ({
+      open: applySignal(rows)(strategy.openSignal!).data.map((r) => ({
+        strategy,
+        open: true,
+        long: strategy.direction === "long",
+        short: strategy.direction === "short",
+        time: r.time,
+        action: "open",
+      })),
+      close: applySignal(rows)(strategy.closeSignal!).data.map((r) => ({
+        strategy,
+        close: true,
+        long: strategy.direction === "long",
+        short: strategy.direction === "short",
+        time: r.time,
+        action: "close",
+      })),
+    });
+  };
 
 export const calculateStrategy =
   (source: IChartData[], target: IChartData[]) =>

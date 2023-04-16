@@ -14,6 +14,9 @@ import { useStrategyStats } from "../../strategy-details/hooks/strategy-stats";
 import { useStrategyTrades } from "../../strategy-details/hooks/strategy-trades";
 import { XStats } from "../../utils/stats";
 import { useStrategy } from "../../v2/hooks/v2-data.hook";
+import { Space } from "../../utils/row";
+import copy from "copy-to-clipboard";
+import { ClipboardIcon } from "@heroicons/react/24/outline";
 
 type Props = {
   strategy: IStrategy;
@@ -43,18 +46,24 @@ export const MyStrategyStats = ({ strategy, reversed, useTpLs }: Props) => {
   const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
-  const uploadTrades = async () => {
+  const uploadTrades = async (c?: boolean) => {
     if (!success && !error && !uploading) {
       try {
-        setSuccess(false);
-        setError(false);
-        setUploading(true);
+        if (!c) {
+          setSuccess(false);
+          setError(false);
+          setUploading(true);
+        }
         const { data } = await axios.post("/api/scripts/strategy", {
           trades,
           strategy,
           source,
           dataset,
+          upload: !c,
         });
+        if (data?.script && c) {
+          copy(data?.script);
+        }
         if (data?.data?.success) {
           setSuccess(true);
           updateStrategy({
@@ -78,29 +87,40 @@ export const MyStrategyStats = ({ strategy, reversed, useTpLs }: Props) => {
   return (
     <Box position="relative">
       <Box position="absolute" top={-32} right={0}>
-        <Tooltip title="Upload to TradingView">
-          <IconButton
-            size="sm"
-            onClick={uploadTrades}
-            color={
-              error
-                ? "danger"
-                : success || strategy?.scripts?.[dataset]
-                ? "success"
-                : "primary"
-            }
-          >
-            {uploading ? (
-              <CircularProgress />
-            ) : success ? (
-              <CheckIcon />
-            ) : error ? (
-              <ExclamationTriangleIcon width={16} />
-            ) : (
-              <CloudArrowUpIcon width={20} />
-            )}
-          </IconButton>
-        </Tooltip>
+        <Space>
+          <Tooltip title="Upload to TradingView">
+            <IconButton
+              size="sm"
+              onClick={() => uploadTrades()}
+              color={
+                error
+                  ? "danger"
+                  : success || strategy?.scripts?.[dataset]
+                  ? "success"
+                  : "primary"
+              }
+            >
+              {uploading ? (
+                <CircularProgress />
+              ) : success ? (
+                <CheckIcon />
+              ) : error ? (
+                <ExclamationTriangleIcon width={16} />
+              ) : (
+                <CloudArrowUpIcon width={20} />
+              )}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Copy script">
+            <IconButton
+              size="sm"
+              onClick={() => uploadTrades(true)}
+              color={"primary"}
+            >
+              <ClipboardIcon width={16} />
+            </IconButton>
+          </Tooltip>
+        </Space>
       </Box>
       <XStats
         table

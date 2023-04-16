@@ -72,6 +72,11 @@ export const TVIndicatorSearch = ({ onSelect = noop }: Props) => {
         getOptionLabel={(option) => option.scriptName}
         options={options}
         loading={loading}
+        slotProps={{
+          listbox: {
+            disablePortal: true,
+          },
+        }}
         endDecorator={
           loading ? (
             <CircularProgress

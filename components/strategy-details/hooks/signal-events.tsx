@@ -1,3 +1,4 @@
+import { useDebugValue } from "react";
 import { useRows } from "../../../hooks/data.hook";
 import { IChartData, ISignal, IStrategy } from "../../../types/app.types";
 import { applySignal } from "../../../utils/calculations";
@@ -20,6 +21,8 @@ export const useSignalEvents = (
   r?: IChartData[]
 ): ISOpenClose => {
   const { rows: source } = useRows("source");
+  useDebugValue(strategy);
+
   if (strategy?.openSignal && strategy?.closeSignal) {
     const { data: open, bars: openBars } = applySignal(r || source)(
       strategy?.openSignal

@@ -2,7 +2,7 @@ import { Card } from "@mui/joy";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import { Box, Stack } from "@mui/system";
 import { useEventEmitter } from "ahooks";
-import { FC } from "react";
+import { FC, useDebugValue } from "react";
 import { CLOSING } from "ws";
 import { useRows, useSettings } from "../../hooks/data.hook";
 import { getReversalStrategy } from "../../utils/strategy.utils";
@@ -40,6 +40,7 @@ export const StrategyData: FC<Props> = ({ id }) => {
     takeProfit,
     stopLoss
   );
+  
   const { reverseStrategies } = useSettings();
   return (
     <Card>

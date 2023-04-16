@@ -19,7 +19,6 @@ export const ThemeToggle = ({}: ThemeToggleProps) => {
     },
     [setTheme, theme]
   );
-  console.log(theme);
   return (
     <Space>
       <IconButton
