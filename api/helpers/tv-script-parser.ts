@@ -37,7 +37,7 @@ times = array.from(${rows})
 for t in times
     n = t.l ? 'LONG' : 'SHORT'
     if (time == t.ot)    
-        strategy.entry(n, t.l ? strategy.long : strategy.short, t.n)
+        strategy.order(n, t.l ? strategy.long : strategy.short, t.n)
     if (time == t.ct)
         strategy.close(n)
 `;

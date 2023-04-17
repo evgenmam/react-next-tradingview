@@ -114,16 +114,14 @@ export const useStrategyTrades = (
         (!closed ? bars.at(-1)?.close : bars.at(-1)?.open) || 0
       );
 
-      const openTotal = val(
-        strategy?.usd || (strategy?.entry || 1) * openPrice
-      );
       const contracts = val(
-        Math.round(strategy?.usd ? openTotal / openPrice : strategy?.entry || 1)
+        strategy?.usd
+          ? Math.floor(strategy.usd / openPrice)
+          : strategy?.entry || 1
       );
-      const pnl =
-        val(val(contracts * closePrice) - openTotal) *
-        (strategy?.direction === "short" ? -1 : 1);
-      const closeTotal = openTotal + pnl;
+      const openTotal = val(openPrice * contracts);
+      const closeTotal = val(closePrice * contracts);
+      const pnl = val(closeTotal - openTotal);
       const symbol = c[strategy?.dataset as keyof typeof c]?.split?.(":")?.[1];
       const openTime = new Date(bars[0].time);
       const cc = bars.at(-1)?.time;
